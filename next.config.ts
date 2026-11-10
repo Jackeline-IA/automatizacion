@@ -28,8 +28,7 @@ const ARCHIVOS_OCR = [
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    // Rutas que hacen OCR. La de prueba es temporal (Fase 5) y se borra al terminar.
-    "/api/ocr-prueba": ARCHIVOS_OCR,
+    // Rutas que hacen OCR.
     "/api/procesos/**": ARCHIVOS_OCR,
     // El diagnóstico solo comprueba que los datos del idioma estén en el paquete.
     "/api/salud": [DATOS_IDIOMA_OCR],
