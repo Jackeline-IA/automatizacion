@@ -1,0 +1,21 @@
+7 FACTURA ELECTRÓNICA
+Ferretería Moreno Bahena S.A.
+NIT 884304004-2 - Responsable de IVA FE-000447
+CLIENTE DATOS DE LA FACTURA
+Distribuciones Archuleta Perales Ltda. Emisión: 2026-10-20 - 10:45:51
+Documento: 868893598-2 Vence: 2026-10-20
+Contado - Efectivo
+Diag. 74 4 4-96, Pereira - Resolución DIAN 18764600875352 de 2026-02-26 - Prefijo FE
+Cant. Descripción Precio unitario Subtotal
+38 Guantes de seguridad de carnaza par $12.100 $459.800
+8 Cinta métrica 8 metros con freno $16.800 $134.400
+24 Casco de seguridad con suspensión de 4 $35.600 $854.400
+puntos
+68 Varilla corrugada 3/8 pulgada x 6 metros $23.200 $1.577.600
+25 Cemento gris uso general bolsa x 50 kg $33.100 $827.500
+23 Pintura vinilo tipo 1 blanco galón $65.700 $1.511.100
+Subtotal $5.364.800
+IVA (19%) $1.019.312
+Total factura $6.384.112
+CUFE 72e6fad3146fd2859c8fdb08e5f8924cace177e87ba690476fee93b94133e10d298f169c642b23962bb0de1d27574113
+Representación gráfica de factura electrónica de venta. Documento sintético con datos ficticios para fines académicos.

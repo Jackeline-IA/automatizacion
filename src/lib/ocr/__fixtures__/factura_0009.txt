@@ -1,0 +1,18 @@
+FACTURA ELECTRÓNICA
+Compuredes Flores Alonzo S.A.S.
+NIT 879173898-8 - Responsable de IVA FE-000077
+CLIENTE DATOS DE LA FACTURA
+Inversiones Pulido Angulo S.A. Emisión: 28 de septiembre de 2026 - 14:11:52
+Documento: 899396057-0 Vence: 28 de octubre de 2026
+Crédito 30 días - Efectivo
+Cra 71 4 54-69, Medellín - Resolución DIAN 18764597429242 de 25 de enero de 2026 - Prefijo FE
+Cant. Descripción Precio unitario Subtotal
+3 Disco de estado sólido SSD 1 TB $371.700 $1.115.100
+3 Mouse óptico inalámbrico ergonómico $115.700 $347.100
+5 Portátil 14" Core i5 16 GB RAM 512 GB SSD $3.615.600 $18.078.000
+3 UPS interactiva 1000 VA $467.800 $1.403.400
+Subtotal $20.943.600
+IVA (19%) $3.979.284
+Total factura $24.922.884
+CUFE 5636d2f9daab2cdf9f3171bfc8c9bbf2400b000193C496760a4327607722119839b043ac519eedb2df f933ad99be43d7
+Representación gráfica de factura electrónica de venta. Documento sintético con datos ficticios para fines académicos.

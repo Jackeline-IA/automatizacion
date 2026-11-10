@@ -1,0 +1,36 @@
+Compuredes Villalpando Ordóñez S.A.S. FACTURA ELECTRÓNICA DE VENTA
+
+NIT: 880.877.724-0 No. FE-000386
+
+Responsable de IVA
+
+Calle 39 4 67-55, Cartagena
+
+Tel. 603 4958076
+
+Resolución DIAN No. 18764059304556 del 2026-02-23. Prefijo FE, rango del FE-000001 al FE-005000.
+
+Fecha de emisión: 2026-01-30 19:08:56 Fecha de vencimiento: 2026-01-30
+
+Forma de pago: Contado Medio de pago: Efectivo
+
+Adquirente: Agroindustrias Tello Durán Ltda. NIT/CC: 858.209.858-4
+
+[e] pss [me | valerntare [we | valer]
+
+Teclado mecánico inalámbrico español $198.000 $396.000
+
+UPS interactiva 1000 VA $631.700 $1.895.100
+
+Router Wi-Fi 6 doble banda $442.500 $885.000
+
+la Cable HDMI 2.0 de 2 metros $31.700 $348.700
+
+Portátil 14" Core i5 16 GB RAM 512 GB SSD $2.423.300 $4.846.600
+Valor antes de IVA $8.371.400
+IVA 19% $1.590.566
+TOTAL A PAGAR $9.961.966
+
+CUFE: cdSbde10f143661f2dec325739212307a650c9C7412da4f9c4387f26e38d0eaB3a3153d8edO8bbd941895f343beds4d9
+
+Representación gráfica de factura electrónica de venta. Documento sintético con datos ficticios para fines académicos.

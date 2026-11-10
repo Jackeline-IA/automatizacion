@@ -1,0 +1,19 @@
++ O FACTURA ELECTRÓNICA
+Infotec Rico Rubio S.A.
+NIT 856162509-7 - Responsable de IVA FE-000833
+CLIENTE DATOS DE LA FACTURA
+Inversiones Rangel Batista S.A.S. Emisión: 16 de octubre de 2026 - 12:19:31
+Documento: 869745262-3 Vence: 15 de noviembre de 2026
+Crédito 30 días - Transferencia débito bancaria
+Av. 119 4 3141, Barranquilla - Resolución DIAN 18764721181387 de 2 de febrero de 2026 - Prefijo FE
+Cant. Descripción Precio unitario Subtotal
+———————————]————————————;—];
+5 Monitor LED 24 pulgadas Full HD $763.900 $3.819.500
+1 Impresora multifuncional láser $1.637.500 $1.637.500
+monocromática con red
+Subtotal $5.457.000
+IVA (19%) $1.036.830
+— —Ón———————————— ———Ñ]
+Total factura $6.493.830
+CUFE $7453f4aa9caba9043c2877c83132€1712 f0bf25d23267c24732472a6a120€87 3d 1 368ee 1a6a30810089293867768a
+Representación gráfica de factura electrónica de venta. Documento sintético con datos ficticios para fines académicos.

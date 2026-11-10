@@ -1,0 +1,22 @@
+Servicios Profesionales Arce Gallegos S.A.S. FACTURA ELECTRÓNICA DE VENTA
+NIT: 836.531.588-1 No. FE-000906
+Responsable de IVA
+Av. 27 4 53-18, Bucaramanga
+Tel. 604 3138834
+Resolución DIAN No. 18764125519785 del 11/01/2026. Prefijo FE, rango del FE-000001 al FE-005000.
+Fecha de emisión: 13/09/2026 15:22:57 Fecha de vencimiento: 13/09/2026
+Forma de pago: Contado Medio de pago: Efectivo
+Adquirente: Comercializadora Palacios Orta S.A.S. NIT/CC: 879.905.239-7
+[e] pss [me | valernare [we | valer]
+Asesoría contable por horas $215.400 $1.077.000
+2 | Capacitación en herramientas ofimáticas, sesión 1 $375.600 19% $375.600
+de 4 horas
+3 | Instalación y configuración de red estructurada, 5 $94.100 19% $470.500
+por punto
+Mantenimiento preventivo de equipos de 25 $101.800 19% $2.545.000
+cómputo
+Valor antes de IVA $4.468.100
+IVA 19% $848.939
+TOTAL A PAGAR $5.317.039
+CUFE: ac3855d7deee67cSc8f2ab096cfalc845f648025fd38a7858499d8e8d62c5e57145eb39c0f2f1042248a914366cdaas9
+Representación gráfica de factura electrónica de venta. Documento sintético con datos ficticios para fines académicos.

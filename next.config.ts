@@ -3,7 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    agentFeedback: true,
+    // Desactivado: con `true`, `next dev` añade un bloque a AGENTS.md en cada
+    // arranque y lo restaura si se borra (el archivo quedaba siempre modificado).
+    agentFeedback: false,
   },
   cacheComponents: true,
   partialPrefetching: true,
