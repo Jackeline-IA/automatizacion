@@ -1,13 +1,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { connection } from "next/server";
+import { exigirUsuario } from "@/lib/auth/sesion";
 
 /*
  * Diagnóstico del despliegue: convierte «no sé qué pasa en Vercel» en un JSON legible.
- *
- * Devuelve SOLO booleanos y nombres de variables, nunca valores.
- * Pendiente (Fase A): exigir sesión. Hasta que exista el inicio de sesión esta
- * ruta es pública, y por eso no puede revelar nada más que nombres.
+ * Exige sesión y devuelve SOLO booleanos y nombres de variables, nunca valores.
  */
 
 const VARIABLES = [
@@ -38,16 +35,17 @@ async function cargaSharp(): Promise<boolean> {
   }
 }
 
-export async function GET() {
-  // Con cacheComponents una ruta GET se prerenderiza al compilar si no lee nada de
-  // la petición: respondería con el diagnóstico de la máquina que compiló. Esto la
-  // obliga a ejecutarse en cada petición, en el servidor real.
-  await connection();
+export async function GET(request: Request) {
+  // Leer la cookie de la petición hace además que la ruta sea dinámica: con
+  // cacheComponents, una ruta GET que no lee nada de la petición se prerenderiza
+  // al compilar y respondería con el diagnóstico de la máquina que compiló.
+  const usuario = await exigirUsuario(request);
+  if (usuario instanceof Response) return usuario;
 
   const variablesFaltantes = VARIABLES.filter((nombre) => !process.env[nombre]?.trim());
   const sharp = await cargaSharp();
-  // Será false en Vercel hasta la Fase 5, cuando outputFileTracingIncludes meta
-  // los datos de idioma en el paquete de la función.
+  // Que este archivo esté no garantiza que el OCR funcione en Vercel: el núcleo
+  // WASM de tesseract se carga de forma dinámica y se configura en la Fase 5.
   const datosIdiomaOcr = existsSync(path.join(process.cwd(), DATOS_IDIOMA));
 
   return Response.json({
