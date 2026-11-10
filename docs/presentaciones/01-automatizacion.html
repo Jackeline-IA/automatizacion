@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatización: qué es y cómo pensarla</title>
+<link rel="stylesheet" href="deck.css">
+</head>
+<body>
+<!-- Puntas de flecha compartidas por todos los diagramas SVG -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="pta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--muted)"/></marker>
+    <marker id="pta-azul" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--acento)"/></marker>
+    <marker id="pta-verde" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--verde)"/></marker>
+    <marker id="pta-rojo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--rojo)"/></marker>
+    <marker id="pta-ambar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ambar)"/></marker>
+
+    <!-- Iconos reutilizables: se colorean con style="color: var(--acento)" en el <use> -->
+    <symbol id="ico-engranaje" viewBox="0 0 100 100"><g fill="currentColor">
+      <circle cx="50" cy="50" r="33"/>
+      <rect x="43" y="5" width="14" height="19" rx="3"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(45 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(90 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(135 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(180 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(225 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(270 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(315 50 50)"/></g>
+      <circle cx="50" cy="50" r="13" style="fill: var(--papel)"/></symbol>
+    <symbol id="ico-persona" viewBox="0 0 100 100"><g fill="currentColor"><circle cx="50" cy="30" r="17"/><path d="M16 94 C16 62 84 62 84 94 Z"/></g></symbol>
+    <symbol id="ico-documento" viewBox="0 0 100 100"><rect x="20" y="6" width="60" height="88" rx="7" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/>
+      <g fill="currentColor"><rect x="32" y="24" width="36" height="6" rx="3"/><rect x="32" y="40" width="36" height="6" rx="3"/><rect x="32" y="56" width="36" height="6" rx="3"/><rect x="32" y="72" width="22" height="6" rx="3"/></g></symbol>
+    <symbol id="ico-check" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="currentColor"/><path d="M29 52 L44 67 L72 35" fill="none" style="stroke: var(--sobre-acento)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-equis" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="currentColor"/><path d="M33 33 L67 67 M67 33 L33 67" fill="none" style="stroke: var(--sobre-acento)" stroke-width="10" stroke-linecap="round"/></symbol>
+    <symbol id="ico-alerta" viewBox="0 0 100 100"><path d="M50 8 L94 88 L6 88 Z" fill="currentColor" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><rect x="45" y="36" width="10" height="28" rx="4" style="fill: var(--sobre-acento)"/><circle cx="50" cy="75" r="6" style="fill: var(--sobre-acento)"/></symbol>
+    <symbol id="ico-planilla" viewBox="0 0 100 100"><rect x="8" y="14" width="84" height="72" rx="6" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/>
+      <rect x="8" y="14" width="84" height="18" rx="6" fill="currentColor"/><path d="M8 50 H92 M8 68 H92 M36 32 V86 M64 32 V86" stroke="currentColor" stroke-width="3.5" fill="none"/></symbol>
+    <symbol id="ico-reloj" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" style="fill: var(--papel)" stroke="currentColor" stroke-width="6"/><path d="M50 22 V50 L68 62" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-candado" viewBox="0 0 100 100"><rect x="18" y="42" width="64" height="48" rx="8" fill="currentColor"/><path d="M32 42 V30 C32 10 68 10 68 30 V42" fill="none" stroke="currentColor" stroke-width="8"/><circle cx="50" cy="66" r="7" style="fill: var(--papel)"/></symbol>
+    <symbol id="ico-banco" viewBox="0 0 100 100"><path d="M10 38 L50 12 L90 38 Z" fill="currentColor"/><g fill="currentColor"><rect x="18" y="44" width="12" height="32"/><rect x="44" y="44" width="12" height="32"/><rect x="70" y="44" width="12" height="32"/><rect x="10" y="80" width="80" height="10" rx="2"/></g></symbol>
+    <symbol id="ico-correo" viewBox="0 0 100 100"><rect x="8" y="22" width="84" height="58" rx="8" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/><path d="M10 26 L50 56 L90 26" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+<div id="marco"><div id="escenario">
+<section class="slide" id="portada">
+  <div class="fila crece" style="align-items:center; gap:30px">
+    <div class="col" style="flex:1.15; gap:22px">
+      <span class="sobre">Tendencias en desarrollo de software</span>
+      <h1>Automatizar: que el trabajo repetitivo lo haga la máquina</h1>
+      <p class="muted">Qué es, qué se puede automatizar y cómo se piensa un proceso de empresa, antes de escribir una sola línea de código.</p>
+      <p class="mini">→ avanzar · N notas del profesor · T tema claro/oscuro · F pantalla completa</p>
+    </div>
+    <svg viewBox="0 0 540 420" width="520" height="404" role="img" aria-label="Facturas que entran a unas reglas y salen ordenadas en una planilla">
+      <use href="#ico-persona" x="246" y="6" width="56" height="56" style="color: var(--muted)"/>
+      <text x="316" y="40" class="t-s t-m">tú defines las reglas</text>
+      <path class="flecha azul" d="M274 66 V104"/>
+      <use href="#ico-documento" x="14" y="122" width="104" height="104" style="color: var(--muted)"/>
+      <use href="#ico-documento" x="30" y="110" width="104" height="104" style="color: var(--muted)"/>
+      <use href="#ico-documento" x="46" y="98" width="104" height="104" style="color: var(--acento)"/>
+      <text x="92" y="262" class="t-s t-b" text-anchor="middle">1000 facturas</text>
+      <path class="flecha" d="M172 160 H212"/>
+      <g class="tuerca"><use href="#ico-engranaje" x="214" y="108" width="120" height="120" style="color: var(--acento)"/><animateTransform attributeName="transform" type="rotate" from="0 274 168" to="360 274 168" dur="16s" repeatCount="indefinite"/></g>
+      <text x="274" y="262" class="t-s t-b" text-anchor="middle">reglas</text>
+      <path class="flecha" d="M346 160 H386"/>
+      <use href="#ico-planilla" x="390" y="100" width="124" height="124" style="color: var(--verde)"/>
+      <use href="#ico-check" x="478" y="190" width="48" height="48" style="color: var(--verde)"/>
+      <text x="452" y="262" class="t-s t-b" text-anchor="middle">datos ordenados</text>
+      <rect x="40" y="320" width="460" height="56" rx="28" class="caja azul"/>
+      <text x="270" y="356" class="t-b" text-anchor="middle">entrada → reglas → salida</text>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Apertura (1 min).</b> Pregunta al grupo: «¿Qué es lo más repetitivo que hacen en un día normal?». Anota 2–3 respuestas en el tablero; las retomamos al final.<br>
+    <b>Idea central:</b> hoy no vamos a programar. Vamos a aprender a <b>pensar</b> en automatización: qué es, cuándo conviene, cómo se descompone un proceso de empresa. Después, en la segunda presentación, lo construimos.<br>
+    Señala el dibujo: una persona define reglas una sola vez; la máquina las repite sobre miles de facturas y entrega datos ordenados.
+  </aside>
+</section>
+
+<section class="slide" id="objetivos">
+  <span class="sobre">Antes de empezar</span>
+  <h2>¿Qué te vas a llevar de esta clase?</h2>
+  <div class="cols4">
+    <div class="card azul"><span class="num">1</span><h3>Entender</h3><p>Qué es automatizar, qué <b>no</b> lo es y para qué sirve.</p></div>
+    <div class="card verde"><span class="num">2</span><h3>Reconocer</h3><p>Qué procesos de una empresa se pueden automatizar… y cuáles conviene dejar a las personas.</p></div>
+    <div class="card violeta"><span class="num">3</span><h3>Mapear</h3><p>Descomponer un proceso real, paso a paso, como el pago de la nómina.</p></div>
+    <div class="card ambar"><span class="num">4</span><h3>Conectar</h3><p>Ver cómo todo esto aterriza en el proyecto que vamos a construir.</p></div>
+  </div>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 190" width="1152" height="190" role="img" aria-label="Agenda en cuatro partes">
+      <path class="linea" d="M110 62 H1042" style="stroke-width:5"/>
+      <g><circle cx="110" cy="62" r="24" class="relleno"/><text x="110" y="71" class="t-b t-w" text-anchor="middle">1</text>
+        <text x="110" y="116" class="t-b" text-anchor="middle">El concepto</text><text x="110" y="142" class="t-s t-m" text-anchor="middle">qué es y qué se</text><text x="110" y="162" class="t-s t-m" text-anchor="middle">puede automatizar</text></g>
+      <g><circle cx="407" cy="62" r="24" class="relleno verde"/><text x="407" y="71" class="t-b t-w" text-anchor="middle">2</text>
+        <text x="407" y="116" class="t-b" text-anchor="middle">La empresa</text><text x="407" y="142" class="t-s t-m" text-anchor="middle">áreas, procesos</text><text x="407" y="162" class="t-s t-m" text-anchor="middle">y talento humano</text></g>
+      <g><circle cx="704" cy="62" r="24" style="fill: var(--violeta)"/><text x="704" y="71" class="t-b t-w" text-anchor="middle">3</text>
+        <text x="704" y="116" class="t-b" text-anchor="middle">Un caso real</text><text x="704" y="142" class="t-s t-m" text-anchor="middle">el pago de la nómina,</text><text x="704" y="162" class="t-s t-m" text-anchor="middle">manual vs automático</text></g>
+      <g><circle cx="1001" cy="62" r="24" class="relleno ambar"/><text x="1001" y="71" class="t-b t-w" text-anchor="middle">4</text>
+        <text x="1001" y="116" class="t-b" text-anchor="middle">Nuestro proyecto</text><text x="1001" y="142" class="t-s t-m" text-anchor="middle">procesar facturas</text><text x="1001" y="162" class="t-s t-m" text-anchor="middle">de principio a fin</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Cómo usar esta diapositiva (1 min).</b> Lee los cuatro objetivos en voz alta y señala la línea de la agenda.<br>
+    <b>Mensaje:</b> no es solo «construir», es entender el concepto. Si entienden bien las partes 1 a 3, la parte 4 (construir) se vuelve una aplicación natural, no una receta.<br>
+    Duración total sugerida: 45–60 minutos con la actividad de la ficha (diapositiva 30).
+  </aside>
+</section>
+
+<section class="slide" id="historia">
+  <span class="sobre">Una historia para empezar</span>
+  <h2>Un lunes en contabilidad…</h2>
+  <p class="peq">Marta es contadora. Esta mañana llegaron <b>1000 facturas</b> de proveedores, todas en imagen. Hay que registrar cada una en una planilla.</p>
+  <div class="fila crece">
+    <svg viewBox="0 0 700 440" width="640" height="400" style="flex:none" role="img" aria-label="Los cuatro pasos manuales que se repiten mil veces">
+      <g class="paso inicio">
+        <rect x="60" y="0" width="540" height="82" rx="12" class="caja"/><circle cx="30" cy="41" r="22" class="relleno"/><text x="30" y="49" class="t-b t-w" text-anchor="middle">1</text>
+        <text x="84" y="36" class="t-b">Abre la imagen de la factura</text><text x="84" y="62" class="t-s t-m">una por una, en pantalla</text>
+      </g>
+      <g class="paso">
+        <path class="flecha" d="M330 82 V108"/>
+        <rect x="60" y="110" width="540" height="82" rx="12" class="caja"/><circle cx="30" cy="151" r="22" class="relleno"/><text x="30" y="159" class="t-b t-w" text-anchor="middle">2</text>
+        <text x="84" y="146" class="t-b">Lee y digita unos 8 datos</text><text x="84" y="172" class="t-s t-m">número, fecha, NIT, proveedor, valores…</text>
+      </g>
+      <g class="paso">
+        <path class="flecha" d="M330 192 V218"/>
+        <rect x="60" y="220" width="540" height="82" rx="12" class="caja"/><circle cx="30" cy="261" r="22" class="relleno"/><text x="30" y="269" class="t-b t-w" text-anchor="middle">3</text>
+        <text x="84" y="256" class="t-b">Comprueba que las cuentas cuadren</text><text x="84" y="282" class="t-s t-m">subtotal + IVA = total</text>
+      </g>
+      <g class="paso">
+        <path class="flecha" d="M330 302 V328"/>
+        <rect x="60" y="330" width="540" height="82" rx="12" class="caja"/><circle cx="30" cy="371" r="22" class="relleno"/><text x="30" y="379" class="t-b t-w" text-anchor="middle">4</text>
+        <text x="84" y="366" class="t-b">Lo escribe en la planilla</text><text x="84" y="392" class="t-s t-m">y pasa a la siguiente factura</text>
+      </g>
+      <g class="paso">
+        <path class="flecha ambar punteada" d="M600 371 C672 371 672 41 600 41"/>
+        <rect x="610" y="190" width="86" height="60" rx="30" class="caja ambar"/><text x="653" y="228" class="t-b" text-anchor="middle">×1000</text>
+      </g>
+    </svg>
+    <div class="col" style="gap:14px">
+      <div class="card ambar paso"><h3>Supuesto (para razonar)</h3><p>3 minutos por factura × 1000 = <b>50 horas</b>, casi <b>6 días</b> de trabajo de una persona.</p></div>
+      <div class="card rojo paso"><h3>El riesgo</h3><p>Un dígito mal digitado se vuelve un <b>pago equivocado</b>… y nadie lo ve hasta que alguien reclama.</p></div>
+      <div class="card azul paso"><h3>La pregunta de hoy</h3><p>¿Y si esas reglas las ejecutara <b>una máquina</b>, y Marta solo revisara lo raro?</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cuenta la historia con calma; cada → revela un paso.</b><br>
+    Pide a alguien que diga cuál de los 4 pasos es el más aburrido y cuál el más propenso a error (casi seguro: digitar y comprobar).<br>
+    <b>Aclara que el «3 minutos por factura» es un supuesto ilustrativo</b>, no una medición. Sirve para razonar en órdenes de magnitud: miles de unidades × minutos = muchas horas.<br>
+    Cierra con la pregunta de hoy; el resto de la presentación es la respuesta.
+  </aside>
+</section>
+
+<section class="slide" id="que-es">
+  <span class="sobre">Concepto</span>
+  <h2>¿Qué es automatizar?</h2>
+  <div class="cita">Usar tecnología para que una tarea o un proceso se ejecute <span class="hl">solo</span>, siguiendo <span class="hl">reglas que definimos una vez</span>, con la mínima intervención humana.</div>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 330" width="1152" height="320" role="img" aria-label="Una persona define reglas; el software las ejecuta sobre la entrada y produce la salida">
+      <use href="#ico-persona" x="40" y="14" width="62" height="62" style="color: var(--muted)"/>
+      <text x="196" y="36" class="t-s t-m" text-anchor="middle">tú, una sola vez</text>
+      <path class="flecha azul" d="M116 46 H298"/>
+      <rect x="302" y="8" width="290" height="76" rx="12" class="caja azul"/>
+      <text x="447" y="42" class="t-b" text-anchor="middle">Reglas</text><text x="447" y="68" class="t-s t-m" text-anchor="middle">si … entonces …</text>
+      <path class="flecha azul" d="M447 86 V128"/>
+
+      <rect x="20" y="138" width="210" height="104" rx="12" class="caja"/>
+      <use href="#ico-documento" x="34" y="150" width="46" height="46" style="color: var(--muted)"/>
+      <text x="92" y="178" class="t-b">Entrada</text><text x="34" y="222" class="t-s t-m">datos o archivos</text>
+      <path class="flecha" d="M232 190 H318"/>
+
+      <rect x="322" y="130" width="250" height="120" rx="14" class="caja azul"/>
+      <g class="tuerca"><use href="#ico-engranaje" x="416" y="140" width="62" height="62" style="color: var(--acento)"/><animateTransform attributeName="transform" type="rotate" from="0 447 171" to="360 447 171" dur="16s" repeatCount="indefinite"/></g>
+      <text x="447" y="222" class="t-b" text-anchor="middle">Software</text><text x="447" y="242" class="t-s t-m" text-anchor="middle">ejecuta las reglas</text>
+      <path class="flecha" d="M574 190 H660"/>
+
+      <rect x="664" y="138" width="210" height="104" rx="12" class="caja verde"/>
+      <use href="#ico-check" x="678" y="150" width="46" height="46" style="color: var(--verde)"/>
+      <text x="736" y="178" class="t-b">Salida</text><text x="678" y="222" class="t-s t-m">resultado o aviso</text>
+
+      <path class="flecha azul punteada" d="M770 246 C770 322 125 322 125 246"/>
+      <text x="447" y="316" class="t-s t-m" text-anchor="middle">se repite miles de veces, sin cansarse y sin errores de digitación</text>
+
+      <g>
+        <rect x="920" y="22" width="232" height="62" rx="12" class="caja ambar"/><text x="1036" y="60" class="t-b" text-anchor="middle">Reglas claras</text>
+        <rect x="920" y="104" width="232" height="62" rx="12" class="caja ambar"/><text x="1036" y="142" class="t-b" text-anchor="middle">Repetición</text>
+        <rect x="920" y="186" width="232" height="62" rx="12" class="caja ambar"/><text x="1036" y="224" class="t-b" text-anchor="middle">Registro (traza)</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Definición en una frase:</b> automatizar es pasar de «una persona hace esto cada vez» a «alguien lo define una vez y la máquina lo repite».<br>
+    Recorre el dibujo: la persona define las <b>reglas</b> (si… entonces…); el software las aplica a la <b>entrada</b> y produce una <b>salida</b>; y se repite sin cansarse.<br>
+    <b>Tres palabras que deben quedar:</b> reglas claras (si no puedes escribirlas, no puedes automatizar), repetición (si pasa una vez al año, rara vez conviene) y registro (que quede traza de qué se hizo).
+  </aside>
+</section>
+
+<section class="slide" id="cotidiano">
+  <span class="sobre">Concepto</span>
+  <h2>Ya convives con automatizaciones</h2>
+  <div class="cols3 crece" style="grid-template-rows: 1fr 1fr">
+    <div class="card paso inicio"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><rect x="40" y="6" width="20" height="62" rx="10" style="fill:var(--papel)" stroke="var(--rojo)" stroke-width="5"/><rect x="46" y="30" width="8" height="46" rx="4" fill="var(--rojo)"/><circle cx="50" cy="78" r="16" fill="var(--rojo)"/></svg>
+      <div><h3>Termostato</h3><p>Si baja de 20 °C → enciende la calefacción</p></div></div></div>
+    <div class="card paso inicio"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><rect x="30" y="4" width="40" height="92" rx="10" style="fill:var(--fg)" opacity=".88"/><circle cx="50" cy="26" r="9" fill="var(--rojo)"/><circle cx="50" cy="50" r="9" fill="var(--ambar)"/><circle cx="50" cy="74" r="9" fill="var(--verde)"/></svg>
+      <div><h3>Semáforo</h3><p>Cada cierto tiempo → cambia la luz</p></div></div></div>
+    <div class="card paso inicio"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><use href="#ico-banco" width="100" height="100" style="color: var(--acento)"/></svg>
+      <div><h3>Débito automático</h3><p>El día 5 de cada mes → paga el recibo</p></div></div></div>
+    <div class="card paso"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><use href="#ico-correo" width="100" height="100" style="color: var(--ambar)"/></svg>
+      <div><h3>Filtro de spam</h3><p>Si el correo parece sospechoso → va a la carpeta de spam</p></div></div></div>
+    <div class="card paso"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><use href="#ico-reloj" width="100" height="100" style="color: var(--violeta)"/></svg>
+      <div><h3>Alarma</h3><p>A las 6:30 → suena, todos los días</p></div></div></div>
+    <div class="card paso"><div class="fila" style="align-items:center">
+      <svg viewBox="0 0 100 100" width="60" height="60" aria-hidden="true" style="flex:none"><path d="M26 76 C8 76 6 50 26 48 C26 26 58 20 66 42 C86 38 96 62 78 76 Z" fill="var(--acento)"/><path d="M50 66 V44 M40 54 L50 44 L60 54" fill="none" style="stroke:var(--sobre-acento)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><h3>Copia de seguridad</h3><p>Cada noche → guarda tus fotos en la nube</p></div></div></div>
+  </div>
+  <div class="aviso azul paso">Todas siguen el mismo patrón: un <b>disparador</b> (el momento) + una <b>regla</b> (la condición) + una <b>acción</b> (lo que se hace).</div>
+  <aside class="notas">
+    <b>Objetivo:</b> que vean que automatizar no es algo exótico; ya viven rodeados de automatizaciones.<br>
+    Pregunta: «¿cuál de estas automatiza algo que antes hacíamos a mano?». El débito automático es un buen ejemplo: antes se hacía fila en el banco.<br>
+    <b>Clave:</b> en todas hay disparador + regla + acción. Esa es la estructura que vamos a reutilizar con procesos de empresa.
+  </aside>
+</section>
+
+<section class="slide" id="espectro">
+  <span class="sobre">Concepto</span>
+  <h2>Automatizar no es «todo o nada»</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 470" width="1152" height="460" role="img" aria-label="Cinco niveles de automatización, de manual a autónoma">
+      <g class="paso inicio"><rect x="14" y="290" width="210" height="130" rx="10" class="caja"/>
+        <text x="119" y="322" class="t-b" text-anchor="middle">1 · Manual</text><text x="119" y="350" class="t-xs t-m" text-anchor="middle">Todo a mano</text><text x="119" y="372" class="t-xs" text-anchor="middle">Digitar cada factura</text><text x="119" y="392" class="t-xs" text-anchor="middle">en Excel</text></g>
+      <g class="paso"><rect x="238" y="228" width="210" height="192" rx="10" class="caja"/>
+        <text x="343" y="260" class="t-b" text-anchor="middle">2 · Asistida</text><text x="343" y="288" class="t-xs t-m" text-anchor="middle">Herramientas que ayudan</text><text x="343" y="316" class="t-xs" text-anchor="middle">Excel con fórmulas</text><text x="343" y="336" class="t-xs" text-anchor="middle">y validaciones</text></g>
+      <g class="paso"><rect x="462" y="166" width="210" height="254" rx="10" class="caja azul"/>
+        <text x="567" y="198" class="t-b" text-anchor="middle">3 · Automatizada</text><text x="567" y="226" class="t-xs t-m" text-anchor="middle">Reglas que corren solas</text><text x="567" y="254" class="t-xs" text-anchor="middle">Un programa procesa</text><text x="567" y="274" class="t-xs" text-anchor="middle">toda la carpeta</text></g>
+      <g class="paso"><rect x="686" y="104" width="210" height="316" rx="10" class="caja azul"/>
+        <text x="791" y="136" class="t-b" text-anchor="middle">4 · Inteligente</text><text x="791" y="164" class="t-xs t-m" text-anchor="middle">Entiende lo desordenado</text><text x="791" y="192" class="t-xs" text-anchor="middle">OCR / IA lee la imagen</text><text x="791" y="212" class="t-xs" text-anchor="middle">de la factura</text></g>
+      <g class="paso"><rect x="910" y="42" width="228" height="378" rx="10" class="caja vacia"/>
+        <text x="1024" y="74" class="t-b" text-anchor="middle">5 · Autónoma</text><text x="1024" y="102" class="t-xs t-m" text-anchor="middle">Decide y se adapta sola</text><text x="1024" y="130" class="t-xs" text-anchor="middle">Poco común: exige mucha</text><text x="1024" y="150" class="t-xs" text-anchor="middle">confianza y control</text></g>
+      <path class="flecha" d="M14 446 H1130"/><text x="14" y="466" class="t-s t-m">menos automatización</text><text x="1130" y="466" class="t-s t-m" text-anchor="end">más automatización</text>
+      <g class="paso"><rect x="14" y="30" width="540" height="92" rx="12" class="caja ambar"/>
+        <text x="30" y="62" class="t-b">★ Nuestro proyecto está en 3 y 4</text><text x="30" y="88" class="t-s">Reglas + OCR, y una persona que revisa</text><text x="30" y="108" class="t-s">las excepciones (no se deja solo).</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Idea:</b> la automatización es un espectro, no un interruptor. Casi nadie pasa de 1 a 5; se sube escalón por escalón, midiendo.<br>
+    Ejemplo con facturas: 1) digitar a mano; 2) Excel con fórmulas que ya suman y avisan; 3) un programa lee los datos y los valida; 4) usa OCR/IA para leer la imagen; 5) decide y corrige solo (rara vez se justifica).<br>
+    <b>Nuestro proyecto:</b> escalones 3 y 4, pero deliberadamente con un humano revisando las facturas dudosas. Ese equilibrio es la lección.
+  </aside>
+</section>
+
+<section class="slide" id="anatomia">
+  <span class="sobre">Concepto</span>
+  <h2>Anatomía de cualquier automatización</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 478" width="1152" height="470" role="img" aria-label="Flujo: disparador, entrada, reglas, decisión, acción, registro y excepciones con una persona">
+      <g class="paso inicio"><rect x="0" y="20" width="196" height="100" rx="12" class="caja azul"/>
+        <text x="98" y="56" class="t-b" text-anchor="middle">Disparador</text><text x="98" y="84" class="t-xs t-m" text-anchor="middle">¿qué la pone en marcha?</text><text x="98" y="104" class="t-xs" text-anchor="middle">alguien sube la carpeta</text></g>
+      <g class="paso inicio"><path class="flecha azul" d="M198 70 H236"/>
+        <rect x="238" y="20" width="196" height="100" rx="12" class="caja azul"/>
+        <text x="336" y="56" class="t-b" text-anchor="middle">Entrada</text><text x="336" y="84" class="t-xs t-m" text-anchor="middle">¿con qué datos trabaja?</text><text x="336" y="104" class="t-xs" text-anchor="middle">imágenes de facturas</text></g>
+      <g class="paso"><path class="flecha azul" d="M436 70 H474"/>
+        <rect x="476" y="20" width="216" height="100" rx="12" class="caja azul"/>
+        <text x="584" y="56" class="t-b" text-anchor="middle">Reglas</text><text x="584" y="84" class="t-xs t-m" text-anchor="middle">¿qué hace con ellos?</text><text x="584" y="104" class="t-xs" text-anchor="middle">leer, extraer, validar</text></g>
+      <g class="paso"><path class="flecha azul" d="M694 70 H726"/>
+        <path d="M728 70 L806 16 L884 70 L806 124 Z" class="caja ambar"/>
+        <text x="806" y="66" class="t-b" text-anchor="middle">¿Cumple?</text><text x="806" y="88" class="t-xs" text-anchor="middle">IVA, sumas, NIT</text></g>
+      <g class="paso"><path class="flecha verde" d="M886 70 H924"/><text x="905" y="58" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">sí</text>
+        <rect x="926" y="20" width="226" height="100" rx="12" class="caja verde"/>
+        <text x="1039" y="56" class="t-b" text-anchor="middle">Acción / salida</text><text x="1039" y="84" class="t-xs t-m" text-anchor="middle">¿qué entrega?</text><text x="1039" y="104" class="t-xs" text-anchor="middle">guarda datos y Excel</text></g>
+      <g class="paso"><path class="flecha ambar" d="M806 126 V196"/><text x="822" y="168" class="t-xs t-b" style="fill:var(--ambar)">no</text>
+        <rect x="700" y="198" width="212" height="92" rx="12" class="caja ambar"/>
+        <text x="806" y="234" class="t-b" text-anchor="middle">Excepción</text><text x="806" y="262" class="t-xs" text-anchor="middle">queda «en revisión»,</text><text x="806" y="280" class="t-xs" text-anchor="middle">no se pierde</text></g>
+      <g class="paso"><path class="flecha violeta" d="M806 292 V342" style="stroke:var(--violeta)"/>
+        <rect x="684" y="344" width="244" height="104" rx="12" class="caja violeta"/>
+        <use href="#ico-persona" x="696" y="360" width="46" height="46" style="color: var(--violeta)"/>
+        <text x="756" y="382" class="t-b">Una persona</text><text x="756" y="408" class="t-xs">revisa, corrige</text><text x="756" y="428" class="t-xs">o descarta</text>
+        <path class="flecha verde punteada" d="M930 396 C1040 396 1039 300 1039 128"/><text x="1050" y="340" class="t-xs t-m">vuelve al flujo</text></g>
+      <g class="paso"><path class="flecha punteada" d="M1039 122 V198" style="display:none"/>
+        <rect x="926" y="198" width="226" height="92" rx="12" class="caja"/>
+        <text x="1039" y="234" class="t-b" text-anchor="middle">Registro</text><text x="1039" y="262" class="t-xs" text-anchor="middle">qué pasó, cuándo y</text><text x="1039" y="280" class="t-xs" text-anchor="middle">con qué regla (métricas)</text></g>
+      <g class="paso"><rect x="0" y="198" width="640" height="250" rx="14" class="caja vacia"/>
+        <text x="24" y="238" class="t-b">Lo que hace buena a una automatización</text>
+        <text x="24" y="278" class="t-s">• Reglas escritas y verificables</text>
+        <text x="24" y="308" class="t-s">• Las excepciones se ven y se atienden</text>
+        <text x="24" y="338" class="t-s">• Repetir el proceso no duplica nada</text>
+        <text x="24" y="368" class="t-s">• Se puede medir cómo le va</text>
+        <text x="24" y="410" class="t-s t-m">Nada de esto depende de la tecnología elegida.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Esta es la diapositiva más importante del concepto.</b> Revela con → cada pieza y pregunta qué ejemplo cotidiano encaja (el débito automático: disparador = día 5; entrada = tu cuenta; reglas = ¿hay saldo?; excepción = rechazo y aviso).<br>
+    <b>Insiste en la excepción:</b> una buena automatización no pretende acertar el 100 %; sabe qué hacer cuando no está segura y se lo pasa a una persona. En nuestro proyecto es el estado «revisión».<br>
+    <b>Registro:</b> sin traza no hay confianza ni mejora. Lo veremos en las métricas.
+  </aside>
+</section>
+
+<section class="slide" id="que-automatizar">
+  <span class="sobre">¿Qué se puede automatizar?</span>
+  <h2>Seis señales de un buen candidato</h2>
+  <div class="fila crece">
+    <ul class="lista ok" style="flex:1.25; gap:14px">
+      <li class="paso inicio"><b>Es repetitiva</b>: se hace igual, muchas veces.</li>
+      <li class="paso"><b>Tiene reglas claras</b>: puedes escribirlas como «si… entonces…».</li>
+      <li class="paso"><b>Usa datos digitales</b> (o que se pueden digitalizar).</li>
+      <li class="paso"><b>Hay volumen o frecuencia</b>: el esfuerzo se paga solo.</li>
+      <li class="paso"><b>Es propensa a error humano</b>: digitar, copiar, calcular.</li>
+      <li class="paso"><b>Tiene un resultado medible</b>: sabes cuándo salió bien.</li>
+    </ul>
+    <div class="col" style="flex:1">
+      <div class="card azul paso" style="padding:22px">
+        <h3>La prueba de los 10 segundos</h3>
+        <p>¿Podrías explicárselo <b>por escrito</b>, paso a paso y sin ambigüedad, a un practicante nuevo?</p>
+        <p style="margin-top:10px"><span class="chip verde">Sí</span> candidato a automatizar</p>
+        <p><span class="chip rojo">No</span> primero hay que definir el proceso</p>
+      </div>
+      <div class="card ambar paso"><h3>Ejemplos</h3><p class="peq">Registrar facturas · calcular nómina · conciliar el banco · enviar recordatorios de pago · generar reportes semanales.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Revela cada señal y pide un ejemplo del grupo.</b> Si un proceso cumple 4 o más señales, vale la pena mirarlo en serio.<br>
+    <b>La prueba de los 10 segundos</b> es muy útil en la práctica: si no se puede explicar por escrito sin ambigüedad, tampoco se puede enseñar a una máquina. Muchas veces el primer beneficio de «automatizar» es que obliga a definir bien el proceso.<br>
+    Conecta con nuestro caso: registrar facturas cumple las seis (repetitivo, reglas claras, digital, volumen, error humano, medible).
+  </aside>
+</section>
+
+<section class="slide" id="matriz">
+  <span class="sobre">¿Qué se puede automatizar?</span>
+  <h2>¿Por dónde empezar? Frecuencia vs. criterio</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 470" width="1152" height="456" role="img" aria-label="Matriz de dos por dos: frecuencia contra complejidad">
+      <path class="flecha" d="M62 440 V8"/><text x="30" y="230" class="t-s t-b t-m" text-anchor="middle" transform="rotate(-90 30 230)">frecuencia / volumen →</text>
+      <path class="flecha" d="M80 456 H1146"/><text x="610" y="470" class="t-s t-b t-m" text-anchor="middle" style="transform:translateY(-4px)">complejidad y criterio humano →</text>
+      <g class="paso inicio"><rect x="84" y="4" width="512" height="212" rx="14" class="caja verde"/>
+        <text x="104" y="40" class="t-b">Automatiza primero</text><text x="104" y="70" class="t-s">Muy repetitivo y con reglas claras.</text>
+        <text x="104" y="108" class="t-s t-m">Ejemplos:</text><text x="104" y="134" class="t-s">• registrar facturas</text><text x="104" y="160" class="t-s">• calcular la nómina</text><text x="104" y="186" class="t-s">• conciliar el banco</text></g>
+      <g class="paso"><rect x="616" y="4" width="526" height="212" rx="14" class="caja violeta"/>
+        <text x="636" y="40" class="t-b">Máquina propone, persona decide</text><text x="636" y="70" class="t-s">Frecuente, pero con juicio de por medio.</text>
+        <text x="636" y="108" class="t-s t-m">Ejemplos:</text><text x="636" y="134" class="t-s">• preseleccionar hojas de vida</text><text x="636" y="160" class="t-s">• clasificar reclamos de clientes</text><text x="636" y="186" class="t-s">• revisar facturas dudosas</text></g>
+      <g class="paso"><rect x="84" y="232" width="512" height="212" rx="14" class="caja ambar"/>
+        <text x="104" y="268" class="t-b">Un script o una plantilla</text><text x="104" y="298" class="t-s">Simple, pero poco frecuente: no vale una gran obra.</text>
+        <text x="104" y="336" class="t-s t-m">Ejemplos:</text><text x="104" y="362" class="t-s">• renombrar archivos en lote</text><text x="104" y="388" class="t-s">• correo de bienvenida</text><text x="104" y="414" class="t-s">• reporte mensual pequeño</text></g>
+      <g class="paso"><rect x="616" y="232" width="526" height="212" rx="14" class="caja rojo"/>
+        <text x="636" y="268" class="t-b">Déjalo a las personas (por ahora)</text><text x="636" y="298" class="t-s">Raro, complejo y de mucho criterio.</text>
+        <text x="636" y="336" class="t-s t-m">Ejemplos:</text><text x="636" y="362" class="t-s">• negociar con un cliente difícil</text><text x="636" y="388" class="t-s">• decisiones estratégicas</text><text x="636" y="414" class="t-s">• casos únicos sin precedente</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Cómo leerla:</b> hacia arriba, lo que pasa muchas veces; hacia la derecha, lo que exige criterio humano.<br>
+    El cuadro verde es donde se gana más y se arriesga menos: <b>empieza ahí</b> (nuestro proyecto, la nómina).<br>
+    El violeta es la zona interesante hoy con IA: la máquina propone, la persona decide. Pregunta: «¿qué pasaría si dejáramos que la máquina decidiera sola a quién contratar?» (riesgos de sesgo y de error a escala).<br>
+    Pídeles que ubiquen en la matriz una tarea de su día a día.
+  </aside>
+</section>
+
+<section class="slide" id="no-automatizar">
+  <span class="sobre">¿Qué se puede automatizar?</span>
+  <h2>Cuándo todavía NO automatizar</h2>
+  <div class="fila crece">
+    <ul class="lista mal" style="flex:1.05; gap:14px">
+      <li class="paso inicio"><b>El proceso está roto o confuso</b>: nadie sabe cómo se hace de verdad.</li>
+      <li class="paso"><b>Cambia cada semana</b>: las reglas no están estables.</li>
+      <li class="paso"><b>Casi no se repite</b>: el esfuerzo cuesta más que el ahorro.</li>
+      <li class="paso"><b>Requiere empatía o criterio</b>: una conversación difícil, una decisión ética.</li>
+      <li class="paso"><b>Un error sale muy caro y nadie lo vería</b>: mejor dejar a una persona en el ciclo.</li>
+    </ul>
+    <div class="col" style="flex:1; gap:12px">
+      <svg viewBox="0 0 520 250" width="520" height="250" role="img" aria-label="Automatizar un desorden produce el mismo desorden, más rápido">
+        <rect x="0" y="30" width="190" height="150" rx="12" class="caja rojo"/>
+        <path d="M24 70 L100 56 L40 100 L150 92 L50 146 L160 140" fill="none" stroke="var(--rojo)" stroke-width="4" stroke-linejoin="round"/>
+        <text x="95" y="206" class="t-s t-b" text-anchor="middle">proceso desordenado</text>
+        <path class="flecha" d="M200 105 H236"/>
+        <g class="tuerca"><use href="#ico-engranaje" x="238" y="68" width="74" height="74" style="color: var(--muted)"/><animateTransform attributeName="transform" type="rotate" from="0 275 105" to="360 275 105" dur="16s" repeatCount="indefinite"/></g>
+        <path class="flecha" d="M318 105 H354"/>
+        <rect x="358" y="30" width="162" height="150" rx="12" class="caja rojo"/>
+        <path d="M376 60 L430 52 L388 90 L470 84 L394 130 L480 124 M382 150 L440 140 L408 168" fill="none" stroke="var(--rojo)" stroke-width="4" stroke-linejoin="round"/>
+        <use href="#ico-alerta" x="468" y="36" width="44" height="44" style="color: var(--rojo)"/>
+        <text x="439" y="206" class="t-s t-b" text-anchor="middle">el mismo desorden…</text><text x="439" y="230" class="t-s t-b" text-anchor="middle">¡pero más rápido!</text>
+      </svg>
+      <div class="cita paso" style="font-size:28px">Primero <b>simplifica</b>. Después <b>automatiza</b>.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Mensaje clave:</b> automatizar un proceso malo solo lo hace malo más rápido. Antes de automatizar, mapea, simplifica y elimina pasos que sobran.<br>
+    Pregunta al grupo: «¿conocen un proceso en una oficina o un colegio que da vueltas innecesarias?». Si lo automatizas tal cual, ¿qué ganas?<br>
+    <b>Nota sobre criterio humano:</b> no es que las personas «sean mejores», es que algunas decisiones requieren responsabilidad y contexto que conviene dejar en manos humanas, con ayuda de la máquina.
+  </aside>
+</section>
+
+<section class="slide" id="objetivo-automatizar">
+  <span class="sobre">Objetivo de la automatización</span>
+  <h2>¿Para qué automatizamos?</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 470" width="1152" height="458" role="img" aria-label="Seis beneficios de automatizar">
+      <g class="paso inicio"><path class="linea" d="M576 235 L576 60"/><path class="linea" d="M576 235 L858 150"/><path class="linea" d="M576 235 L858 330"/><path class="linea" d="M576 235 L576 410"/><path class="linea" d="M576 235 L294 330"/><path class="linea" d="M576 235 L294 150"/>
+        <circle cx="576" cy="235" r="84" class="relleno"/><text x="576" y="228" class="t-b t-w t-l" text-anchor="middle">Automatizar</text><text x="576" y="256" class="t-s t-w" text-anchor="middle">el objetivo</text></g>
+      <g class="paso"><rect x="436" y="18" width="280" height="76" rx="14" class="caja azul"/><text x="576" y="52" class="t-b" text-anchor="middle">Ahorrar tiempo</text><text x="576" y="78" class="t-s t-m" text-anchor="middle">horas que se liberan</text></g>
+      <g class="paso"><rect x="722" y="112" width="280" height="76" rx="14" class="caja verde"/><text x="862" y="146" class="t-b" text-anchor="middle">Reducir errores</text><text x="862" y="172" class="t-s t-m" text-anchor="middle">menos digitar y copiar</text></g>
+      <g class="paso"><rect x="722" y="292" width="280" height="76" rx="14" class="caja ambar"/><text x="862" y="326" class="t-b" text-anchor="middle">Bajar costos</text><text x="862" y="352" class="t-s t-m" text-anchor="middle">menor costo por unidad</text></g>
+      <g class="paso"><rect x="436" y="372" width="280" height="76" rx="14" class="caja violeta"/><text x="576" y="406" class="t-b" text-anchor="middle">Escalar</text><text x="576" y="432" class="t-s t-m" text-anchor="middle">más volumen sin más gente</text></g>
+      <g class="paso"><rect x="150" y="292" width="280" height="76" rx="14" class="caja"/><text x="290" y="326" class="t-b" text-anchor="middle">Trazabilidad</text><text x="290" y="352" class="t-s t-m" text-anchor="middle">queda registro de todo</text></g>
+      <g class="paso"><rect x="150" y="112" width="280" height="76" rx="14" class="caja rojo"/><text x="290" y="146" class="t-b" text-anchor="middle">Liberar talento</text><text x="290" y="172" class="t-s t-m" text-anchor="middle">personas en trabajo de valor</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Pregunta de debate (2 min):</b> «¿cuál de estos seis es el MÁS importante para una empresa pequeña? ¿y para una grande?». No hay una respuesta única; depende del contexto.<br>
+    Subraya <b>«liberar talento»</b>: el objetivo no es reemplazar personas, es que dediquen su tiempo a lo que la máquina no hace bien (analizar, atender, decidir). Cuando se automatiza mal, el efecto en el empleo es un tema serio; lo retomamos en riesgos.<br>
+    <b>Escalar</b>: poder procesar 10 veces más facturas sin contratar 10 veces más personas.
+  </aside>
+</section>
+
+<section class="slide" id="medir">
+  <span class="sobre">Objetivo de la automatización</span>
+  <h2>Si no se mide, no se sabe si funcionó</h2>
+  <div class="fila crece">
+    <div class="col" style="flex:1.1; gap:12px">
+      <div class="cols2" style="gap:12px">
+        <div class="card azul paso inicio"><h3>Tiempo</h3><p class="peq">minutos de persona por unidad</p></div>
+        <div class="card verde paso inicio"><h3>Calidad</h3><p class="peq">% bien hecho a la primera</p></div>
+        <div class="card ambar paso inicio"><h3>Costo</h3><p class="peq">pesos por unidad procesada</p></div>
+        <div class="card violeta paso inicio"><h3>Capacidad</h3><p class="peq">cuántas unidades al día</p></div>
+      </div>
+      <div class="aviso azul paso"><b>Fórmula básica</b><br>Ahorro de tiempo = (tiempo antes − tiempo después) × volumen</div>
+      <p class="peq paso">En nuestro proyecto: <b>leídas correctamente / total</b> y <b>mal leídas / total</b>, por lote.</p>
+    </div>
+    <div class="col" style="flex:1.1">
+      <table class="t paso">
+        <tr><th colspan="3">Ejemplo ilustrativo: 1000 facturas</th></tr>
+        <tr><td></td><td><b>A mano</b></td><td><b>Automatizado</b></td></tr>
+        <tr><td>Trabajo de la máquina</td><td>—</td><td>≈ 30 min</td></tr>
+        <tr><td>Trabajo de una persona</td><td>≈ 50 h <span class="mini">(3 min c/u)</span></td><td>≈ 5 h <span class="mini">(revisa ~10 %)</span></td></tr>
+        <tr><td>Ahorro de persona</td><td colspan="2"><b>≈ 45 horas</b> por cada 1000 facturas</td></tr>
+      </table>
+      <div class="aviso paso" style="font-size:19px">Cifras de ejemplo con supuestos explícitos (3 min por factura, 10 % a revisión). Con datos reales, <b>mide tú</b> el antes y el después.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Por qué medir:</b> sin una línea base («antes»), no se puede demostrar que la automatización mejoró algo, ni detectar cuándo empieza a fallar.<br>
+    Recorre el ejemplo: 1000 facturas × 3 min = 50 h a mano. Automatizado: la máquina trabaja ~30 min y una persona revisa solo el ~10 % dudoso (100 × 3 min = 5 h). Ahorro ≈ 45 h. Insiste en que son <b>supuestos</b> para razonar.<br>
+    <b>Conexión con el proyecto:</b> la pestaña «Métricas» muestra, por lote, cuántas facturas se leyeron correctamente y cuántas no. Esa es la vara con la que juzgamos si la automatización sirve.
+  </aside>
+</section>
+
+<section class="slide" id="tecnologias">
+  <span class="sobre">Tecnologías para automatizar</span>
+  <h2>De lo sencillo a lo sofisticado</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 468" width="1152" height="456" role="img" aria-label="Seis capas de tecnología para automatizar">
+      <path class="flecha azul" d="M24 456 V8"/><text x="-228" y="46" class="t-s t-b t-m" text-anchor="middle" transform="rotate(-90)">más flexible · más complejo</text>
+      <g class="paso inicio"><rect x="60" y="388" width="380" height="68" rx="12" class="caja"/><text x="78" y="430" class="t-b">1 · Hojas y macros</text>
+        <text x="460" y="414" class="t-b">Excel, Google Sheets</text><text x="460" y="440" class="t-s t-m">fórmulas, validaciones, macros</text></g>
+      <g class="paso"><rect x="60" y="312" width="380" height="68" rx="12" class="caja"/><text x="78" y="354" class="t-b">2 · Scripts y programación</text>
+        <text x="460" y="338" class="t-b">Python, TypeScript / Node, tareas programadas</text><text x="460" y="364" class="t-s t-m">control total: leer archivos, aplicar reglas, guardar</text></g>
+      <g class="paso"><rect x="60" y="236" width="380" height="68" rx="12" class="caja azul"/><text x="78" y="278" class="t-b">3 · APIs y webhooks</text>
+        <text x="460" y="262" class="t-b">conectar sistemas entre sí</text><text x="460" y="288" class="t-s t-m">«cuando pasa X en A, haz Y en B»</text></g>
+      <g class="paso"><rect x="60" y="160" width="380" height="68" rx="12" class="caja azul"/><text x="78" y="202" class="t-b">4 · Plataformas de flujos</text>
+        <text x="460" y="186" class="t-b">Zapier, Make, n8n, Power Automate</text><text x="460" y="212" class="t-s t-m">low/no-code: arrastrar y conectar, casi sin programar</text></g>
+      <g class="paso"><rect x="60" y="84" width="380" height="68" rx="12" class="caja violeta"/><text x="78" y="126" class="t-b">5 · RPA (robots)</text>
+        <text x="460" y="110" class="t-b">UiPath, Automation Anywhere</text><text x="460" y="136" class="t-s t-m">imitan clics y teclas en pantallas de programas viejos</text></g>
+      <g class="paso"><rect x="60" y="8" width="380" height="68" rx="12" class="caja ambar"/><text x="78" y="50" class="t-b">6 · Inteligencia artificial</text>
+        <text x="460" y="34" class="t-b">OCR, aprendizaje automático, modelos de lenguaje</text><text x="460" y="60" class="t-s t-m">leer imágenes, clasificar, resumir, conversar</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>No son excluyentes:</b> casi siempre se combinan (un script que llama a una API y usa OCR). La capa correcta es la más simple que resuelva el problema.<br>
+    Recorre de abajo hacia arriba con →. Pregunta cuáles han usado: casi todos conocen Excel; algunos habrán visto Zapier o macros.<br>
+    <b>Regla práctica:</b> si el problema se resuelve con una fórmula de Excel, no montes un servidor. Subimos de capa solo cuando la anterior se queda corta (volumen, integración, datos desordenados).<br>
+    <b>Nuestro proyecto</b> combina las capas 2 (programación en TypeScript) y 6 (OCR).
+  </aside>
+</section>
+
+<section class="slide" id="cuando-usar">
+  <span class="sobre">Tecnologías para automatizar</span>
+  <h2>¿Cuál uso y cuándo?</h2>
+  <table class="t" style="font-size:20px">
+    <tr><th style="width:23%">Tecnología</th><th style="width:40%">Úsala cuando…</th><th>Cuidado con…</th></tr>
+    <tr class="paso inicio"><td><b>Hojas y macros</b></td><td>el proceso es pequeño y lo hace una persona</td><td>se vuelve frágil y nadie sabe cómo funciona</td></tr>
+    <tr class="paso inicio"><td><b>Scripts y programación</b></td><td>necesitas control total y reglas propias</td><td>alguien tiene que mantenerlo</td></tr>
+    <tr class="paso"><td><b>APIs y webhooks</b></td><td>los sistemas ya ofrecen una API</td><td>límites de uso y cambios de versión</td></tr>
+    <tr class="paso"><td><b>Flujos low/no-code</b></td><td>quieres conectar aplicaciones rápido</td><td>costo por uso y poca flexibilidad</td></tr>
+    <tr class="paso"><td><b>RPA</b></td><td>el sistema viejo no tiene API: solo pantallas</td><td>se rompe si cambia la pantalla</td></tr>
+    <tr class="paso"><td><b>IA (OCR, ML, LLM)</b></td><td>los datos son desordenados: imágenes, texto libre</td><td>no es exacta: necesita <b>validación y revisión</b></td></tr>
+  </table>
+  <div class="aviso azul paso">Regla práctica: usa la capa <b>más simple</b> que resuelva el problema. Sube de capa solo cuando la anterior se quede corta.</div>
+  <aside class="notas">
+    Esta tabla es de consulta; no la leas toda. Elige 2 filas y pide un ejemplo a los estudiantes.<br>
+    <b>Punto importante sobre IA:</b> es potente con datos desordenados, pero <b>no es exacta</b>. Por eso, junto a la IA (o al OCR) siempre van validaciones y una vía de revisión humana; es exactamente lo que haremos con las facturas.<br>
+    RPA: útil en empresas con programas antiguos sin API; es una solución «de pegamento» que a veces es la única disponible.
+  </aside>
+</section>
+
+<section class="slide" id="stack-proyecto">
+  <span class="sobre">Tecnologías para automatizar</span>
+  <h2>Qué usaremos en nuestro proyecto</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 420" width="1152" height="412" role="img" aria-label="Las tecnologías del proyecto, ordenadas según la anatomía de una automatización">
+      <g class="paso inicio"><rect x="0" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="85" y="26" class="t-s t-b t-m" text-anchor="middle">DISPARADOR</text>
+        <text x="85" y="86" class="t-b" text-anchor="middle">Interfaz web</text><text x="85" y="114" class="t-xs" text-anchor="middle">Next.js + React</text><text x="85" y="138" class="t-xs t-m" text-anchor="middle">el usuario sube</text><text x="85" y="156" class="t-xs t-m" text-anchor="middle">la carpeta</text></g>
+      <g class="paso inicio"><path class="flecha" d="M172 105 H196"/><rect x="198" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="283" y="26" class="t-s t-b t-m" text-anchor="middle">ENTRADA</text>
+        <text x="283" y="86" class="t-b" text-anchor="middle">Archivos</text><text x="283" y="114" class="t-xs" text-anchor="middle">Vercel Blob</text><text x="283" y="138" class="t-xs t-m" text-anchor="middle">almacén privado</text><text x="283" y="156" class="t-xs t-m" text-anchor="middle">de imágenes</text></g>
+      <g class="paso"><path class="flecha" d="M370 105 H394"/><rect x="396" y="40" width="170" height="130" rx="12" class="caja ambar"/><text x="481" y="26" class="t-s t-b t-m" text-anchor="middle">LECTURA (IA)</text>
+        <text x="481" y="86" class="t-b" text-anchor="middle">OCR</text><text x="481" y="114" class="t-xs" text-anchor="middle">tesseract.js</text><text x="481" y="138" class="t-xs t-m" text-anchor="middle">de imagen</text><text x="481" y="156" class="t-xs t-m" text-anchor="middle">a texto</text></g>
+      <g class="paso"><path class="flecha" d="M568 105 H592"/><rect x="594" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="679" y="26" class="t-s t-b t-m" text-anchor="middle">REGLAS</text>
+        <text x="679" y="86" class="t-b" text-anchor="middle">Extractor y</text><text x="679" y="110" class="t-b" text-anchor="middle">validador</text><text x="679" y="138" class="t-xs t-m" text-anchor="middle">TypeScript puro</text><text x="679" y="156" class="t-xs t-m" text-anchor="middle">con pruebas</text></g>
+      <g class="paso"><path class="flecha" d="M766 105 H790"/><rect x="792" y="40" width="170" height="130" rx="12" class="caja verde"/><text x="877" y="26" class="t-s t-b t-m" text-anchor="middle">REGISTRO</text>
+        <text x="877" y="86" class="t-b" text-anchor="middle">Datos</text><text x="877" y="114" class="t-xs" text-anchor="middle">Firestore</text><text x="877" y="138" class="t-xs t-m" text-anchor="middle">facturas, clientes,</text><text x="877" y="156" class="t-xs t-m" text-anchor="middle">métricas</text></g>
+      <g class="paso"><path class="flecha" d="M964 105 H988"/><rect x="990" y="40" width="162" height="130" rx="12" class="caja verde"/><text x="1071" y="26" class="t-s t-b t-m" text-anchor="middle">SALIDA</text>
+        <text x="1071" y="86" class="t-b" text-anchor="middle">Excel y panel</text><text x="1071" y="114" class="t-xs" text-anchor="middle">exceljs + métricas</text><text x="1071" y="138" class="t-xs t-m" text-anchor="middle">un Excel por lote</text></g>
+      <g class="paso"><rect x="0" y="250" width="560" height="120" rx="12" class="caja violeta"/>
+        <use href="#ico-candado" x="20" y="272" width="56" height="56" style="color: var(--violeta)"/>
+        <text x="96" y="290" class="t-b">Acceso: Firebase Authentication</text><text x="96" y="318" class="t-s">solo personas autorizadas entran;</text><text x="96" y="340" class="t-s">cada quien ve lo suyo</text></g>
+      <g class="paso"><rect x="592" y="250" width="560" height="120" rx="12" class="caja"/>
+        <use href="#ico-engranaje" x="612" y="272" width="56" height="56" style="color: var(--muted)"/>
+        <text x="688" y="290" class="t-b">Dónde corre: Vercel (funciones)</text><text x="688" y="318" class="t-s">sin servidor propio; cada petición</text><text x="688" y="340" class="t-s">es una función de corta vida</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Adelanto (no entres en detalle):</b> en la segunda presentación construimos cada pieza. Aquí solo mostramos que el proyecto sigue la misma anatomía que acabamos de ver: disparador → entrada → lectura → reglas → registro → salida, más acceso y dónde corre.<br>
+    Nota que usamos una capa de IA (OCR) rodeada de reglas escritas por nosotros y validaciones: la IA lee, las reglas verifican.
+  </aside>
+</section>
+
+<section class="slide" id="area">
+  <span class="sobre">La empresa por dentro</span>
+  <h2>¿Qué es un área empresarial?</h2>
+  <p class="peq">Un <b>área</b> (o departamento) es un grupo de personas con una <b>función especializada</b> dentro de la empresa. Cada una tiene sus propios procesos, herramientas e indicadores, y todas trabajan por el mismo objetivo.</p>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 444" width="1152" height="430" role="img" aria-label="Organigrama simple: la dirección y ocho áreas">
+      <g class="paso inicio"><rect x="326" y="0" width="500" height="50" rx="12" class="caja solida"/><text x="576" y="33" class="t-b t-w" text-anchor="middle">Dirección general · define el rumbo</text>
+        <path class="linea" d="M576 50 V70"/></g>
+      <g class="paso inicio"><rect x="0" y="70" width="1152" height="374" rx="16" class="caja vacia"/><text x="16" y="94" class="t-xs t-b t-m">ÁREAS DE LA EMPRESA</text></g>
+      <g class="paso"><rect x="12" y="104" width="270" height="112" rx="12" class="caja"/><text x="147" y="140" class="t-b" text-anchor="middle">Comercial y ventas</text><text x="147" y="170" class="t-xs t-m" text-anchor="middle">vende y atiende</text><text x="147" y="190" class="t-xs t-m" text-anchor="middle">a los clientes</text></g>
+      <g class="paso"><rect x="298" y="104" width="270" height="112" rx="12" class="caja"/><text x="433" y="140" class="t-b" text-anchor="middle">Marketing</text><text x="433" y="170" class="t-xs t-m" text-anchor="middle">da a conocer</text><text x="433" y="190" class="t-xs t-m" text-anchor="middle">la marca y los productos</text></g>
+      <g class="paso"><rect x="584" y="104" width="270" height="112" rx="12" class="caja"/><text x="719" y="140" class="t-b" text-anchor="middle">Compras y logística</text><text x="719" y="170" class="t-xs t-m" text-anchor="middle">consigue y mueve</text><text x="719" y="190" class="t-xs t-m" text-anchor="middle">lo que se necesita</text></g>
+      <g class="paso"><rect x="870" y="104" width="270" height="112" rx="12" class="caja"/><text x="1005" y="140" class="t-b" text-anchor="middle">Operaciones</text><text x="1005" y="170" class="t-xs t-m" text-anchor="middle">produce el bien</text><text x="1005" y="190" class="t-xs t-m" text-anchor="middle">o presta el servicio</text></g>
+      <g class="paso"><rect x="12" y="232" width="270" height="112" rx="12" class="caja azul"/><text x="147" y="268" class="t-b" text-anchor="middle" style="font-size:19px">Finanzas y contabilidad</text><text x="147" y="298" class="t-xs t-m" text-anchor="middle">controla el dinero y</text><text x="147" y="318" class="t-xs t-m" text-anchor="middle">registra todo (facturas)</text></g>
+      <g class="paso"><rect x="298" y="232" width="270" height="112" rx="12" class="caja violeta"/><text x="433" y="268" class="t-b" text-anchor="middle">Talento humano</text><text x="433" y="298" class="t-xs t-m" text-anchor="middle">atrae, paga y cuida</text><text x="433" y="318" class="t-xs t-m" text-anchor="middle">a las personas (nómina)</text></g>
+      <g class="paso"><rect x="584" y="232" width="270" height="112" rx="12" class="caja"/><text x="719" y="268" class="t-b" text-anchor="middle">Tecnología (TI)</text><text x="719" y="298" class="t-xs t-m" text-anchor="middle">mantiene los sistemas</text><text x="719" y="318" class="t-xs t-m" text-anchor="middle">y los datos</text></g>
+      <g class="paso"><rect x="870" y="232" width="270" height="112" rx="12" class="caja"/><text x="1005" y="268" class="t-b" text-anchor="middle">Servicio al cliente</text><text x="1005" y="298" class="t-xs t-m" text-anchor="middle">resuelve dudas</text><text x="1005" y="318" class="t-xs t-m" text-anchor="middle">y reclamos</text></g>
+      <g class="paso"><text x="576" y="394" class="t-s" text-anchor="middle">Hoy veremos dos: <tspan class="t-b" style="fill:var(--acento)">Finanzas y contabilidad</tspan> (facturas) y <tspan class="t-b" style="fill:var(--violeta)">Talento humano</tspan> (nómina).</text>
+        <text x="576" y="422" class="t-xs t-m" text-anchor="middle">Los nombres cambian de una empresa a otra (y en las pequeñas una sola persona puede cubrir varias áreas).</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Si alguien nunca ha trabajado en una empresa, esta diapositiva es la base.</b> Define el área con un ejemplo cercano: en un colegio, «rectoría», «secretaría académica», «tesorería», «coordinación» son áreas.<br>
+    Revela las áreas con →. Pide a cada estudiante que diga en cuál de ellas le gustaría trabajar y qué cree que hace.<br>
+    Menciona que en una empresa pequeña una persona puede hacer varias de estas funciones; el organigrama es un modelo, no una regla.<br>
+    <b>Anuncia los dos ejemplos de hoy:</b> las facturas (finanzas y contabilidad) y la nómina (talento humano).
+  </aside>
+</section>
+
+<section class="slide" id="proceso">
+  <span class="sobre">La empresa por dentro</span>
+  <h2>¿Qué es un proceso?</h2>
+  <p class="peq">Una secuencia de <b>actividades relacionadas</b> que transforma unas <b>entradas</b> en una <b>salida de valor</b>, con responsables, reglas y herramientas.</p>
+  <svg viewBox="0 0 1152 172" width="1152" height="164" role="img" aria-label="Ejemplo: pagar a un proveedor, de la factura al pago">
+    <g class="paso inicio"><rect x="0" y="40" width="188" height="92" rx="12" class="caja"/><text x="94" y="30" class="t-xs t-b t-m" text-anchor="middle">ENTRADAS</text><text x="94" y="82" class="t-b" text-anchor="middle">Factura y</text><text x="94" y="108" class="t-b" text-anchor="middle">pedido</text></g>
+    <g class="paso inicio"><path class="flecha" d="M190 86 H218"/>
+      <rect x="220" y="40" width="168" height="92" rx="12" class="caja azul"/><text x="304" y="30" class="t-xs t-b t-m" text-anchor="middle">ACTIVIDAD 1</text><text x="304" y="92" class="t-b" text-anchor="middle">Recibir</text></g>
+    <g class="paso inicio"><path class="flecha" d="M390 86 H418"/>
+      <rect x="420" y="40" width="168" height="92" rx="12" class="caja azul"/><text x="504" y="30" class="t-xs t-b t-m" text-anchor="middle">ACTIVIDAD 2</text><text x="504" y="92" class="t-b" text-anchor="middle">Registrar</text></g>
+    <g class="paso inicio"><path class="flecha" d="M590 86 H618"/>
+      <rect x="620" y="40" width="168" height="92" rx="12" class="caja azul"/><text x="704" y="30" class="t-xs t-b t-m" text-anchor="middle">ACTIVIDAD 3</text><text x="704" y="92" class="t-b" text-anchor="middle">Aprobar</text></g>
+    <g class="paso inicio"><path class="flecha" d="M790 86 H818"/>
+      <rect x="820" y="40" width="168" height="92" rx="12" class="caja azul"/><text x="904" y="30" class="t-xs t-b t-m" text-anchor="middle">ACTIVIDAD 4</text><text x="904" y="92" class="t-b" text-anchor="middle">Pagar</text></g>
+    <g class="paso inicio"><path class="flecha verde" d="M990 86 H1018"/>
+      <rect x="1020" y="40" width="132" height="92" rx="12" class="caja verde"/><text x="1086" y="30" class="t-xs t-b t-m" text-anchor="middle">SALIDA</text><text x="1086" y="82" class="t-b" text-anchor="middle">Proveedor</text><text x="1086" y="108" class="t-b" text-anchor="middle">pagado</text></g>
+  </svg>
+  <div class="cols4">
+    <div class="card azul paso"><h3>Responsable</h3><p>¿Quién lo hace y quién responde por el resultado?</p></div>
+    <div class="card verde paso"><h3>Reglas</h3><p>¿Cómo se decide? (montos, aprobaciones, plazos)</p></div>
+    <div class="card ambar paso"><h3>Herramientas</h3><p>¿Con qué? (papel, Excel, un sistema contable)</p></div>
+    <div class="card violeta paso"><h3>Indicador</h3><p>¿Cómo sé que salió bien? (a tiempo, sin errores)</p></div>
+  </div>
+  <div class="aviso azul paso">Tarea ⊂ Actividad ⊂ <b>Proceso</b> ⊂ Área. Automatizamos <b>procesos</b> (o partes de ellos), no personas.</div>
+  <aside class="notas">
+    <b>Definición operativa:</b> un proceso tiene entradas, actividades, salidas, responsables, reglas, herramientas e indicadores. Si falta alguno de esos elementos, el proceso está mal definido (y será difícil automatizarlo).<br>
+    Ejemplo: «pagar a un proveedor». Entradas: factura y pedido; actividades: recibir, registrar, aprobar, pagar; salida: proveedor pagado.<br>
+    Pide que digan qué elementos tiene un proceso que conozcan (por ejemplo, «matricularse en el colegio»).<br>
+    <b>Jerarquía:</b> una <i>tarea</i> es una acción (digitar un dato); varias forman una <i>actividad</i>; varias actividades forman un <i>proceso</i>; los procesos viven en un <i>área</i>.
+  </aside>
+</section>
+
+<section class="slide" id="calles">
+  <span class="sobre">La empresa por dentro</span>
+  <h2>Los procesos atraviesan varias áreas</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 452" width="1152" height="440" role="img" aria-label="Diagrama de calles: comprar y pagar a un proveedor, pasando por cuatro áreas">
+      <g class="paso inicio">
+        <rect x="0" y="0" width="1152" height="104" class="caja"/><rect x="0" y="0" width="150" height="104" class="caja azul"/><text x="75" y="58" class="t-b" text-anchor="middle" style="font-size:19px">Compras</text>
+        <rect x="0" y="116" width="1152" height="104" class="caja"/><rect x="0" y="116" width="150" height="104" class="caja azul"/><text x="75" y="174" class="t-b" text-anchor="middle" style="font-size:19px">Almacén</text>
+        <rect x="0" y="232" width="1152" height="104" class="caja"/><rect x="0" y="232" width="150" height="104" class="caja azul"/><text x="75" y="282" class="t-b" text-anchor="middle" style="font-size:19px">Contabilidad</text>
+        <rect x="0" y="348" width="1152" height="104" class="caja"/><rect x="0" y="348" width="150" height="104" class="caja azul"/><text x="75" y="398" class="t-b" text-anchor="middle" style="font-size:19px">Tesorería</text>
+      </g>
+      <g class="paso inicio"><rect x="190" y="26" width="190" height="52" rx="10" class="caja solida"/><text x="285" y="58" class="t-s t-b t-w" text-anchor="middle">Hace el pedido</text></g>
+      <g class="paso"><path class="flecha" d="M285 78 V142 H410"/><use href="#ico-alerta" x="262" y="94" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="412" y="142" width="190" height="52" rx="10" class="caja solida"/><text x="507" y="174" class="t-s t-b t-w" text-anchor="middle">Recibe la mercancía</text></g>
+      <g class="paso"><path class="flecha" d="M507 194 V258 H632"/><use href="#ico-alerta" x="484" y="210" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="634" y="258" width="190" height="52" rx="10" class="caja solida-v"/><text x="729" y="290" class="t-s t-b t-w" text-anchor="middle">Registra la factura</text>
+        <text x="729" y="246" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">★ nuestro proyecto</text></g>
+      <g class="paso"><path class="flecha" d="M826 284 H864"/>
+        <rect x="866" y="258" width="190" height="52" rx="10" class="caja solida"/><text x="961" y="290" class="t-s t-b t-w" text-anchor="middle">Aprueba el pago</text></g>
+      <g class="paso"><path class="flecha" d="M961 310 V374 H982"/><use href="#ico-alerta" x="938" y="326" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="984" y="374" width="150" height="52" rx="10" class="caja solida"/><text x="1059" y="406" class="t-s t-b t-w" text-anchor="middle">Paga</text></g>
+      <g class="paso"><rect x="480" y="10" width="640" height="88" rx="12" class="caja ambar"/>
+        <use href="#ico-alerta" x="496" y="30" width="38" height="38" style="color: var(--ambar)"/>
+        <text x="548" y="46" class="t-b">Cada traspaso entre áreas</text><text x="548" y="72" class="t-s">= una espera, un papel extraviado o un error de digitación.</text>
+        <text x="548" y="92" class="t-xs t-m">Los traspasos son los mejores sitios para buscar qué automatizar.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Diagrama de calles (swimlane):</b> cada calle es un área; las flechas son traspasos de trabajo entre áreas. Léelo de izquierda a derecha con →.<br>
+    <b>Idea fuerte:</b> los procesos no viven dentro de un área, la cruzan. Y en cada traspaso aparece lo malo: esperas, pérdidas, errores. Ahí es donde la automatización suele dar más resultado.<br>
+    <b>Nuestro proyecto vive en el cuadro verde:</b> «Registra la factura», en Contabilidad. Antes de llegar ahí, alguien hizo el pedido y alguien recibió la mercancía; después, alguien aprueba y alguien paga.<br>
+    Pregunta: «¿qué pasa si la factura llega mal registrada?» (se paga mal, se descuadra la contabilidad, hay que rehacer).
+  </aside>
+</section>
+
+<section class="slide" id="por-area">
+  <span class="sobre">Procesos de empresa que se pueden automatizar</span>
+  <h2>Ejemplos por área</h2>
+  <div class="cols3 crece" style="grid-template-rows: repeat(3, 1fr); gap:14px">
+    <div class="card azul"><h3>Finanzas y contabilidad</h3><p>registrar facturas · conciliar el banco · cierres contables</p></div>
+    <div class="card violeta"><h3>Talento humano</h3><p>nómina · certificados laborales · incorporación de personal</p></div>
+    <div class="card"><h3>Comercial y ventas</h3><p>cotizaciones · seguimiento de clientes · facturación</p></div>
+    <div class="card"><h3>Compras</h3><p>órdenes de compra · aprobaciones · comparar cotizaciones</p></div>
+    <div class="card"><h3>Operaciones</h3><p>control de inventarios · reportes de producción · alertas</p></div>
+    <div class="card"><h3>Servicio al cliente</h3><p>clasificar solicitudes · respuestas frecuentes · encuestas</p></div>
+    <div class="card"><h3>Tecnología (TI)</h3><p>crear y retirar usuarios · copias de seguridad · monitoreo</p></div>
+    <div class="card"><h3>Marketing</h3><p>envío de correos · reportes de campañas · publicaciones programadas</p></div>
+    <div class="card"><h3>Jurídico</h3><p>contratos desde plantillas · alertas de vencimiento · firmas electrónicas</p></div>
+  </div>
+  <aside class="notas">
+    <b>No hay que leerlas todas.</b> Elige tres áreas y pide al grupo que identifique en cada una: ¿qué se repite? ¿qué tiene reglas claras? ¿dónde hay datos digitales?<br>
+    Resalta las dos de color: finanzas (nuestras facturas) y talento humano (la nómina que veremos en detalle).<br>
+    <b>Patrón común:</b> son procesos con volumen, reglas y datos. Casi toda empresa tiene candidatos en cada área; lo difícil no es encontrarlos, es elegir por cuál empezar (la matriz de dos por dos de antes).
+  </aside>
+</section>
+
+<section class="slide" id="talento">
+  <span class="sobre">La empresa por dentro</span>
+  <h2>Talento humano: el área de las personas</h2>
+  <div class="fila crece">
+    <div class="col" style="flex:0.95; gap:14px">
+      <p class="peq">Se encarga de <b>atraer, contratar, pagar, formar y cuidar</b> a las personas de la empresa durante toda su vida laboral.</p>
+      <div class="card violeta paso inicio"><h3>Nuestro ejemplo: la nómina</h3><p class="peq">Cada periodo hay que calcular y pagar a todos, cumpliendo la ley.</p></div>
+      <div class="card paso"><h3>Otros procesos automatizables</h3><p class="peq">publicar vacantes y filtrar hojas de vida · generar contratos · certificados laborales · solicitudes de vacaciones · encuestas de clima</p></div>
+      <div class="aviso paso" style="font-size:19px">Ojo: aquí hay <b>datos personales</b> y decisiones que afectan vidas. Se automatiza lo repetitivo; las decisiones sensibles las toman personas.</div>
+    </div>
+    <svg viewBox="0 0 660 440" width="600" height="400" style="flex:none" role="img" aria-label="Ciclo de vida del empleado en nueve etapas, con la nómina resaltada">
+      <ellipse cx="330" cy="215" rx="230" ry="170" class="linea punteada fina"/>
+      <circle cx="330" cy="215" r="70" class="caja violeta"/><text x="330" y="208" class="t-b" text-anchor="middle">Vida laboral</text><text x="330" y="232" class="t-b" text-anchor="middle">del empleado</text>
+      <g class="paso inicio">
+        <rect x="264" y="25" width="132" height="40" rx="10" class="caja"/><text x="330" y="50" class="t-xs t-b" text-anchor="middle">Reclutamiento</text>
+        <rect x="412" y="65" width="132" height="40" rx="10" class="caja"/><text x="478" y="90" class="t-xs t-b" text-anchor="middle">Selección</text>
+        <rect x="490" y="165" width="132" height="40" rx="10" class="caja"/><text x="556" y="190" class="t-xs t-b" text-anchor="middle">Contratación</text>
+        <rect x="463" y="280" width="132" height="40" rx="10" class="caja"/><text x="529" y="305" class="t-xs t-b" text-anchor="middle">Inducción</text>
+      </g>
+      <g class="paso inicio"><rect x="333" y="355" width="152" height="46" rx="10" class="caja solida" style="fill:var(--violeta);stroke:var(--violeta)"/><text x="409" y="384" class="t-xs t-b t-w" text-anchor="middle">★ Nómina y pagos</text></g>
+      <g class="paso">
+        <rect x="185" y="355" width="132" height="40" rx="10" class="caja"/><text x="251" y="380" class="t-xs t-b" text-anchor="middle">Capacitación</text>
+        <rect x="65" y="280" width="132" height="40" rx="10" class="caja"/><text x="131" y="305" class="t-xs t-b" text-anchor="middle">Evaluación</text>
+        <rect x="38" y="165" width="132" height="40" rx="10" class="caja"/><text x="104" y="190" class="t-xs t-b" text-anchor="middle">Bienestar</text>
+        <rect x="116" y="65" width="132" height="40" rx="10" class="caja"/><text x="182" y="90" class="t-xs t-b" text-anchor="middle">Retiro</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Qué es talento humano:</b> antes se llamaba «recursos humanos» o «personal». Gestiona a las personas desde que se busca a alguien hasta que se retira.<br>
+    Recorre el ciclo con →. Haz notar que hay etapas muy humanas (selección, evaluación, bienestar) y otras muy operativas y repetitivas (nómina, certificados). Las segundas son las mejores candidatas.<br>
+    <b>Datos sensibles:</b> en Colombia los datos personales están protegidos por la Ley 1581 de 2012 (habeas data). Quien automatice procesos de nómina maneja salarios, cuentas bancarias y cédulas: la seguridad no es opcional.
+  </aside>
+</section>
+
+<section class="slide" id="nomina-que-es">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>¿Qué es la nómina?</h2>
+  <p class="peq">Es el proceso por el cual la empresa <b>calcula y paga</b> cada periodo (quincena o mes) lo que le corresponde a cada empleado, <b>descuenta</b> lo que ordena la ley y <b>cumple</b> sus obligaciones con el Estado.</p>
+  <svg viewBox="0 0 1152 150" width="1152" height="146" role="img" aria-label="Salario más horas extra más auxilios igual al devengado; menos deducciones igual al neto a pagar">
+    <g class="paso inicio"><rect x="0" y="22" width="150" height="100" rx="12" class="caja"/><text x="75" y="66" class="t-s t-b" text-anchor="middle">Salario</text><text x="75" y="90" class="t-s t-b" text-anchor="middle">básico</text></g>
+    <text x="170" y="84" class="t-l t-b t-m" text-anchor="middle">+</text>
+    <g class="paso inicio"><rect x="190" y="22" width="150" height="100" rx="12" class="caja"/><text x="265" y="66" class="t-s t-b" text-anchor="middle">Horas extra</text><text x="265" y="90" class="t-s t-b" text-anchor="middle">y recargos</text></g>
+    <text x="360" y="84" class="t-l t-b t-m" text-anchor="middle">+</text>
+    <g class="paso inicio"><rect x="380" y="22" width="150" height="100" rx="12" class="caja"/><text x="455" y="66" class="t-s t-b" text-anchor="middle">Auxilios y</text><text x="455" y="90" class="t-s t-b" text-anchor="middle">comisiones</text></g>
+    <text x="552" y="84" class="t-l t-b t-m" text-anchor="middle">=</text>
+    <g class="paso"><rect x="572" y="22" width="190" height="100" rx="12" class="caja azul"/><text x="667" y="60" class="t-b" text-anchor="middle">DEVENGADO</text><text x="667" y="88" class="t-xs t-m" text-anchor="middle">lo que el empleado gana</text></g>
+    <text x="782" y="84" class="t-l t-b t-m" text-anchor="middle">−</text>
+    <g class="paso"><rect x="802" y="22" width="190" height="100" rx="12" class="caja rojo"/><text x="897" y="60" class="t-b" text-anchor="middle">DEDUCCIONES</text><text x="897" y="88" class="t-xs t-m" text-anchor="middle">salud, pensión, otros</text></g>
+    <text x="1012" y="84" class="t-l t-b t-m" text-anchor="middle">=</text>
+    <g class="paso"><rect x="1032" y="22" width="120" height="100" rx="12" class="caja verde"/><text x="1092" y="66" class="t-b" text-anchor="middle">NETO</text><text x="1092" y="92" class="t-s t-b" text-anchor="middle">a pagar</text></g>
+  </svg>
+  <div class="cols3">
+    <div class="card paso"><h3>Aportes del empleador</h3><p class="peq">Lo que la empresa paga <b>además</b>: seguridad social y otros aportes. No sale del bolsillo del empleado.</p></div>
+    <div class="card paso"><h3>Prestaciones sociales</h3><p class="peq">Prima, cesantías, vacaciones… se causan mes a mes y se pagan en su momento.</p></div>
+    <div class="card paso"><h3>Reportes al Estado</h3><p class="peq">En Colombia: la planilla de seguridad social (PILA) y la nómina electrónica ante la DIAN.</p></div>
+  </div>
+  <div class="aviso paso" style="font-size:19px">Referencia general para entender el proceso. Las tarifas, topes y obligaciones cambian: se verifican siempre con un contador o con la norma vigente.</div>
+  <aside class="notas">
+    <b>Para quien nunca ha visto una nómina:</b> es el «cálculo del sueldo» de todos los empleados. Lo que el empleado <b>devenga</b> es lo que gana (salario, horas extra, comisiones, auxilios). De ahí se <b>deducen</b> los aportes que la ley le hace pagar (salud y pensión, por ejemplo). Lo que queda es el <b>neto</b>, lo que realmente recibe en su cuenta.<br>
+    Además la empresa tiene sus propias obligaciones: aportes del empleador, prestaciones y reportes. Eso hace que calcular una nómina correctamente sea laborioso y delicado.<br>
+    <b>Aclara que no es asesoría contable</b>: las cifras y reglas exactas dependen de la norma vigente. El objetivo aquí es entender la estructura del proceso para analizarlo como candidato a automatización.
+  </aside>
+</section>
+
+<section class="slide" id="nomina-manual">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>Así se hace a mano, paso a paso</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 420" width="1152" height="412" role="img" aria-label="Ocho pasos de la nómina manual; tres de ellos son propensos a error">
+      <g class="paso inicio"><rect x="0" y="0" width="270" height="168" rx="12" class="caja"/><circle cx="30" cy="30" r="18" class="relleno"/><text x="30" y="37" class="t-s t-b t-w" text-anchor="middle">1</text>
+        <text x="58" y="36" class="t-s t-b">Reunir novedades</text><text x="20" y="76" class="t-xs">horas extra, incapacidades,</text><text x="20" y="98" class="t-xs">vacaciones, ingresos y retiros</text><text x="20" y="128" class="t-xs t-m">de varios archivos y correos</text><use href="#ico-alerta" x="230" y="118" width="30" height="30" style="color: var(--ambar)"/></g>
+      <g class="paso"><path class="flecha" d="M272 84 H292"/><rect x="294" y="0" width="270" height="168" rx="12" class="caja"/><circle cx="324" cy="30" r="18" class="relleno"/><text x="324" y="37" class="t-s t-b t-w" text-anchor="middle">2</text>
+        <text x="352" y="36" class="t-s t-b">Calcular el devengado</text><text x="314" y="76" class="t-xs">salario + extras + auxilios</text><text x="314" y="98" class="t-xs">de cada empleado</text><text x="314" y="128" class="t-xs t-m">fórmulas copiadas de Excel</text><use href="#ico-alerta" x="524" y="118" width="30" height="30" style="color: var(--ambar)"/></g>
+      <g class="paso"><path class="flecha" d="M566 84 H586"/><rect x="588" y="0" width="270" height="168" rx="12" class="caja"/><circle cx="618" cy="30" r="18" class="relleno"/><text x="618" y="37" class="t-s t-b t-w" text-anchor="middle">3</text>
+        <text x="646" y="36" class="t-s t-b">Calcular deducciones</text><text x="608" y="76" class="t-xs">salud, pensión y otros</text><text x="608" y="98" class="t-xs">descuentos por empleado</text><text x="608" y="128" class="t-xs t-m">las reglas cambian con la ley</text><use href="#ico-alerta" x="818" y="118" width="30" height="30" style="color: var(--ambar)"/></g>
+      <g class="paso"><path class="flecha" d="M860 84 H880"/><rect x="882" y="0" width="270" height="168" rx="12" class="caja"/><circle cx="912" cy="30" r="18" class="relleno"/><text x="912" y="37" class="t-s t-b t-w" text-anchor="middle">4</text>
+        <text x="940" y="36" class="t-s t-b">Aportes (empleador)</text><text x="902" y="76" class="t-xs">seguridad social y</text><text x="902" y="98" class="t-xs">provisiones de prestaciones</text></g>
+      <g class="paso"><path class="flecha" d="M1017 170 V190 H135 V212"/><rect x="0" y="214" width="270" height="168" rx="12" class="caja violeta"/><circle cx="30" cy="244" r="18" style="fill:var(--violeta)"/><text x="30" y="251" class="t-s t-b t-w" text-anchor="middle">5</text>
+        <text x="58" y="250" class="t-s t-b">Revisar y aprobar</text><use href="#ico-persona" x="20" y="272" width="40" height="40" style="color: var(--violeta)"/><text x="72" y="290" class="t-xs">la gerencia da el</text><text x="72" y="312" class="t-xs">visto bueno</text></g>
+      <g class="paso"><path class="flecha" d="M272 298 H292"/><rect x="294" y="214" width="270" height="168" rx="12" class="caja"/><circle cx="324" cy="244" r="18" class="relleno"/><text x="324" y="251" class="t-s t-b t-w" text-anchor="middle">6</text>
+        <text x="352" y="250" class="t-s t-b">Pagar</text><use href="#ico-banco" x="314" y="272" width="40" height="40" style="color: var(--acento)"/><text x="366" y="290" class="t-xs">archivo al banco o</text><text x="366" y="312" class="t-xs">transferencias</text></g>
+      <g class="paso"><path class="flecha" d="M566 298 H586"/><rect x="588" y="214" width="270" height="168" rx="12" class="caja"/><circle cx="618" cy="244" r="18" class="relleno"/><text x="618" y="251" class="t-s t-b t-w" text-anchor="middle">7</text>
+        <text x="646" y="250" class="t-s t-b">Desprendibles</text><use href="#ico-correo" x="608" y="272" width="40" height="40" style="color: var(--acento)"/><text x="660" y="290" class="t-xs">un comprobante a</text><text x="660" y="312" class="t-xs">cada empleado</text></g>
+      <g class="paso"><path class="flecha" d="M860 298 H880"/><rect x="882" y="214" width="270" height="168" rx="12" class="caja"/><circle cx="912" cy="244" r="18" class="relleno"/><text x="912" y="251" class="t-s t-b t-w" text-anchor="middle">8</text>
+        <text x="940" y="250" class="t-s t-b">Registrar y reportar</text><text x="902" y="290" class="t-xs">asientos contables,</text><text x="902" y="312" class="t-xs">seguridad social y DIAN</text></g>
+      <g class="paso"><use href="#ico-alerta" x="0" y="396" width="22" height="22" style="color: var(--ambar)"/><text x="30" y="414" class="t-s">= aquí es donde más se cuelan los errores (digitar, copiar, calcular)</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Recorre los 8 pasos con →.</b> Pregunta en cada uno: «¿de dónde salen los datos?», «¿quién lo hace?», «¿qué puede salir mal?».<br>
+    Señala los tres primeros (alerta): recoger novedades de varios lugares, calcular y descontar con fórmulas copiadas. Ahí es donde se cuelan los errores, y se descubren cuando el empleado reclama.<br>
+    El paso 5 (aprobación) es <b>humano y debe seguir siéndolo</b>: lo veremos en la versión automatizada.<br>
+    Menciona la repetición: esto se hace cada quincena o cada mes, para todos los empleados.
+  </aside>
+</section>
+
+<section class="slide" id="nomina-ejemplo">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>Un ejemplo con números: el desprendible de Ana</h2>
+  <div class="fila crece" style="gap:28px">
+    <svg viewBox="0 0 560 410" width="540" height="398" style="flex:none" role="img" aria-label="Desprendible de pago de un empleado de ejemplo">
+      <rect x="0" y="0" width="560" height="410" rx="14" class="papel"/>
+      <text x="24" y="38" class="t-b">Desprendible de pago · Ana (ejemplo)</text>
+      <path class="linea fina" d="M24 52 H536"/>
+      <g class="paso inicio"><text x="24" y="90">Salario básico</text><text x="536" y="90" text-anchor="end">$3.000.000</text>
+        <text x="24" y="122">Horas extra</text><text x="536" y="122" text-anchor="end">$150.000</text></g>
+      <g class="paso"><path class="linea fina" d="M24 138 H536"/><text x="24" y="168" class="t-b">DEVENGADO</text><text x="536" y="168" class="t-b" text-anchor="end">$3.150.000</text></g>
+      <g class="paso"><text x="24" y="206">Salud (4 %)</text><text x="536" y="206" text-anchor="end" style="fill:var(--rojo)">− $126.000</text>
+        <text x="24" y="238">Pensión (4 %)</text><text x="536" y="238" text-anchor="end" style="fill:var(--rojo)">− $126.000</text>
+        <path class="linea fina" d="M24 254 H536"/><text x="24" y="284" class="t-b">DEDUCCIONES</text><text x="536" y="284" class="t-b" text-anchor="end" style="fill:var(--rojo)">− $252.000</text></g>
+      <g class="paso"><rect x="16" y="310" width="528" height="78" rx="12" class="caja verde"/><text x="32" y="360" class="t-l t-b">NETO A PAGAR</text><text x="528" y="360" class="t-l t-b" text-anchor="end" style="fill:var(--verde)">$2.898.000</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="card azul paso"><h3>Cómo se calculó</h3>
+        <p class="peq">Devengado = 3.000.000 + 150.000 = <b>3.150.000</b><br>Salud = 4 % × 3.150.000 = <b>126.000</b><br>Pensión = 4 % × 3.150.000 = <b>126.000</b><br>Neto = 3.150.000 − 252.000 = <b>2.898.000</b></p></div>
+      <div class="card rojo paso"><h3>Ahora imagina…</h3><p class="peq"><b>300 empleados</b>, cada mes. Una celda mal copiada es un pago equivocado… multiplicado por los meses que pasen sin que nadie lo note.</p></div>
+      <div class="aviso paso" style="font-size:18px">Ejemplo simplificado: sin auxilio de transporte, retención en la fuente ni fondo de solidaridad. Las tarifas y topes cambian: verifícalos.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Haz el cálculo en vivo con los estudiantes.</b> Revela con → y pídeles que calculen el 4 % antes de mostrar el resultado.<br>
+    <b>Ana, ejemplo ficticio:</b> salario de 3.000.000 y 150.000 por horas extra → devengado 3.150.000. Salud 4 % = 126.000; pensión 4 % = 126.000. Neto = 2.898.000.<br>
+    <b>Verifica:</b> 3.150.000 × 0,04 = 126.000 ✓ · 126.000 × 2 = 252.000 ✓ · 3.150.000 − 252.000 = 2.898.000 ✓.<br>
+    Dejar claro que es un ejemplo simplificado para ver la mecánica; una nómina real incluye más conceptos y reglas (auxilio de transporte, retención, fondo de solidaridad, límites por salario base).<br>
+    <b>La lección:</b> las reglas son simples y repetitivas, pero se aplican muchas veces; justo lo que una máquina hace bien y una persona hace aburrida y propensa al error.
+  </aside>
+</section>
+
+<section class="slide" id="nomina-auto">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>La misma nómina, automatizada</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 468" width="1152" height="458" role="img" aria-label="Nómina automatizada: disparador, novedades, reglas, validación, aprobación humana y acciones">
+      <g class="paso inicio"><rect x="0" y="22" width="168" height="104" rx="12" class="caja azul"/><text x="84" y="14" class="t-xs t-b t-m" text-anchor="middle">DISPARADOR</text>
+        <text x="84" y="64" class="t-b" text-anchor="middle" style="font-size:19px">Fecha de corte</text><text x="84" y="92" class="t-xs" text-anchor="middle">el 15 y el 30</text></g>
+      <g class="paso inicio"><path class="flecha azul" d="M170 74 H190"/><rect x="192" y="22" width="190" height="104" rx="12" class="caja azul"/><text x="287" y="14" class="t-xs t-b t-m" text-anchor="middle">ENTRADAS</text>
+        <text x="287" y="62" class="t-b" text-anchor="middle">Novedades</text><text x="287" y="88" class="t-xs" text-anchor="middle">reloj, solicitudes,</text><text x="287" y="106" class="t-xs" text-anchor="middle">contratos</text></g>
+      <g class="paso"><path class="flecha azul" d="M384 74 H404"/><rect x="406" y="22" width="200" height="104" rx="12" class="caja azul"/><text x="506" y="14" class="t-xs t-b t-m" text-anchor="middle">REGLAS</text>
+        <text x="506" y="62" class="t-b" text-anchor="middle">Cálculo</text><text x="506" y="88" class="t-xs" text-anchor="middle">devengado, deducciones</text><text x="506" y="106" class="t-xs" text-anchor="middle">y aportes</text></g>
+      <g class="paso"><path class="flecha azul" d="M608 74 H624"/><path d="M626 74 L698 20 L770 74 L698 128 Z" class="caja ambar"/>
+        <text x="698" y="68" class="t-b" text-anchor="middle" style="font-size:19px">¿Todo bien?</text><text x="698" y="90" class="t-xs" text-anchor="middle">datos completos</text></g>
+      <g class="paso"><path class="flecha verde" d="M772 74 H792"/><text x="782" y="62" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">sí</text>
+        <rect x="794" y="22" width="170" height="104" rx="12" class="caja violeta"/><text x="879" y="14" class="t-xs t-b t-m" text-anchor="middle">PERSONA</text>
+        <use href="#ico-persona" x="806" y="40" width="34" height="34" style="color: var(--violeta)"/><text x="848" y="64" class="t-b">Aprueba</text><text x="879" y="100" class="t-xs" text-anchor="middle">antes de pagar</text></g>
+      <g class="paso"><path class="flecha verde" d="M966 74 H986"/><rect x="988" y="22" width="164" height="104" rx="12" class="caja verde"/><text x="1070" y="14" class="t-xs t-b t-m" text-anchor="middle">ACCIONES</text>
+        <text x="1070" y="56" class="t-s t-b" text-anchor="middle">Archivo al banco</text><text x="1070" y="80" class="t-xs" text-anchor="middle">desprendibles,</text><text x="1070" y="98" class="t-xs" text-anchor="middle">asiento, PILA, DIAN</text></g>
+      <g class="paso"><path class="flecha ambar" d="M698 130 V212"/><text x="714" y="176" class="t-xs t-b" style="fill:var(--ambar)">no</text>
+        <rect x="574" y="214" width="248" height="96" rx="12" class="caja ambar"/><text x="698" y="248" class="t-b" text-anchor="middle">Excepciones</text><text x="698" y="274" class="t-xs" text-anchor="middle">sin cuenta bancaria, extras fuera</text><text x="698" y="292" class="t-xs" text-anchor="middle">de rango, dato faltante</text>
+        <path class="flecha violeta" d="M698 312 V352" style="stroke:var(--violeta)"/>
+        <rect x="574" y="354" width="248" height="94" rx="12" class="caja violeta"/><use href="#ico-persona" x="588" y="372" width="40" height="40" style="color: var(--violeta)"/><text x="640" y="398" class="t-b">El analista</text><text x="640" y="424" class="t-xs">corrige y reintenta</text></g>
+      <g class="paso"><path class="flecha" d="M1070 128 V212"/><rect x="920" y="214" width="232" height="96" rx="12" class="caja"/><text x="1036" y="250" class="t-b" text-anchor="middle">Registro</text><text x="1036" y="276" class="t-xs" text-anchor="middle">quién aprobó, cuándo</text><text x="1036" y="294" class="t-xs" text-anchor="middle">y con qué reglas</text></g>
+      <g class="paso"><rect x="0" y="214" width="540" height="234" rx="14" class="caja vacia"/>
+        <text x="22" y="252" class="t-b">Qué cambia</text>
+        <text x="22" y="290" class="t-s">• Los datos llegan desde su origen, sin copiar.</text>
+        <text x="22" y="320" class="t-s">• Las reglas viven en un solo lugar: si cambia la</text><text x="22" y="344" class="t-s">  ley, se actualiza una vez.</text>
+        <text x="22" y="374" class="t-s">• Los errores se detectan antes de pagar.</text>
+        <text x="22" y="404" class="t-s">• Una persona sigue aprobando; revisa excepciones.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Misma anatomía de antes, aplicada a la nómina.</b> Revela con →.<br>
+    <b>Disparador:</b> la fecha de corte. <b>Entradas:</b> las novedades (ya no de varios correos, sino de los sistemas donde nacen). <b>Reglas:</b> el cálculo, escrito una vez. <b>Validación:</b> ¿está todo completo y razonable?<br>
+    <b>Lo más importante:</b> antes de pagar hay una <b>aprobación humana</b>. Pagar es una acción difícil de deshacer; por eso la máquina prepara y valida, pero la persona autoriza. Las excepciones van a un analista.<br>
+    <b>Registro:</b> queda quién aprobó y con qué reglas: útil para auditoría y para resolver reclamos.<br>
+    Pregunta: «¿qué pasaría si el cálculo se equivoca para todos los empleados a la vez?» (error a escala: por eso se prueba y se revisa antes de pagar).
+  </aside>
+</section>
+
+<section class="slide" id="antes-despues">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>Antes y después</h2>
+  <div class="cols2 crece" style="gap:24px">
+    <div class="card rojo" style="padding:22px 24px">
+      <h3 style="display:flex; gap:10px; align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><use href="#ico-equis" width="100" height="100" style="color: var(--rojo)"/></svg> Manual</h3>
+      <ul class="lista mal peq" style="margin-top:8px; gap:12px">
+        <li class="paso inicio">Datos en varios archivos y correos</li>
+        <li class="paso">Fórmulas copiadas de un mes a otro</li>
+        <li class="paso">Los errores aparecen cuando el empleado reclama</li>
+        <li class="paso">Días de trabajo concentrado en cada corte</li>
+        <li class="paso">Si el analista falta, nadie sabe cómo se hace</li>
+      </ul>
+    </div>
+    <div class="card verde" style="padding:22px 24px">
+      <h3 style="display:flex; gap:10px; align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg> Automatizado</h3>
+      <ul class="lista ok peq" style="margin-top:8px; gap:12px">
+        <li class="paso inicio">Datos centralizados desde su origen</li>
+        <li class="paso">Reglas en un solo lugar, probadas</li>
+        <li class="paso">Los errores se detectan antes de pagar</li>
+        <li class="paso">Horas de revisión, no días de digitación</li>
+        <li class="paso">El proceso queda documentado en el propio sistema</li>
+      </ul>
+    </div>
+  </div>
+  <div class="aviso azul paso"><b>Lo que NO cambia:</b> una persona responsable aprueba antes de pagar, y el equipo pasa de digitar a <b>revisar excepciones y mejorar el proceso</b>.</div>
+  <aside class="notas">
+    <b>Comparación rápida.</b> Pide a los estudiantes que, antes de revelar cada punto automatizado, adivinen la respuesta a cada problema de la columna izquierda.<br>
+    <b>Cierra con la idea más importante:</b> no se elimina a la persona; cambia su rol. Pasa de digitar y comprobar a revisar excepciones, tomar decisiones y mejorar el proceso. Si la empresa solo ve «ahorro de personal» sin pensar en la reconversión del equipo, la automatización suele fracasar.<br>
+    Esta diapositiva prepara el punto de riesgos y buenas prácticas.
+  </aside>
+</section>
+
+<section class="slide" id="riesgos">
+  <span class="sobre">Automatizar con responsabilidad</span>
+  <h2>Riesgos y buenas prácticas</h2>
+  <div class="cols3 crece" style="grid-template-rows: 1fr 1fr; gap:16px">
+    <div class="card rojo paso inicio"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-alerta" width="100" height="100" style="color: var(--rojo)"/></svg>
+      <div><h3>Errores a escala</h3><p class="peq">Una regla mal escrita se repite miles de veces. <b>Prueba</b> antes de soltarla.</p></div></div></div>
+    <div class="card violeta paso inicio"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-persona" width="100" height="100" style="color: var(--violeta)"/></svg>
+      <div><h3>Persona en el ciclo</h3><p class="peq">Antes de una acción difícil de deshacer (pagar, borrar) <b>alguien aprueba</b>.</p></div></div></div>
+    <div class="card ambar paso"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-candado" width="100" height="100" style="color: var(--ambar)"/></svg>
+      <div><h3>Datos personales</h3><p class="peq">Nómina y facturas tienen datos sensibles. En Colombia: Ley 1581 de 2012 (<i>habeas data</i>).</p></div></div></div>
+    <div class="card azul paso"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-candado" width="100" height="100" style="color: var(--acento)"/></svg>
+      <div><h3>Seguridad y accesos</h3><p class="peq">Quién puede ver y ejecutar qué. Las claves <b>nunca</b> van dentro del código.</p></div></div></div>
+    <div class="card verde paso"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-documento" width="100" height="100" style="color: var(--verde)"/></svg>
+      <div><h3>Trazabilidad</h3><p class="peq">Registrar <b>qué</b> se hizo, <b>cuándo</b> y con <b>qué regla</b>, para poder explicarlo.</p></div></div></div>
+    <div class="card paso"><div class="fila" style="align-items:flex-start"><svg viewBox="0 0 100 100" width="46" height="46" aria-hidden="true" style="flex:none"><use href="#ico-reloj" width="100" height="100" style="color: var(--muted)"/></svg>
+      <div><h3>Plan B y personas</h3><p class="peq">¿Qué pasa si falla? Y el equipo: capacitarlo para revisar y mejorar, no solo «reemplazarlo».</p></div></div></div>
+  </div>
+  <aside class="notas">
+    <b>Cierre del bloque conceptual.</b> Automatizar da poder, y el poder trae responsabilidad.<br>
+    <b>Errores a escala:</b> un error humano afecta una factura; un error de regla afecta todas. Por eso hay pruebas y una vía de revisión.<br>
+    <b>Persona en el ciclo:</b> es la lección del caso de la nómina.<br>
+    <b>Datos personales:</b> nombra la Ley 1581 de 2012 sin entrar en detalles jurídicos; el mensaje es que la información de nómina es sensible y hay que protegerla (accesos, claves, registros).<br>
+    <b>Personas:</b> habla con honestidad del impacto en el empleo: la automatización cambia los roles; las empresas responsables capacitan a su gente. Abre una discusión corta de 2 minutos si el grupo tiene opinión.
+  </aside>
+</section>
+
+<section class="slide" id="ciclo">
+  <span class="sobre">Cómo automatizar un proceso</span>
+  <h2>Un ciclo de cinco pasos</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 452" width="1152" height="440" role="img" aria-label="Ciclo: entender, medir, simplificar, automatizar y monitorear">
+      <g class="paso inicio"><rect x="446" y="8" width="260" height="96" rx="14" class="caja azul"/><circle cx="476" cy="38" r="17" class="relleno"/><text x="476" y="45" class="t-s t-b t-w" text-anchor="middle">1</text>
+        <text x="500" y="44" class="t-s t-b">Entender y mapear</text><text x="466" y="78" class="t-xs">quién, qué, cuándo y con qué</text></g>
+      <g class="paso"><path class="flecha" d="M708 52 Q790 56 836 112"/>
+        <rect x="731" y="128" width="260" height="96" rx="14" class="caja azul"/><circle cx="761" cy="158" r="17" class="relleno"/><text x="761" y="165" class="t-s t-b t-w" text-anchor="middle">2</text>
+        <text x="785" y="164" class="t-s t-b">Medir la línea base</text><text x="751" y="198" class="t-xs">tiempo, errores y volumen hoy</text></g>
+      <g class="paso"><path class="flecha" d="M864 226 Q870 290 800 318"/>
+        <rect x="622" y="308" width="260" height="96" rx="14" class="caja verde"/><circle cx="652" cy="338" r="17" class="relleno verde"/><text x="652" y="345" class="t-s t-b t-w" text-anchor="middle">3</text>
+        <text x="676" y="344" class="t-s t-b">Simplificar</text><text x="642" y="378" class="t-xs">quitar los pasos que sobran</text></g>
+      <g class="paso"><path class="flecha" d="M620 356 H536"/>
+        <rect x="270" y="308" width="260" height="96" rx="14" class="caja verde"/><circle cx="300" cy="338" r="17" class="relleno verde"/><text x="300" y="345" class="t-s t-b t-w" text-anchor="middle">4</text>
+        <text x="324" y="344" class="t-s t-b">Automatizar</text><text x="290" y="378" class="t-xs">lo estable, empezando pequeño</text></g>
+      <g class="paso"><path class="flecha" d="M300 306 Q282 256 292 226"/>
+        <rect x="161" y="128" width="260" height="96" rx="14" class="caja ambar"/><circle cx="191" cy="158" r="17" class="relleno ambar"/><text x="191" y="165" class="t-s t-b t-w" text-anchor="middle">5</text>
+        <text x="215" y="164" class="t-s t-b">Monitorear y mejorar</text><text x="181" y="198" class="t-xs">métricas y excepciones</text></g>
+      <g class="paso"><path class="flecha ambar" d="M322 126 Q372 66 444 56"/>
+        <text x="576" y="236" class="t-b" text-anchor="middle">Se repite</text><text x="576" y="262" class="t-s t-m" text-anchor="middle">cada mejora abre la siguiente</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>El método, en cinco pasos.</b> El error más común es saltarse el 1, el 2 y el 3 y empezar directamente por el 4 (programar).<br>
+    <b>1 Entender:</b> hablar con quien hace el proceso, no solo con su jefe. <b>2 Medir:</b> sin línea base no sabrás si mejoraste. <b>3 Simplificar:</b> no automatices pasos inútiles. <b>4 Automatizar lo estable:</b> empieza por una parte pequeña. <b>5 Monitorear:</b> las métricas y las excepciones te dicen qué mejorar después.<br>
+    Conecta con el proyecto: nosotros empezamos por una parte acotada (leer y validar facturas) y miramos las métricas por lote.
+  </aside>
+</section>
+
+<section class="slide" id="nuestro-proceso">
+  <span class="sobre">Nuestro proyecto</span>
+  <h2>Registrar facturas recibidas: antes y después</h2>
+  <p class="peq">Área: <b>Finanzas y contabilidad</b> · Proceso: <b>cuentas por pagar</b> (registrar las facturas de los proveedores).</p>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="392" role="img" aria-label="Comparación del proceso manual y el automatizado de registro de facturas">
+      <g class="paso inicio"><text x="0" y="22" class="t-b" style="fill:var(--rojo)">A MANO</text>
+        <rect x="0" y="34" width="236" height="82" rx="12" class="caja rojo"/><text x="118" y="82" class="t-s t-b" text-anchor="middle">Abrir la imagen</text>
+        <path class="flecha rojo" d="M238 75 H270"/><rect x="272" y="34" width="236" height="82" rx="12" class="caja rojo"/><text x="390" y="82" class="t-s t-b" text-anchor="middle">Leer y digitar</text>
+        <path class="flecha rojo" d="M510 75 H542"/><rect x="544" y="34" width="236" height="82" rx="12" class="caja rojo"/><text x="662" y="82" class="t-s t-b" text-anchor="middle">Comprobar las cuentas</text>
+        <path class="flecha rojo" d="M782 75 H814"/><rect x="816" y="34" width="236" height="82" rx="12" class="caja rojo"/><text x="934" y="82" class="t-s t-b" text-anchor="middle">Anotar en Excel</text>
+        <rect x="1064" y="46" width="88" height="58" rx="29" class="caja ambar"/><text x="1108" y="83" class="t-b" text-anchor="middle">×1000</text></g>
+      <g class="paso"><text x="0" y="168" class="t-b" style="fill:var(--verde)">AUTOMATIZADO</text>
+        <rect x="0" y="180" width="170" height="76" rx="12" class="caja verde"/><text x="85" y="224" class="t-s t-b" text-anchor="middle">Subir carpeta</text>
+        <path class="flecha verde" d="M172 218 H194"/><rect x="196" y="180" width="170" height="76" rx="12" class="caja verde"/><text x="281" y="224" class="t-s t-b" text-anchor="middle">OCR lee</text>
+        <path class="flecha verde" d="M368 218 H390"/><rect x="392" y="180" width="170" height="76" rx="12" class="caja verde"/><text x="477" y="214" class="t-s t-b" text-anchor="middle">Extraer</text><text x="477" y="238" class="t-s t-b" text-anchor="middle">los campos</text>
+        <path class="flecha verde" d="M564 218 H586"/><rect x="588" y="180" width="170" height="76" rx="12" class="caja verde"/><text x="673" y="214" class="t-s t-b" text-anchor="middle">Validar</text><text x="673" y="238" class="t-s t-b" text-anchor="middle">las reglas</text>
+        <path class="flecha verde" d="M760 218 H782"/><rect x="784" y="180" width="170" height="76" rx="12" class="caja verde"/><text x="869" y="214" class="t-s t-b" text-anchor="middle">Guardar</text><text x="869" y="238" class="t-s t-b" text-anchor="middle">y Excel</text>
+        <path class="flecha verde" d="M956 218 H978"/><rect x="980" y="180" width="172" height="76" rx="12" class="caja verde"/><text x="1066" y="214" class="t-s t-b" text-anchor="middle">Métricas</text><text x="1066" y="238" class="t-s t-b" text-anchor="middle">por lote</text></g>
+      <g class="paso"><path class="flecha ambar" d="M673 258 V300"/><text x="690" y="286" class="t-xs t-b" style="fill:var(--ambar)">si no cuadra</text>
+        <rect x="548" y="302" width="250" height="84" rx="12" class="caja violeta"/><use href="#ico-persona" x="560" y="322" width="40" height="40" style="color: var(--violeta)"/><text x="612" y="338" class="t-b">Revisión</text><text x="612" y="364" class="t-s">humana (formulario)</text>
+        <text x="0" y="352" class="t-s t-m">Las dudosas no se pierden:</text><text x="0" y="378" class="t-s t-m">quedan «en revisión».</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Aterriza todo lo anterior en nuestro caso.</b> Arriba, el proceso a mano (el de Marta); abajo, el automatizado.<br>
+    Cada caja verde es algo que construiremos en la segunda presentación. La caja violeta es la excepción: cuando las cuentas no cuadran, la factura queda en revisión para que una persona la mire.<br>
+    <b>Recuerda la medición:</b> en el conjunto de 1000 facturas del curso, la validación aceptó automáticamente 875 (88 %) y dejó 125 para revisión humana (40 de ellas con un problema puesto a propósito). Un 100 % no existe con imágenes degradadas, y eso está bien: lo importante es que las dudosas se vean.
+  </aside>
+</section>
+
+<section class="slide" id="mapeo">
+  <span class="sobre">Nuestro proyecto</span>
+  <h2>De cada concepto, una pieza del proyecto</h2>
+  <table class="t" style="font-size:20px">
+    <tr><th style="width:17%">Concepto</th><th>En nuestro proyecto</th><th style="width:15%">Se construye en</th></tr>
+    <tr class="paso inicio"><td><b>Disparador</b></td><td>el usuario elige la carpeta y pulsa «Subir y procesar»</td><td>Fases 3 y 8</td></tr>
+    <tr class="paso inicio"><td><b>Entrada</b></td><td>las imágenes de las facturas, en un almacén privado (Vercel Blob)</td><td>Fase 3</td></tr>
+    <tr class="paso"><td><b>Reglas</b></td><td>OCR + extractor + validador: IVA 19 %, impoconsumo 4 %, sumas y dígito de verificación del NIT</td><td>Fases 4 y 5</td></tr>
+    <tr class="paso"><td><b>Excepción</b></td><td>estado «revisión»: no se pierde; una persona la corrige en un formulario con la imagen al lado</td><td>Fases 6 y 9</td></tr>
+    <tr class="paso"><td><b>Registro</b></td><td>Firestore: facturas, clientes y métricas de cada lote; sin duplicados</td><td>Fases 2, 6 y 8</td></tr>
+    <tr class="paso"><td><b>Salida</b></td><td>un Excel por lote y el panel de métricas</td><td>Fases 7 y 8</td></tr>
+    <tr class="paso"><td><b>Seguridad</b></td><td>inicio de sesión con Firebase Authentication; cada quien ve lo suyo</td><td>Fase A</td></tr>
+  </table>
+  <aside class="notas">
+    Esta tabla es el puente con la segunda presentación. Cada fila es un concepto de esta clase y la fase donde lo construiremos.<br>
+    Resalta dos cosas que muestran que el proyecto aplica lo conceptual y no es solo «programar»: la <b>excepción</b> (revisión humana) y el <b>registro</b> (que no haya duplicados y que existan métricas).<br>
+    Adelanta que la <b>idempotencia</b> (repetir sin duplicar) es una decisión de diseño que aparece en la Fase 6.
+  </aside>
+</section>
+
+<section class="slide" id="actividad">
+  <span class="sobre">Tu turno · 8 minutos en parejas</span>
+  <h2>La ficha de un proceso</h2>
+  <div class="fila crece">
+    <div class="card" style="flex:1.15; padding:18px 22px">
+      <h3>Elige un proceso y llena la ficha</h3>
+      <ul class="lista peq" style="gap:7px; margin-top:6px">
+        <li><b>Nombre</b> del proceso y <b>área</b> a la que pertenece</li>
+        <li><b>Quién</b> lo hace y con qué herramientas</li>
+        <li><b>Entradas</b> y <b>salida</b> (¿qué llega, qué se entrega?)</li>
+        <li><b>Pasos</b> (entre 5 y 8) y <b>reglas</b> de decisión</li>
+        <li><b>Frecuencia y volumen</b>; <b>tiempo</b> por unidad</li>
+        <li><b>Errores</b> típicos y dónde se cuelan</li>
+        <li><b>Semáforo</b> de automatización y por qué</li>
+      </ul>
+    </div>
+    <div class="col" style="flex:1; gap:12px">
+      <div class="card ambar"><h3>Ideas si no se te ocurre</h3><p class="peq">registrar la asistencia y calcular horas extra · responder preguntas frecuentes de clientes · reporte semanal de ventas · conciliación bancaria</p></div>
+      <div class="card"><div class="fila" style="align-items:center">
+        <svg viewBox="0 0 60 130" width="48" height="104" aria-hidden="true" style="flex:none"><rect x="8" y="4" width="44" height="122" rx="12" style="fill:var(--fg)" opacity=".88"/><circle cx="30" cy="30" r="12" fill="var(--rojo)"/><circle cx="30" cy="65" r="12" fill="var(--ambar)"/><circle cx="30" cy="100" r="12" fill="var(--verde)"/></svg>
+        <div><p class="peq"><b style="color:var(--verde)">Verde</b>: automatiza ya.<br><b style="color:var(--ambar)">Amarillo</b>: con una persona en el ciclo.<br><b style="color:var(--rojo)">Rojo</b>: todavía no.</p></div></div></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Actividad (8–10 minutos):</b> parejas; cada pareja elige un proceso real o inventado y llena la ficha en una hoja. Circula por el salón y haz preguntas: «¿cuál es la regla exacta?», «¿qué pasa cuando no se cumple?».<br>
+    Pide a 2 parejas que compartan su semáforo y justifiquen. Usa la matriz de frecuencia vs. criterio humano y las seis señales para cuestionar sus conclusiones.<br>
+    <b>Qué buscas:</b> que noten lo difícil que es describir un proceso sin ambigüedad; ese esfuerzo ya es el primer paso de automatizarlo.
+  </aside>
+</section>
+
+<section class="slide" id="repaso">
+  <span class="sobre">Repaso rápido</span>
+  <h2>Cinco preguntas para comprobar</h2>
+  <ul class="lista" style="gap:16px">
+    <li class="paso inicio"><b>1.</b> ¿Qué diferencia hay entre <b>automatizar</b> y <b>usar inteligencia artificial</b>?</li>
+    <li class="paso"><b>2.</b> Da <b>dos señales</b> de que un proceso es buen candidato a automatizarse.</li>
+    <li class="paso"><b>3.</b> En la nómina automatizada, ¿por qué una <b>persona aprueba</b> antes de pagar?</li>
+    <li class="paso"><b>4.</b> ¿Qué es un <b>área</b>, qué es un <b>proceso</b>, y por qué un proceso suele <b>cruzar áreas</b>?</li>
+    <li class="paso"><b>5.</b> En nuestro proyecto, ¿qué es el estado <b>«revisión»</b> y por qué existe?</li>
+  </ul>
+  <aside class="notas">
+    <b>Respuestas esperadas (úsalas para guiar, no para dictar):</b><br>
+    1. Automatizar es que algo se ejecute solo siguiendo reglas; la IA es una de las tecnologías que se pueden usar (para leer imágenes, clasificar…), pero se puede automatizar sin IA y la IA sola no es automatización.<br>
+    2. Repetitivo, reglas claras, datos digitales, volumen, propenso a error, resultado medible (cualquiera de las seis).<br>
+    3. Porque pagar es una acción difícil de deshacer y un error de regla se repite para todos; la máquina prepara y valida, la persona autoriza.<br>
+    4. Área: grupo de personas con una función especializada. Proceso: secuencia de actividades que transforma entradas en una salida de valor. Cruzan áreas porque el trabajo pasa de una función a otra (traspasos).<br>
+    5. Es el estado de una factura cuyos datos no cuadran con las validaciones: no se pierde ni se acepta a ciegas; espera a una persona. Existe porque ni la mejor lectura automática acierta siempre.
+  </aside>
+</section>
+
+<section class="slide" id="cierre">
+  <span class="sobre">Para llevarte</span>
+  <h2>Cinco ideas</h2>
+  <ul class="lista" style="gap:12px">
+    <li class="paso inicio"><b>Automatizar</b> es que una máquina ejecute, siguiendo <b>reglas que defines una vez</b>, lo que antes hacía una persona cada vez.</li>
+    <li class="paso"><b>No todo se automatiza</b>: busca lo repetitivo, con reglas claras, digital y de volumen. <b>Primero simplifica</b>.</li>
+    <li class="paso">Un <b>proceso</b> cruza áreas; los <b>traspasos</b> son los mejores lugares para empezar.</li>
+    <li class="paso">Una buena automatización maneja las <b>excepciones</b> y deja una <b>persona</b> en las decisiones difíciles.</li>
+    <li class="paso"><b>Mide</b> antes y después, y deja <b>registro</b> de todo.</li>
+  </ul>
+  <div class="paso" style="margin-top:6px; display:flex; gap:18px; align-items:center; flex-wrap:wrap">
+    <a class="boton" href="02-construccion.html">Ahora lo construimos →</a>
+    <span class="muted peq">Siguiente: «Construcción del procesador de facturas, paso a paso»</span>
+  </div>
+  <aside class="notas">
+    <b>Cierra volviendo a la pregunta de la primera diapositiva:</b> «lo más repetitivo que hacen en un día normal». Pregunta si ahora lo ven distinto: ¿es candidato? ¿qué semáforo tendría?<br>
+    Repasa las cinco ideas y haz clic en el botón para pasar a la presentación de construcción (o presiona Fin para volver al principio).<br>
+    Si queda tiempo: dos minutos de dudas.
+  </aside>
+</section>
+</div></div>
+<div id="barra"><i></i></div>
+<div id="ayuda">← → avanzar · N notas del profesor · T tema · F pantalla completa</div>
+<div id="contador"></div>
+<div id="notas"></div>
+<script src="deck.js"></script>
+</body>
+</html>

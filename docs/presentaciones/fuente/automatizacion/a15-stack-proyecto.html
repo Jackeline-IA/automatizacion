@@ -1,0 +1,30 @@
+<section class="slide" id="stack-proyecto">
+  <span class="sobre">Tecnologías para automatizar</span>
+  <h2>Qué usaremos en nuestro proyecto</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 420" width="1152" height="412" role="img" aria-label="Las tecnologías del proyecto, ordenadas según la anatomía de una automatización">
+      <g class="paso inicio"><rect x="0" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="85" y="26" class="t-s t-b t-m" text-anchor="middle">DISPARADOR</text>
+        <text x="85" y="86" class="t-b" text-anchor="middle">Interfaz web</text><text x="85" y="114" class="t-xs" text-anchor="middle">Next.js + React</text><text x="85" y="138" class="t-xs t-m" text-anchor="middle">el usuario sube</text><text x="85" y="156" class="t-xs t-m" text-anchor="middle">la carpeta</text></g>
+      <g class="paso inicio"><path class="flecha" d="M172 105 H196"/><rect x="198" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="283" y="26" class="t-s t-b t-m" text-anchor="middle">ENTRADA</text>
+        <text x="283" y="86" class="t-b" text-anchor="middle">Archivos</text><text x="283" y="114" class="t-xs" text-anchor="middle">Vercel Blob</text><text x="283" y="138" class="t-xs t-m" text-anchor="middle">almacén privado</text><text x="283" y="156" class="t-xs t-m" text-anchor="middle">de imágenes</text></g>
+      <g class="paso"><path class="flecha" d="M370 105 H394"/><rect x="396" y="40" width="170" height="130" rx="12" class="caja ambar"/><text x="481" y="26" class="t-s t-b t-m" text-anchor="middle">LECTURA (IA)</text>
+        <text x="481" y="86" class="t-b" text-anchor="middle">OCR</text><text x="481" y="114" class="t-xs" text-anchor="middle">tesseract.js</text><text x="481" y="138" class="t-xs t-m" text-anchor="middle">de imagen</text><text x="481" y="156" class="t-xs t-m" text-anchor="middle">a texto</text></g>
+      <g class="paso"><path class="flecha" d="M568 105 H592"/><rect x="594" y="40" width="170" height="130" rx="12" class="caja azul"/><text x="679" y="26" class="t-s t-b t-m" text-anchor="middle">REGLAS</text>
+        <text x="679" y="86" class="t-b" text-anchor="middle">Extractor y</text><text x="679" y="110" class="t-b" text-anchor="middle">validador</text><text x="679" y="138" class="t-xs t-m" text-anchor="middle">TypeScript puro</text><text x="679" y="156" class="t-xs t-m" text-anchor="middle">con pruebas</text></g>
+      <g class="paso"><path class="flecha" d="M766 105 H790"/><rect x="792" y="40" width="170" height="130" rx="12" class="caja verde"/><text x="877" y="26" class="t-s t-b t-m" text-anchor="middle">REGISTRO</text>
+        <text x="877" y="86" class="t-b" text-anchor="middle">Datos</text><text x="877" y="114" class="t-xs" text-anchor="middle">Firestore</text><text x="877" y="138" class="t-xs t-m" text-anchor="middle">facturas, clientes,</text><text x="877" y="156" class="t-xs t-m" text-anchor="middle">métricas</text></g>
+      <g class="paso"><path class="flecha" d="M964 105 H988"/><rect x="990" y="40" width="162" height="130" rx="12" class="caja verde"/><text x="1071" y="26" class="t-s t-b t-m" text-anchor="middle">SALIDA</text>
+        <text x="1071" y="86" class="t-b" text-anchor="middle">Excel y panel</text><text x="1071" y="114" class="t-xs" text-anchor="middle">exceljs + métricas</text><text x="1071" y="138" class="t-xs t-m" text-anchor="middle">un Excel por lote</text></g>
+      <g class="paso"><rect x="0" y="250" width="560" height="120" rx="12" class="caja violeta"/>
+        <use href="#ico-candado" x="20" y="272" width="56" height="56" style="color: var(--violeta)"/>
+        <text x="96" y="290" class="t-b">Acceso: Firebase Authentication</text><text x="96" y="318" class="t-s">solo personas autorizadas entran;</text><text x="96" y="340" class="t-s">cada quien ve lo suyo</text></g>
+      <g class="paso"><rect x="592" y="250" width="560" height="120" rx="12" class="caja"/>
+        <use href="#ico-engranaje" x="612" y="272" width="56" height="56" style="color: var(--muted)"/>
+        <text x="688" y="290" class="t-b">Dónde corre: Vercel (funciones)</text><text x="688" y="318" class="t-s">sin servidor propio; cada petición</text><text x="688" y="340" class="t-s">es una función de corta vida</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Adelanto (no entres en detalle):</b> en la segunda presentación construimos cada pieza. Aquí solo mostramos que el proyecto sigue la misma anatomía que acabamos de ver: disparador → entrada → lectura → reglas → registro → salida, más acceso y dónde corre.<br>
+    Nota que usamos una capa de IA (OCR) rodeada de reglas escritas por nosotros y validaciones: la IA lee, las reglas verifican.
+  </aside>
+</section>

@@ -1,0 +1,33 @@
+<section class="slide" id="fase-5">
+  <span class="sobre">Fase 5 · OCR dentro de una función de Vercel</span>
+  <h2>El OCR se cuelga en silencio si faltan archivos</h2>
+  <svg viewBox="0 0 1152 262" width="1152" height="252" style="flex:none" role="img" aria-label="Sin configurar, el núcleo WASM no entra al paquete y el hilo muere; con outputFileTracingIncludes entra todo">
+    <g class="paso inicio"><rect x="0" y="0" width="560" height="262" rx="14" class="caja rojo"/><text x="20" y="32" class="t-b" style="fill:var(--rojo)">Sin configurar</text>
+      <rect x="20" y="48" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="130" y="75" class="t-xs t-b" text-anchor="middle">route.js (tu código)</text>
+      <rect x="20" y="100" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="130" y="127" class="t-xs t-b" text-anchor="middle">tesseract.js</text>
+      <rect x="20" y="152" width="220" height="42" rx="9" class="caja azul"/><text x="130" y="179" class="t-xs t-b" text-anchor="middle">hilo del worker</text>
+      <path class="flecha rojo" d="M242 173 L316 122"/><path class="flecha rojo" d="M242 173 L316 176"/>
+      <rect x="318" y="98" width="220" height="42" rx="9" class="caja rojo vacia"/><text x="428" y="125" class="t-xs t-b" text-anchor="middle">núcleo WASM  ✗ falta</text>
+      <rect x="318" y="156" width="220" height="42" rx="9" class="caja rojo vacia"/><text x="428" y="183" class="t-xs t-b" text-anchor="middle">datos del idioma  ✗ falta</text>
+      <text x="20" y="232" class="t-s t-b" style="fill:var(--rojo)">el trazador no los ve → el hilo muere → 504</text></g>
+    <g class="paso"><rect x="592" y="0" width="560" height="262" rx="14" class="caja verde"/><text x="612" y="32" class="t-b" style="fill:var(--verde)">Con outputFileTracingIncludes</text>
+      <rect x="612" y="48" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="722" y="75" class="t-xs t-b" text-anchor="middle">route.js (tu código)</text>
+      <rect x="612" y="100" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="722" y="127" class="t-xs t-b" text-anchor="middle">tesseract.js</text>
+      <rect x="612" y="152" width="220" height="42" rx="9" class="caja azul"/><text x="722" y="179" class="t-xs t-b" text-anchor="middle">hilo del worker</text>
+      <path class="flecha verde" d="M834 173 L908 122"/><path class="flecha verde" d="M834 173 L908 176"/>
+      <rect x="910" y="98" width="220" height="42" rx="9" class="caja verde"/><text x="1020" y="125" class="t-xs t-b" text-anchor="middle">núcleo WASM  ✓</text>
+      <rect x="910" y="156" width="220" height="42" rx="9" class="caja verde"/><text x="1020" y="183" class="t-xs t-b" text-anchor="middle">datos del idioma  ✓</text>
+      <text x="612" y="232" class="t-s t-b" style="fill:var(--verde)">todo dentro del paquete (≈113 MB de 250)</text></g>
+  </svg>
+  <div class="cols3">
+    <div class="card paso" style="padding:12px 16px"><h3 style="font-size:21px">1 · Original</h3><p class="peq" style="font-size:19px">la imagen tal cual</p></div>
+    <div class="card azul paso" style="padding:12px 16px"><h3 style="font-size:21px">2 · Preprocesada</h3><p class="peq" style="font-size:19px">gris, contraste, ×1,5 y nitidez</p></div>
+    <div class="card ambar paso" style="padding:12px 16px"><h3 style="font-size:21px">3 · Encabezado invertido</h3><p class="peq" style="font-size:19px">franja superior en negativo</p></div>
+  </div>
+  <div class="aviso azul paso" style="font-size:18px">Se reintenta solo si hay motivos y se queda el resultado con <b>menos motivos</b>. Topes de 60 s: fallar con un mensaje claro.</div>
+  <aside class="notas">
+    <b>La historia del 504:</b> en local todo funcionaba. En Vercel, la función se colgaba hasta agotar el tiempo. La causa: tesseract lanza un <b>hilo aparte</b> que carga con <code>require</code> dinámico el núcleo WASM; el trazador de archivos de Next no ve esas dependencias, así que no entran al paquete; y el hilo muere <b>sin avisar</b>.<br>
+    <b>Dos arreglos:</b> incluir los archivos con <code>outputFileTracingIncludes</code> (todo el núcleo, porque la variante que se carga depende de la CPU) y poner <b>topes de tiempo</b> para que una falla sea un error claro y no un cuelgue.<br>
+    <b>Estrategia de lectura:</b> original → preprocesada → encabezado invertido; se acepta la mejor. Referencia medida en Vercel Hobby: ~1,5 s por factura con 3 lotes concurrentes.
+  </aside>
+</section>

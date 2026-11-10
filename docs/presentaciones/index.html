@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentaciones: automatización y construcción del procesador de facturas</title>
+<style>
+  :root { --bg:#f4f3ef; --papel:#fff; --fg:#16181d; --muted:#565b66; --linea:#cfd2da; --acento:#2459d6; --sobre:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1015; --papel:#191c24; --fg:#eceef3; --muted:#aab0bd; --linea:#3a3f4c; --acento:#6e9bff; --sobre:#0e1015; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.45; }
+  main { max-width: 900px; margin: 0 auto; padding: 48px 24px 64px; }
+  h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -.02em; }
+  p { margin: 0 0 16px; color: var(--muted); font-size: 18px; }
+  .mazo { display: block; background: var(--papel); border: 2px solid var(--linea); border-radius: 16px; padding: 22px 26px; margin: 18px 0; text-decoration: none; color: inherit; }
+  .mazo:hover { border-color: var(--acento); }
+  .mazo b { display: block; font-size: 24px; margin-bottom: 4px; }
+  .mazo span { color: var(--muted); font-size: 17px; }
+  .num { display: inline-block; background: var(--acento); color: var(--sobre); font-weight: 800; border-radius: 999px; padding: 2px 12px; margin-right: 10px; font-size: 15px; vertical-align: middle; }
+  table { border-collapse: collapse; margin-top: 8px; font-size: 16px; }
+  td { padding: 6px 18px 6px 0; border-bottom: 1px solid var(--linea); }
+  kbd { background: var(--papel); border: 1px solid var(--linea); border-radius: 6px; padding: 1px 8px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Presentaciones de la clase</h1>
+  <p>Tendencias en desarrollo de software · tema: automatización. Funcionan sin internet: abre el archivo en el navegador y pulsa <kbd>F</kbd> para pantalla completa.</p>
+  <a class="mazo" href="01-automatizacion.html"><b><span class="num">1</span>Automatización: qué es y cómo pensarla</b><span>32 diapositivas con diagramas: qué es automatizar, qué se puede automatizar, objetivos, tecnologías, áreas de una empresa, qué es un proceso, el caso de la nómina, riesgos y una actividad en clase.</span></a>
+  <a class="mazo" href="02-construccion.html"><b><span class="num">2</span>Construcción del procesador de facturas, paso a paso</b><span>26 diapositivas: la arquitectura, las restricciones de Vercel y cada fase (0 a D) con su diagrama, su porqué y su verificación; errores reales y resultados medidos.</span></a>
+  <h2 style="font-size:20px; margin-top:34px">Teclas</h2>
+  <table>
+    <tr><td><kbd>→</kbd> <kbd>Espacio</kbd></td><td>avanzar (revela el siguiente paso antes de cambiar de diapositiva)</td></tr>
+    <tr><td><kbd>←</kbd></td><td>retroceder</td></tr>
+    <tr><td><kbd>N</kbd></td><td>notas del profesor de la diapositiva (con lo que conviene decir y preguntar)</td></tr>
+    <tr><td><kbd>T</kbd></td><td>tema claro / oscuro</td></tr>
+    <tr><td><kbd>F</kbd></td><td>pantalla completa</td></tr>
+    <tr><td><kbd>Inicio</kbd> <kbd>Fin</kbd></td><td>primera / última diapositiva</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>imprimir o guardar como PDF (una diapositiva por página)</td></tr>
+  </table>
+  <p style="margin-top:28px; font-size:15px">Mantén esta carpeta junta: las presentaciones usan <code>deck.css</code> y <code>deck.js</code>.</p>
+</main>
+</body>
+</html>

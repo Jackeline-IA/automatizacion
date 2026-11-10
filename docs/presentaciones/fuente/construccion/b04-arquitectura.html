@@ -1,0 +1,41 @@
+<section class="slide" id="arquitectura">
+  <span class="sobre">La arquitectura</span>
+  <h2>Las piezas y cómo se hablan</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 470" width="1152" height="458" role="img" aria-label="Navegador, funciones de Vercel y servicios: Blob, Firestore y Firebase Auth">
+      <text x="150" y="14" class="t-s t-b t-m" text-anchor="middle">NAVEGADOR</text><text x="576" y="14" class="t-s t-b t-m" text-anchor="middle">FUNCIONES DE VERCEL (la API)</text><text x="1006" y="14" class="t-s t-b t-m" text-anchor="middle">SERVICIOS</text>
+      <g class="paso inicio">
+        <rect x="0" y="26" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="58" class="t-s t-b" text-anchor="middle">Elegir carpeta y</text><text x="150" y="80" class="t-s t-b" text-anchor="middle">dividir en lotes</text>
+        <rect x="0" y="118" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="150" class="t-s t-b" text-anchor="middle">Subir cada imagen</text><text x="150" y="172" class="t-s t-b" text-anchor="middle">(a través de la API)</text>
+        <rect x="0" y="210" width="300" height="72" rx="12" class="caja violeta"/><text x="150" y="242" class="t-s t-b" text-anchor="middle">Motor: 3 llamadas</text><text x="150" y="264" class="t-s t-b" text-anchor="middle">«lote» en paralelo</text>
+        <rect x="0" y="302" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="334" class="t-s t-b" text-anchor="middle">Ver métricas, tabla</text><text x="150" y="356" class="t-s t-b" text-anchor="middle">y descargar el Excel</text>
+      </g>
+      <g class="paso inicio">
+        <rect x="860" y="26" width="292" height="104" rx="12" class="caja ambar"/><text x="1006" y="64" class="t-b" text-anchor="middle">Vercel Blob</text><text x="1006" y="92" class="t-xs" text-anchor="middle">imágenes y Excel</text><text x="1006" y="112" class="t-xs t-m" text-anchor="middle">almacén privado</text>
+        <rect x="860" y="156" width="292" height="126" rx="12" class="caja verde"/><text x="1006" y="196" class="t-b" text-anchor="middle">Firestore</text><text x="1006" y="224" class="t-xs" text-anchor="middle">facturas, clientes, índices,</text><text x="1006" y="244" class="t-xs" text-anchor="middle">lotes, cola y métricas</text><text x="1006" y="266" class="t-xs t-m" text-anchor="middle">solo desde el servidor</text>
+        <rect x="860" y="308" width="292" height="104" rx="12" class="caja violeta"/><text x="1006" y="346" class="t-b" text-anchor="middle">Firebase Auth</text><text x="1006" y="374" class="t-xs" text-anchor="middle">correo y contraseña</text><text x="1006" y="394" class="t-xs t-m" text-anchor="middle">cookie de sesión</text>
+      </g>
+      <g class="paso">
+        <rect x="430" y="26" width="290" height="52" rx="10" class="caja"/><text x="575" y="50" class="t-s t-b" text-anchor="middle">/procesos/…/imagenes</text><text x="575" y="68" class="t-xs t-m" text-anchor="middle">valida cada archivo y lo guarda</text>
+        <rect x="430" y="96" width="290" height="52" rx="10" class="caja"/><text x="575" y="128" class="t-s t-b" text-anchor="middle">/procesos/…/iniciar · crea cola</text>
+        <rect x="430" y="166" width="290" height="92" rx="10" class="caja azul"/><text x="575" y="200" class="t-s t-b" text-anchor="middle">/procesos/…/lote</text><text x="575" y="224" class="t-xs" text-anchor="middle">descarga → OCR → extrae →</text><text x="575" y="244" class="t-xs" text-anchor="middle">valida → guarda (transacción)</text>
+        <rect x="430" y="276" width="290" height="52" rx="10" class="caja"/><text x="575" y="308" class="t-s t-b" text-anchor="middle">/procesos/…/finalizar · Excel</text>
+        <rect x="430" y="346" width="290" height="52" rx="10" class="caja"/><text x="575" y="378" class="t-s t-b" text-anchor="middle">/api/metricas · /api/sesion…</text>
+        <path class="flecha azul" d="M302 246 H428"/><text x="365" y="236" class="t-xs t-b" style="fill:var(--acento)" text-anchor="middle">×3</text>
+        <path class="flecha" d="M722 212 H858"/><path class="flecha" d="M722 232 H858" style="display:none"/>
+        <path class="flecha ambar" d="M722 188 L858 100"/>
+        <path class="flecha violeta punteada" d="M722 372 L858 360" style="stroke:var(--violeta)"/>
+      </g>
+      <g class="paso">
+        <path class="flecha azul" d="M302 154 L428 62"/><text x="338" y="96" class="t-xs t-b" style="fill:var(--acento)">1 imagen</text><text x="338" y="112" class="t-xs t-b" style="fill:var(--acento)">por petición</text>
+        <path class="flecha ambar" d="M722 50 L858 66"/>
+        <rect x="430" y="420" width="722" height="40" rx="12" class="caja vacia"/><text x="791" y="446" class="t-s t-m" text-anchor="middle">todas las rutas exigen la sesión de Firebase Auth (cookie httpOnly)</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Mapa mental de todo el curso.</b> Recorre con →: primero navegador y servicios; luego las funciones que los conectan.<br>
+    <b>Tres ideas:</b> (1) las imágenes pasan por <b>nuestra API</b>, una por petición: la API valida cada archivo (sesión, lote, tamaño, tipo real) y es la única que escribe en Blob; el navegador nunca habla con el almacén. (2) El trabajo pesado (OCR, validar, guardar) ocurre en la función <code>lote</code>, que el motor del navegador llama tres veces en paralelo. (3) Firestore solo se toca desde el servidor; ningún navegador lo lee directamente.<br>
+    Vuelve a la anatomía de la primera presentación: el disparador es el botón, la entrada son las imágenes, las reglas están en <code>lote</code>, el registro es Firestore.
+  </aside>
+</section>

@@ -1,0 +1,22 @@
+<section class="slide" id="verificacion">
+  <span class="sobre">Cómo se demuestra que cada fase terminó</span>
+  <h2>Una verificación ejecutable por fase</h2>
+  <table class="t" style="font-size:19px">
+    <tr><th style="width:9%">Fase</th><th style="width:50%">Comando o prueba</th><th>Resultado esperado</th></tr>
+    <tr class="paso inicio"><td><b>0</b></td><td><code>npx tsx scripts/probar-conexion.ts</code></td><td>Firestore OK · Auth OK · Blob OK</td></tr>
+    <tr class="paso inicio"><td><b>1</b></td><td><code>npm run build</code> y abrir la URL de Vercel</td><td>sin errores; la página abre</td></tr>
+    <tr class="paso"><td><b>2</b></td><td><code>npx tsx scripts/verificar-reglas.ts</code></td><td>403 en lecturas y escrituras anónimas</td></tr>
+    <tr class="paso"><td><b>A</b></td><td><code>curl -i …/api/procesos</code> sin cookie</td><td>401 (y las páginas redirigen a /login)</td></tr>
+    <tr class="paso"><td><b>4</b></td><td><code>npm test</code></td><td>todas las pruebas pasan</td></tr>
+    <tr class="paso"><td><b>5·3·6·7</b></td><td><code>npx tsx scripts/probar-http.ts &lt;url&gt; &lt;carpeta&gt;</code></td><td>login, subida, 10/10 aceptadas, Excel de 4 hojas</td></tr>
+    <tr class="paso"><td><b>6</b></td><td><code>npx tsx scripts/probar-pipeline.ts …</code></td><td>reproceso: 10/10 duplicadas, sin filas nuevas</td></tr>
+    <tr class="paso"><td><b>8</b></td><td><code>npx tsx scripts/probar-ui.ts …</code> (navegador real)</td><td>0 errores de consola</td></tr>
+    <tr class="paso"><td><b>9</b></td><td><code>probar-correccion.ts</code> y <code>probar-revision-ui.ts</code></td><td>transacción y formulario OK; Excel regenerado</td></tr>
+    <tr class="paso"><td><b>D</b></td><td>revisar los <i>runtime logs</i> de Vercel</td><td>sin 500, 504 ni 413</td></tr>
+  </table>
+  <aside class="notas">
+    <b>La regla de oro:</b> una fase no está terminada hasta que su verificación se <b>ejecuta</b> y pasa; y si toca el servidor, se ejecuta también contra la URL desplegada.<br>
+    Estos scripts son los del repositorio de referencia; los estudiantes pueden escribir los suyos (la guía describe qué debe comprobar cada uno) o pedirle a su IA que los escriba y luego <b>leer qué hacen</b> antes de confiar en ellos.<br>
+    Los scripts de prueba limpian <b>solo lo que ellos mismos crean</b>; ninguno ejecuta el borrado total.
+  </aside>
+</section>

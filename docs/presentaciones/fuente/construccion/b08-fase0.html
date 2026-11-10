@@ -1,0 +1,31 @@
+<section class="slide" id="fase-0">
+  <span class="sobre">Fase 0 · Cuentas y conexiones</span>
+  <h2>Antes de escribir código: los servicios y el <code>.env</code></h2>
+  <div class="fila crece" style="gap:26px">
+    <svg viewBox="0 0 640 410" width="620" height="396" style="flex:none" role="img" aria-label="Cuatro servicios que alimentan el archivo .env y las variables de Vercel">
+      <g class="paso inicio"><rect x="0" y="0" width="210" height="96" rx="12" class="caja verde"/><text x="105" y="40" class="t-b" text-anchor="middle">Firestore</text><text x="105" y="66" class="t-xs" text-anchor="middle">+ clave de servicio</text><text x="105" y="84" class="t-xs t-m" text-anchor="middle">(3 campos del JSON)</text>
+        <path class="flecha" d="M150 98 L240 160"/></g>
+      <g class="paso inicio"><rect x="430" y="0" width="210" height="96" rx="12" class="caja violeta"/><text x="535" y="40" class="t-b" text-anchor="middle">Firebase Auth</text><text x="535" y="66" class="t-xs" text-anchor="middle">+ configuración web</text><text x="535" y="84" class="t-xs t-m" text-anchor="middle">(variables públicas)</text>
+        <path class="flecha" d="M490 98 L400 160"/></g>
+      <g class="paso"><rect x="0" y="314" width="210" height="96" rx="12" class="caja ambar"/><text x="105" y="354" class="t-b" text-anchor="middle">Vercel Blob</text><text x="105" y="380" class="t-xs" text-anchor="middle">almacén privado</text><text x="105" y="398" class="t-xs t-m" text-anchor="middle">+ token</text>
+        <path class="flecha" d="M150 312 L240 250"/></g>
+      <g class="paso"><rect x="430" y="314" width="210" height="96" rx="12" class="caja azul"/><text x="535" y="354" class="t-b" text-anchor="middle">Vercel</text><text x="535" y="380" class="t-xs" text-anchor="middle">las mismas variables</text><text x="535" y="398" class="t-xs t-m" text-anchor="middle">en los 3 entornos</text>
+        <path class="flecha punteada" d="M400 250 L490 312"/></g>
+      <g class="paso inicio"><rect x="220" y="150" width="200" height="110" rx="14" class="caja solida" style="fill:var(--fg);stroke:var(--fg)"/><use href="#ico-candado" x="240" y="168" width="40" height="40" style="color: var(--papel)"/><text x="292" y="196" class="t-b" style="fill:var(--papel)">.env</text><text x="320" y="236" class="t-xs" style="fill:var(--papel)" text-anchor="middle">nunca va a Git</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="term paso" style="font-size:17.5px"><span class="c">$ npx tsx scripts/probar-conexion.ts</span>
+<span class="ok">Firestore OK</span> — escritura, lectura y borrado
+<span class="ok">Auth OK</span> — 1 usuario(s) registrado(s)
+<span class="ok">Blob OK</span> — 0 archivo(s) en el almacén</div>
+      <div class="card rojo paso"><h3>Reglas de oro</h3><ul class="lista mal peq" style="gap:4px"><li>Nunca pegues credenciales en el chat con la IA</li><li>Nunca imprimas el contenido de <code>.env</code></li><li>La clave privada: solo en el servidor</li></ul></div>
+      <div class="card ambar paso"><p class="peq"><b>Trampas:</b> la clave lleva <code>\n</code> literales entre comillas; en el panel de Vercel se pega <b>sin comillas</b> y hay que hacer <b>Redeploy</b> tras cambiar variables.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Esta fase la hace el estudiante en las consolas; la IA solo guía.</b> Nunca se piden ni se escriben valores de credenciales.<br>
+    Los servicios: Firestore (con una clave de servicio de la que solo se usan tres campos), Firebase Authentication (con la configuración web, que es pública por diseño), Vercel Blob (almacén privado) y Vercel (donde se repiten las mismas variables).<br>
+    <b>La verificación</b> es el script <code>probar-conexion.ts</code>: escribe, lee y borra un documento de prueba, lista usuarios y lista el almacén. Si algo falla, no se avanza.<br>
+    <b>Cuéntales el incidente real:</b> la clave privada se imprimió en una conversación con una IA al «inspeccionar» el archivo con un comando que partía las líneas por el signo igual. Una clave filtrada se debe considerar comprometida y rotarse.
+  </aside>
+</section>

@@ -1,0 +1,26 @@
+<section class="slide" id="fase-8a">
+  <span class="sobre">Fase 8 · Interfaz (1 de 3)</span>
+  <h2>Subir el siguiente lote mientras se procesa el anterior</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Diagrama de tiempo: las subidas de los lotes se solapan con el procesamiento en segundo plano">
+      <text x="230" y="14" class="t-xs t-b t-m">tiempo → (sin escala)</text>
+      <path class="flecha" d="M230 24 H1130"/>
+      <g class="paso inicio"><text x="0" y="68" class="t-s t-b">Subida lote 1</text><rect x="230" y="46" width="110" height="34" rx="8" class="caja solida"/>
+        <text x="0" y="116" class="t-s t-b">Subida lote 2</text><rect x="340" y="94" width="110" height="34" rx="8" class="caja solida"/>
+        <text x="0" y="164" class="t-s t-b">Subida lote 3</text><rect x="450" y="142" width="110" height="34" rx="8" class="caja solida"/></g>
+      <g class="paso"><text x="0" y="236" class="t-s t-b">Procesar lote 1</text><rect x="340" y="214" width="330" height="34" rx="8" class="caja solida-v"/><text x="505" y="237" class="t-xs t-b t-w" text-anchor="middle">Motor · 3 trabajadores</text>
+        <text x="0" y="284" class="t-s t-b">Procesar lote 2</text><rect x="670" y="262" width="330" height="34" rx="8" class="caja solida-v"/>
+        <text x="0" y="332" class="t-s t-b">Procesar lote 3</text><rect x="1000" y="310" width="130" height="34" rx="8" class="caja solida-v"/><text x="1100" y="364" class="t-xs t-m" text-anchor="end">…y así hasta el lote 10</text></g>
+      <g class="paso"><path class="linea ambar punteada" d="M340 40 V350"/><text x="350" y="388" class="t-xs t-b" style="fill:var(--ambar)">el lote 1 ya se procesa mientras se sube el 2</text></g>
+    </svg>
+  </div>
+  <div class="fila" style="gap:14px">
+    <div class="aviso azul paso" style="flex:1; font-size:18px"><b>Motor</b> (en el layout): 3 llamadas <code>lote</code> a la vez; sigue al cambiar de pestaña.</div>
+    <div class="aviso verde paso" style="flex:1; font-size:18px"><b>Si cierras la pestaña</b>, al volver retoma lo pendiente: todo es idempotente.</div>
+  </div>
+  <aside class="notas">
+    <b>«Sin bloquearse»:</b> subir y procesar están <b>desacoplados</b>. Al terminar de subir el lote 1, el motor ya empieza a procesarlo mientras el navegador sube el lote 2.<br>
+    <b>El motor</b> es un componente que vive en el layout de la aplicación, así que no se desmonta al cambiar de página. Lanza 3 trabajadores asíncronos; cada uno pide al servidor que procese un lote pequeño; el servidor responde cuántos archivos tomó; cuando ya no quedan, pide el cierre (Excel).<br>
+    <b>Medido:</b> la subida de 1000 imágenes (108 MB) en 10 lotes tomó 68 s en producción, pasando cada imagen por la API, y el navegador nunca se bloqueó (retraso máximo de 9 ms). El procesamiento depende del OCR: unos 1,5 s por factura en Vercel Hobby.
+  </aside>
+</section>

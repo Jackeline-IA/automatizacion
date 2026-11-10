@@ -1,0 +1,19 @@
+<section class="slide" id="mapeo">
+  <span class="sobre">Nuestro proyecto</span>
+  <h2>De cada concepto, una pieza del proyecto</h2>
+  <table class="t" style="font-size:20px">
+    <tr><th style="width:17%">Concepto</th><th>En nuestro proyecto</th><th style="width:15%">Se construye en</th></tr>
+    <tr class="paso inicio"><td><b>Disparador</b></td><td>el usuario elige la carpeta y pulsa «Subir y procesar»</td><td>Fases 3 y 8</td></tr>
+    <tr class="paso inicio"><td><b>Entrada</b></td><td>las imágenes de las facturas, en un almacén privado (Vercel Blob)</td><td>Fase 3</td></tr>
+    <tr class="paso"><td><b>Reglas</b></td><td>OCR + extractor + validador: IVA 19 %, impoconsumo 4 %, sumas y dígito de verificación del NIT</td><td>Fases 4 y 5</td></tr>
+    <tr class="paso"><td><b>Excepción</b></td><td>estado «revisión»: no se pierde; una persona la corrige en un formulario con la imagen al lado</td><td>Fases 6 y 9</td></tr>
+    <tr class="paso"><td><b>Registro</b></td><td>Firestore: facturas, clientes y métricas de cada lote; sin duplicados</td><td>Fases 2, 6 y 8</td></tr>
+    <tr class="paso"><td><b>Salida</b></td><td>un Excel por lote y el panel de métricas</td><td>Fases 7 y 8</td></tr>
+    <tr class="paso"><td><b>Seguridad</b></td><td>inicio de sesión con Firebase Authentication; cada quien ve lo suyo</td><td>Fase A</td></tr>
+  </table>
+  <aside class="notas">
+    Esta tabla es el puente con la segunda presentación. Cada fila es un concepto de esta clase y la fase donde lo construiremos.<br>
+    Resalta dos cosas que muestran que el proyecto aplica lo conceptual y no es solo «programar»: la <b>excepción</b> (revisión humana) y el <b>registro</b> (que no haya duplicados y que existan métricas).<br>
+    Adelanta que la <b>idempotencia</b> (repetir sin duplicar) es una decisión de diseño que aparece en la Fase 6.
+  </aside>
+</section>

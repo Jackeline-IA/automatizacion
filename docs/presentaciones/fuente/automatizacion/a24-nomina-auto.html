@@ -1,0 +1,39 @@
+<section class="slide" id="nomina-auto">
+  <span class="sobre">Caso: el pago de la nómina</span>
+  <h2>La misma nómina, automatizada</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 468" width="1152" height="458" role="img" aria-label="Nómina automatizada: disparador, novedades, reglas, validación, aprobación humana y acciones">
+      <g class="paso inicio"><rect x="0" y="22" width="168" height="104" rx="12" class="caja azul"/><text x="84" y="14" class="t-xs t-b t-m" text-anchor="middle">DISPARADOR</text>
+        <text x="84" y="64" class="t-b" text-anchor="middle" style="font-size:19px">Fecha de corte</text><text x="84" y="92" class="t-xs" text-anchor="middle">el 15 y el 30</text></g>
+      <g class="paso inicio"><path class="flecha azul" d="M170 74 H190"/><rect x="192" y="22" width="190" height="104" rx="12" class="caja azul"/><text x="287" y="14" class="t-xs t-b t-m" text-anchor="middle">ENTRADAS</text>
+        <text x="287" y="62" class="t-b" text-anchor="middle">Novedades</text><text x="287" y="88" class="t-xs" text-anchor="middle">reloj, solicitudes,</text><text x="287" y="106" class="t-xs" text-anchor="middle">contratos</text></g>
+      <g class="paso"><path class="flecha azul" d="M384 74 H404"/><rect x="406" y="22" width="200" height="104" rx="12" class="caja azul"/><text x="506" y="14" class="t-xs t-b t-m" text-anchor="middle">REGLAS</text>
+        <text x="506" y="62" class="t-b" text-anchor="middle">Cálculo</text><text x="506" y="88" class="t-xs" text-anchor="middle">devengado, deducciones</text><text x="506" y="106" class="t-xs" text-anchor="middle">y aportes</text></g>
+      <g class="paso"><path class="flecha azul" d="M608 74 H624"/><path d="M626 74 L698 20 L770 74 L698 128 Z" class="caja ambar"/>
+        <text x="698" y="68" class="t-b" text-anchor="middle" style="font-size:19px">¿Todo bien?</text><text x="698" y="90" class="t-xs" text-anchor="middle">datos completos</text></g>
+      <g class="paso"><path class="flecha verde" d="M772 74 H792"/><text x="782" y="62" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">sí</text>
+        <rect x="794" y="22" width="170" height="104" rx="12" class="caja violeta"/><text x="879" y="14" class="t-xs t-b t-m" text-anchor="middle">PERSONA</text>
+        <use href="#ico-persona" x="806" y="40" width="34" height="34" style="color: var(--violeta)"/><text x="848" y="64" class="t-b">Aprueba</text><text x="879" y="100" class="t-xs" text-anchor="middle">antes de pagar</text></g>
+      <g class="paso"><path class="flecha verde" d="M966 74 H986"/><rect x="988" y="22" width="164" height="104" rx="12" class="caja verde"/><text x="1070" y="14" class="t-xs t-b t-m" text-anchor="middle">ACCIONES</text>
+        <text x="1070" y="56" class="t-s t-b" text-anchor="middle">Archivo al banco</text><text x="1070" y="80" class="t-xs" text-anchor="middle">desprendibles,</text><text x="1070" y="98" class="t-xs" text-anchor="middle">asiento, PILA, DIAN</text></g>
+      <g class="paso"><path class="flecha ambar" d="M698 130 V212"/><text x="714" y="176" class="t-xs t-b" style="fill:var(--ambar)">no</text>
+        <rect x="574" y="214" width="248" height="96" rx="12" class="caja ambar"/><text x="698" y="248" class="t-b" text-anchor="middle">Excepciones</text><text x="698" y="274" class="t-xs" text-anchor="middle">sin cuenta bancaria, extras fuera</text><text x="698" y="292" class="t-xs" text-anchor="middle">de rango, dato faltante</text>
+        <path class="flecha violeta" d="M698 312 V352" style="stroke:var(--violeta)"/>
+        <rect x="574" y="354" width="248" height="94" rx="12" class="caja violeta"/><use href="#ico-persona" x="588" y="372" width="40" height="40" style="color: var(--violeta)"/><text x="640" y="398" class="t-b">El analista</text><text x="640" y="424" class="t-xs">corrige y reintenta</text></g>
+      <g class="paso"><path class="flecha" d="M1070 128 V212"/><rect x="920" y="214" width="232" height="96" rx="12" class="caja"/><text x="1036" y="250" class="t-b" text-anchor="middle">Registro</text><text x="1036" y="276" class="t-xs" text-anchor="middle">quién aprobó, cuándo</text><text x="1036" y="294" class="t-xs" text-anchor="middle">y con qué reglas</text></g>
+      <g class="paso"><rect x="0" y="214" width="540" height="234" rx="14" class="caja vacia"/>
+        <text x="22" y="252" class="t-b">Qué cambia</text>
+        <text x="22" y="290" class="t-s">• Los datos llegan desde su origen, sin copiar.</text>
+        <text x="22" y="320" class="t-s">• Las reglas viven en un solo lugar: si cambia la</text><text x="22" y="344" class="t-s">  ley, se actualiza una vez.</text>
+        <text x="22" y="374" class="t-s">• Los errores se detectan antes de pagar.</text>
+        <text x="22" y="404" class="t-s">• Una persona sigue aprobando; revisa excepciones.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Misma anatomía de antes, aplicada a la nómina.</b> Revela con →.<br>
+    <b>Disparador:</b> la fecha de corte. <b>Entradas:</b> las novedades (ya no de varios correos, sino de los sistemas donde nacen). <b>Reglas:</b> el cálculo, escrito una vez. <b>Validación:</b> ¿está todo completo y razonable?<br>
+    <b>Lo más importante:</b> antes de pagar hay una <b>aprobación humana</b>. Pagar es una acción difícil de deshacer; por eso la máquina prepara y valida, pero la persona autoriza. Las excepciones van a un analista.<br>
+    <b>Registro:</b> queda quién aprobó y con qué reglas: útil para auditoría y para resolver reclamos.<br>
+    Pregunta: «¿qué pasaría si el cálculo se equivoca para todos los empleados a la vez?» (error a escala: por eso se prueba y se revisa antes de pagar).
+  </aside>
+</section>

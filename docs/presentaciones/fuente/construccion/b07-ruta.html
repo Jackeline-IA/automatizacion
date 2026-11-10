@@ -1,0 +1,27 @@
+<section class="slide" id="ruta">
+  <span class="sobre">El plan</span>
+  <h2>Doce pasos, cada uno con su verificación</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 450" width="1152" height="440" role="img" aria-label="Ruta de once fases, de las cuentas a la operación">
+      <path class="linea" d="M60 110 H1092 C1130 110 1130 300 1092 300 H60" style="stroke-width:5; stroke:var(--linea)"/>
+      <g class="paso inicio"><circle cx="60" cy="110" r="26" class="relleno"/><text x="60" y="119" class="t-b t-w" text-anchor="middle">0</text><text x="60" y="162" class="t-s t-b" text-anchor="middle">Cuentas</text><text x="60" y="184" class="t-xs t-m" text-anchor="middle">y conexiones</text></g>
+      <g class="paso"><circle cx="248" cy="110" r="26" class="relleno"/><text x="248" y="119" class="t-b t-w" text-anchor="middle">1</text><text x="248" y="162" class="t-s t-b" text-anchor="middle">Base y</text><text x="248" y="184" class="t-xs t-m" text-anchor="middle">despliegue</text></g>
+      <g class="paso"><circle cx="436" cy="110" r="26" class="relleno"/><text x="436" y="119" class="t-b t-w" text-anchor="middle">2</text><text x="436" y="162" class="t-s t-b" text-anchor="middle">Modelo</text><text x="436" y="184" class="t-xs t-m" text-anchor="middle">de datos</text></g>
+      <g class="paso"><circle cx="624" cy="110" r="26" class="relleno"/><text x="624" y="119" class="t-b t-w" text-anchor="middle">A</text><text x="624" y="162" class="t-s t-b" text-anchor="middle">Autenticación</text><text x="624" y="184" class="t-xs t-m" text-anchor="middle">login seguro</text></g>
+      <g class="paso"><circle cx="812" cy="110" r="26" class="relleno ambar"/><text x="812" y="119" class="t-b t-w" text-anchor="middle">4</text><text x="812" y="162" class="t-s t-b" text-anchor="middle">Extractor</text><text x="812" y="184" class="t-xs t-m" text-anchor="middle">lógica pura</text></g>
+      <g class="paso"><circle cx="1000" cy="110" r="26" class="relleno ambar"/><text x="1000" y="119" class="t-b t-w" text-anchor="middle">5</text><text x="1000" y="162" class="t-s t-b" text-anchor="middle">OCR en</text><text x="1000" y="184" class="t-xs t-m" text-anchor="middle">Vercel</text></g>
+      <g class="paso"><circle cx="1000" cy="300" r="26" class="relleno verde"/><text x="1000" y="309" class="t-b t-w" text-anchor="middle">3</text><text x="1000" y="352" class="t-s t-b" text-anchor="middle">Subida</text><text x="1000" y="374" class="t-xs t-m" text-anchor="middle">a Blob</text></g>
+      <g class="paso"><circle cx="812" cy="300" r="26" class="relleno verde"/><text x="812" y="309" class="t-b t-w" text-anchor="middle">6</text><text x="812" y="352" class="t-s t-b" text-anchor="middle">Lotes y</text><text x="812" y="374" class="t-xs t-m" text-anchor="middle">guardado</text></g>
+      <g class="paso"><circle cx="624" cy="300" r="26" class="relleno verde"/><text x="624" y="309" class="t-b t-w" text-anchor="middle">7</text><text x="624" y="352" class="t-s t-b" text-anchor="middle">Excel</text><text x="624" y="374" class="t-xs t-m" text-anchor="middle">en Blob</text></g>
+      <g class="paso"><circle cx="436" cy="300" r="26" style="fill:var(--violeta)"/><text x="436" y="309" class="t-b t-w" text-anchor="middle">8</text><text x="436" y="352" class="t-s t-b" text-anchor="middle">Interfaz y</text><text x="436" y="374" class="t-xs t-m" text-anchor="middle">métricas</text></g>
+      <g class="paso"><circle cx="248" cy="300" r="26" style="fill:var(--violeta)"/><text x="248" y="309" class="t-b t-w" text-anchor="middle">9</text><text x="248" y="352" class="t-s t-b" text-anchor="middle">Revisión</text><text x="248" y="374" class="t-xs t-m" text-anchor="middle">manual</text></g>
+      <g class="paso"><circle cx="60" cy="300" r="26" style="fill:var(--violeta)"/><text x="60" y="309" class="t-b t-w" text-anchor="middle">D</text><text x="60" y="352" class="t-s t-b" text-anchor="middle">Operación</text><text x="60" y="374" class="t-xs t-m" text-anchor="middle">en Vercel</text></g>
+      <text x="576" y="236" class="t-s t-m" text-anchor="middle">las fases conservan su número histórico: por eso la 3 va después de la 5</text>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>El orden importa.</b> Primero cuentas y despliegue (para que los problemas de la nube aparezcan temprano), luego datos y login, luego la lógica pura (extractor) que se prueba sin nube, después OCR en la nube, la subida, el procesamiento por lotes, el Excel y, al final, la interfaz y la operación.<br>
+    <b>Regla:</b> una fase termina cuando su verificación se ejecuta y pasa. Se hace commit con el mensaje <code>fase-N: …</code> y se etiqueta.<br>
+    La fase 3 (subida) aparece después de la 5 porque necesitamos saber que el OCR funciona en Vercel antes de invertir en la subida masiva.
+  </aside>
+</section>

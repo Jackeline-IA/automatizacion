@@ -1,0 +1,26 @@
+<section class="slide" id="fase-6a">
+  <span class="sobre">Fase 6 · Lotes y guardado (1 de 2)</span>
+  <h2>La cola de trabajo con arrendamiento</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Estados de un archivo en la cola: pendiente, procesando con arrendamiento y terminado">
+      <g class="paso inicio"><rect x="0" y="132" width="220" height="116" rx="14" class="caja"/><text x="110" y="168" class="t-b" text-anchor="middle">pendiente</text><text x="110" y="198" class="t-xs" text-anchor="middle">disponibleDesde = 0</text><text x="110" y="220" class="t-xs t-m" text-anchor="middle">espera su turno</text></g>
+      <g class="paso"><path class="flecha azul" d="M222 190 H338"/><text x="280" y="176" class="t-xs t-b" style="fill:var(--acento)" text-anchor="middle">reclamar</text><text x="280" y="214" class="t-xs t-m" text-anchor="middle">(transacción)</text>
+        <rect x="340" y="132" width="250" height="116" rx="14" class="caja azul"/><use href="#ico-reloj" x="354" y="146" width="34" height="34" style="color: var(--acento)"/><text x="400" y="170" class="t-b">procesando</text><text x="465" y="204" class="t-xs" text-anchor="middle">disponibleDesde = ahora + 5 min</text><text x="465" y="226" class="t-xs t-m" text-anchor="middle">(arrendamiento)</text></g>
+      <g class="paso"><path class="flecha verde" d="M592 160 L728 76"/><path class="flecha ambar" d="M592 190 H728"/><path class="flecha rojo" d="M592 220 L728 312"/>
+        <rect x="730" y="30" width="250" height="90" rx="12" class="caja verde"/><text x="855" y="66" class="t-b" text-anchor="middle" style="font-size:19px">aceptada / duplicada</text><text x="855" y="94" class="t-xs t-m" text-anchor="middle">OCR + validación OK, o ya existía</text>
+        <rect x="730" y="150" width="250" height="90" rx="12" class="caja ambar"/><text x="855" y="186" class="t-b" text-anchor="middle">revisión</text><text x="855" y="214" class="t-xs t-m" text-anchor="middle">algo no cuadra: la ve una persona</text>
+        <rect x="730" y="270" width="250" height="90" rx="12" class="caja rojo"/><text x="855" y="306" class="t-b" text-anchor="middle">error (3 intentos)</text><text x="855" y="334" class="t-xs t-m" text-anchor="middle">queda en revisión con el motivo</text>
+        <rect x="1000" y="30" width="152" height="330" rx="12" class="caja vacia"/><text x="1076" y="170" class="t-s t-b" text-anchor="middle">terminado</text><text x="1076" y="196" class="t-xs t-m" text-anchor="middle">disponibleDesde</text><text x="1076" y="214" class="t-xs t-m" text-anchor="middle">= MAX</text></g>
+      <g class="paso"><path class="flecha ambar punteada" d="M465 130 C465 52 110 52 110 130"/><rect x="146" y="20" width="290" height="48" rx="12" class="caja ambar" style="fill:var(--papel)"/><text x="291" y="41" class="t-xs t-b" style="fill:var(--ambar)" text-anchor="middle">la función se cae: caduca el</text><text x="291" y="60" class="t-xs t-b" style="fill:var(--ambar)" text-anchor="middle">arrendamiento y vuelve a la cola</text>
+        <path class="flecha punteada" d="M465 250 C465 336 110 336 110 250"/><text x="291" y="338" class="t-xs t-b t-m" text-anchor="middle">falló y quedan intentos: vuelve a pendiente</text></g>
+      <g class="paso"><text x="0" y="392" class="t-s t-b" style="fill:var(--acento)">Dos invocaciones concurrentes nunca reclaman el mismo archivo.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>La cola vive en Firestore (no en memoria), porque las funciones de Vercel mueren.</b> Cada imagen es un documento con un estado.<br>
+    <b>Reclamar:</b> una invocación toma hasta 4 archivos <b>dentro de una transacción</b>: los marca «procesando» y les pone un <b>arrendamiento</b> (<code>disponibleDesde = ahora + 5 min</code>). Otra invocación, al consultar los disponibles, no los ve.<br>
+    <b>¿Y si la función se cae a mitad?</b> El arrendamiento caduca solo y el archivo vuelve a estar disponible para otra invocación. No hace falta un proceso vigilante.<br>
+    <b>Errores:</b> se reintenta hasta 3 veces; si sigue fallando, la factura queda en revisión con el motivo (no se pierde).<br>
+    Esto es lo que hace seguro reintentar: la <b>idempotencia</b>.
+  </aside>
+</section>

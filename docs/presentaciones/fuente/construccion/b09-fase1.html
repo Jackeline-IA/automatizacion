@@ -1,0 +1,31 @@
+<section class="slide" id="fase-1">
+  <span class="sobre">Fase 1 · Proyecto base y primer despliegue</span>
+  <h2>Despliega pronto: los problemas aparecen temprano</h2>
+  <svg viewBox="0 0 1152 120" width="1152" height="112" role="img" aria-label="De crear el proyecto a ver la URL desplegada">
+    <g class="paso inicio"><rect x="0" y="16" width="200" height="84" rx="12" class="caja azul"/><text x="100" y="52" class="t-s t-b" text-anchor="middle">create-next-app</text><text x="100" y="76" class="t-xs t-m" text-anchor="middle">TypeScript, Tailwind</text></g>
+    <g class="paso inicio"><path class="flecha" d="M202 58 H250"/><rect x="252" y="16" width="220" height="84" rx="12" class="caja azul"/><text x="362" y="52" class="t-s t-b" text-anchor="middle">Configurar Next</text><text x="362" y="76" class="t-xs t-m" text-anchor="middle">next.config.ts, Node 24</text></g>
+    <g class="paso"><path class="flecha" d="M474 58 H522"/><rect x="524" y="16" width="220" height="84" rx="12" class="caja azul"/><text x="634" y="52" class="t-s t-b" text-anchor="middle">/api/salud</text><text x="634" y="76" class="t-xs t-m" text-anchor="middle">diagnóstico del despliegue</text></g>
+    <g class="paso"><path class="flecha" d="M746 58 H794"/><rect x="796" y="16" width="160" height="84" rx="12" class="caja"/><text x="876" y="52" class="t-s t-b" text-anchor="middle">git push</text><text x="876" y="76" class="t-xs t-m" text-anchor="middle">a GitHub</text></g>
+    <g class="paso"><path class="flecha verde" d="M958 58 H1006"/><rect x="1008" y="16" width="144" height="84" rx="12" class="caja verde"/><text x="1080" y="52" class="t-s t-b" text-anchor="middle">Vercel</text><text x="1080" y="76" class="t-xs t-m" text-anchor="middle">despliega solo</text></g>
+  </svg>
+  <div class="fila crece" style="gap:22px">
+    <div class="term paso" style="flex:1.25; font-size:17px; white-space:pre-wrap"><span class="c">// next.config.ts</span>
+cacheComponents: <span class="n">true</span>,
+serverExternalPackages: [<span class="n">"tesseract.js"</span>],
+outputFileTracingIncludes: {
+  <span class="n">"/api/procesos/**"</span>: [ <span class="c">/* ver Fase 5 */</span> ],
+},
+<span class="c">// package.json</span>
+<span class="n">"engines"</span>: { <span class="n">"node"</span>: <span class="n">"24.x"</span> },
+<span class="n">"overrides"</span>: { <span class="n">"firebase-admin"</span>: { <span class="n">"jwks-rsa"</span>: <span class="n">"3.2.2"</span> } }</div>
+    <div class="col" style="flex:1; gap:12px">
+      <div class="card verde paso"><h3>Verificación</h3><ul class="lista ok peq" style="gap:4px"><li><code>npm run build</code> sin errores</li><li>la URL de Vercel abre la página</li><li><code>/api/salud</code> dice qué falta</li></ul></div>
+      <div class="card ambar paso"><p class="peq"><b>Con <code>cacheComponents</code></b> no existe <code>export const dynamic</code>: se usa <code>await connection()</code>.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Por qué desplegar tan pronto:</b> casi todos los problemas difíciles de este proyecto aparecieron <b>solo en Vercel</b> y habrían sido mucho más caros de descubrir al final.<br>
+    <code>serverExternalPackages</code> evita que el empaquetador rompa paquetes con hilos o WASM (tesseract). <code>outputFileTracingIncludes</code> lo completaremos en la Fase 5. El <code>overrides</code> de <code>jwks-rsa</code> lo explicamos en la Fase A (es la solución de un error real).<br>
+    <code>/api/salud</code> devuelve solo booleanos y nombres de variables que faltan: convierte «no sé qué pasa en Vercel» en un JSON legible.
+  </aside>
+</section>

@@ -1,0 +1,45 @@
+<section class="slide" id="anatomia">
+  <span class="sobre">Concepto</span>
+  <h2>Anatomía de cualquier automatización</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 478" width="1152" height="470" role="img" aria-label="Flujo: disparador, entrada, reglas, decisión, acción, registro y excepciones con una persona">
+      <g class="paso inicio"><rect x="0" y="20" width="196" height="100" rx="12" class="caja azul"/>
+        <text x="98" y="56" class="t-b" text-anchor="middle">Disparador</text><text x="98" y="84" class="t-xs t-m" text-anchor="middle">¿qué la pone en marcha?</text><text x="98" y="104" class="t-xs" text-anchor="middle">alguien sube la carpeta</text></g>
+      <g class="paso inicio"><path class="flecha azul" d="M198 70 H236"/>
+        <rect x="238" y="20" width="196" height="100" rx="12" class="caja azul"/>
+        <text x="336" y="56" class="t-b" text-anchor="middle">Entrada</text><text x="336" y="84" class="t-xs t-m" text-anchor="middle">¿con qué datos trabaja?</text><text x="336" y="104" class="t-xs" text-anchor="middle">imágenes de facturas</text></g>
+      <g class="paso"><path class="flecha azul" d="M436 70 H474"/>
+        <rect x="476" y="20" width="216" height="100" rx="12" class="caja azul"/>
+        <text x="584" y="56" class="t-b" text-anchor="middle">Reglas</text><text x="584" y="84" class="t-xs t-m" text-anchor="middle">¿qué hace con ellos?</text><text x="584" y="104" class="t-xs" text-anchor="middle">leer, extraer, validar</text></g>
+      <g class="paso"><path class="flecha azul" d="M694 70 H726"/>
+        <path d="M728 70 L806 16 L884 70 L806 124 Z" class="caja ambar"/>
+        <text x="806" y="66" class="t-b" text-anchor="middle">¿Cumple?</text><text x="806" y="88" class="t-xs" text-anchor="middle">IVA, sumas, NIT</text></g>
+      <g class="paso"><path class="flecha verde" d="M886 70 H924"/><text x="905" y="58" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">sí</text>
+        <rect x="926" y="20" width="226" height="100" rx="12" class="caja verde"/>
+        <text x="1039" y="56" class="t-b" text-anchor="middle">Acción / salida</text><text x="1039" y="84" class="t-xs t-m" text-anchor="middle">¿qué entrega?</text><text x="1039" y="104" class="t-xs" text-anchor="middle">guarda datos y Excel</text></g>
+      <g class="paso"><path class="flecha ambar" d="M806 126 V196"/><text x="822" y="168" class="t-xs t-b" style="fill:var(--ambar)">no</text>
+        <rect x="700" y="198" width="212" height="92" rx="12" class="caja ambar"/>
+        <text x="806" y="234" class="t-b" text-anchor="middle">Excepción</text><text x="806" y="262" class="t-xs" text-anchor="middle">queda «en revisión»,</text><text x="806" y="280" class="t-xs" text-anchor="middle">no se pierde</text></g>
+      <g class="paso"><path class="flecha violeta" d="M806 292 V342" style="stroke:var(--violeta)"/>
+        <rect x="684" y="344" width="244" height="104" rx="12" class="caja violeta"/>
+        <use href="#ico-persona" x="696" y="360" width="46" height="46" style="color: var(--violeta)"/>
+        <text x="756" y="382" class="t-b">Una persona</text><text x="756" y="408" class="t-xs">revisa, corrige</text><text x="756" y="428" class="t-xs">o descarta</text>
+        <path class="flecha verde punteada" d="M930 396 C1040 396 1039 300 1039 128"/><text x="1050" y="340" class="t-xs t-m">vuelve al flujo</text></g>
+      <g class="paso"><path class="flecha punteada" d="M1039 122 V198" style="display:none"/>
+        <rect x="926" y="198" width="226" height="92" rx="12" class="caja"/>
+        <text x="1039" y="234" class="t-b" text-anchor="middle">Registro</text><text x="1039" y="262" class="t-xs" text-anchor="middle">qué pasó, cuándo y</text><text x="1039" y="280" class="t-xs" text-anchor="middle">con qué regla (métricas)</text></g>
+      <g class="paso"><rect x="0" y="198" width="640" height="250" rx="14" class="caja vacia"/>
+        <text x="24" y="238" class="t-b">Lo que hace buena a una automatización</text>
+        <text x="24" y="278" class="t-s">• Reglas escritas y verificables</text>
+        <text x="24" y="308" class="t-s">• Las excepciones se ven y se atienden</text>
+        <text x="24" y="338" class="t-s">• Repetir el proceso no duplica nada</text>
+        <text x="24" y="368" class="t-s">• Se puede medir cómo le va</text>
+        <text x="24" y="410" class="t-s t-m">Nada de esto depende de la tecnología elegida.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Esta es la diapositiva más importante del concepto.</b> Revela con → cada pieza y pregunta qué ejemplo cotidiano encaja (el débito automático: disparador = día 5; entrada = tu cuenta; reglas = ¿hay saldo?; excepción = rechazo y aviso).<br>
+    <b>Insiste en la excepción:</b> una buena automatización no pretende acertar el 100 %; sabe qué hacer cuando no está segura y se lo pasa a una persona. En nuestro proyecto es el estado «revisión».<br>
+    <b>Registro:</b> sin traza no hay confianza ni mejora. Lo veremos en las métricas.
+  </aside>
+</section>

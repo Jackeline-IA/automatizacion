@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Construcción del procesador de facturas, paso a paso</title>
+<link rel="stylesheet" href="deck.css">
+</head>
+<body>
+<!-- Puntas de flecha compartidas por todos los diagramas SVG -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="pta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--muted)"/></marker>
+    <marker id="pta-azul" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--acento)"/></marker>
+    <marker id="pta-verde" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--verde)"/></marker>
+    <marker id="pta-rojo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--rojo)"/></marker>
+    <marker id="pta-ambar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ambar)"/></marker>
+
+    <!-- Iconos reutilizables: se colorean con style="color: var(--acento)" en el <use> -->
+    <symbol id="ico-engranaje" viewBox="0 0 100 100"><g fill="currentColor">
+      <circle cx="50" cy="50" r="33"/>
+      <rect x="43" y="5" width="14" height="19" rx="3"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(45 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(90 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(135 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(180 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(225 50 50)"/>
+      <rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(270 50 50)"/><rect x="43" y="5" width="14" height="19" rx="3" transform="rotate(315 50 50)"/></g>
+      <circle cx="50" cy="50" r="13" style="fill: var(--papel)"/></symbol>
+    <symbol id="ico-persona" viewBox="0 0 100 100"><g fill="currentColor"><circle cx="50" cy="30" r="17"/><path d="M16 94 C16 62 84 62 84 94 Z"/></g></symbol>
+    <symbol id="ico-documento" viewBox="0 0 100 100"><rect x="20" y="6" width="60" height="88" rx="7" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/>
+      <g fill="currentColor"><rect x="32" y="24" width="36" height="6" rx="3"/><rect x="32" y="40" width="36" height="6" rx="3"/><rect x="32" y="56" width="36" height="6" rx="3"/><rect x="32" y="72" width="22" height="6" rx="3"/></g></symbol>
+    <symbol id="ico-check" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="currentColor"/><path d="M29 52 L44 67 L72 35" fill="none" style="stroke: var(--sobre-acento)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-equis" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="currentColor"/><path d="M33 33 L67 67 M67 33 L33 67" fill="none" style="stroke: var(--sobre-acento)" stroke-width="10" stroke-linecap="round"/></symbol>
+    <symbol id="ico-alerta" viewBox="0 0 100 100"><path d="M50 8 L94 88 L6 88 Z" fill="currentColor" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><rect x="45" y="36" width="10" height="28" rx="4" style="fill: var(--sobre-acento)"/><circle cx="50" cy="75" r="6" style="fill: var(--sobre-acento)"/></symbol>
+    <symbol id="ico-planilla" viewBox="0 0 100 100"><rect x="8" y="14" width="84" height="72" rx="6" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/>
+      <rect x="8" y="14" width="84" height="18" rx="6" fill="currentColor"/><path d="M8 50 H92 M8 68 H92 M36 32 V86 M64 32 V86" stroke="currentColor" stroke-width="3.5" fill="none"/></symbol>
+    <symbol id="ico-reloj" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" style="fill: var(--papel)" stroke="currentColor" stroke-width="6"/><path d="M50 22 V50 L68 62" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ico-candado" viewBox="0 0 100 100"><rect x="18" y="42" width="64" height="48" rx="8" fill="currentColor"/><path d="M32 42 V30 C32 10 68 10 68 30 V42" fill="none" stroke="currentColor" stroke-width="8"/><circle cx="50" cy="66" r="7" style="fill: var(--papel)"/></symbol>
+    <symbol id="ico-banco" viewBox="0 0 100 100"><path d="M10 38 L50 12 L90 38 Z" fill="currentColor"/><g fill="currentColor"><rect x="18" y="44" width="12" height="32"/><rect x="44" y="44" width="12" height="32"/><rect x="70" y="44" width="12" height="32"/><rect x="10" y="80" width="80" height="10" rx="2"/></g></symbol>
+    <symbol id="ico-correo" viewBox="0 0 100 100"><rect x="8" y="22" width="84" height="58" rx="8" style="fill: var(--papel)" stroke="currentColor" stroke-width="5"/><path d="M10 26 L50 56 L90 26" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+<div id="marco"><div id="escenario">
+<section class="slide" id="portada">
+  <div class="fila crece" style="align-items:center; gap:30px">
+    <div class="col" style="flex:1.1; gap:22px">
+      <span class="sobre">Tendencias en desarrollo de software · Parte 2</span>
+      <h1>Construyendo el procesador de facturas, paso a paso</h1>
+      <p class="muted">De las cuentas en la nube a una aplicación desplegada que lee 1000 facturas, valida cada cifra y muestra métricas.</p>
+      <p class="mini">→ avanzar · N notas del profesor · T tema · F pantalla completa</p>
+    </div>
+    <svg viewBox="0 0 540 420" width="520" height="404" role="img" aria-label="Ventana de la aplicación con pestañas, barras de avance y cifras">
+      <rect x="10" y="20" width="520" height="380" rx="16" class="papel"/>
+      <rect x="10" y="20" width="520" height="44" rx="16" class="caja azul"/><circle cx="36" cy="42" r="6" class="relleno rojo"/><circle cx="58" cy="42" r="6" class="relleno ambar"/><circle cx="80" cy="42" r="6" class="relleno verde"/>
+      <rect x="110" y="74" width="150" height="30" rx="8" class="caja solida"/><text x="185" y="95" class="t-xs t-b t-w" text-anchor="middle">Procesar facturas</text>
+      <text x="300" y="95" class="t-xs t-m">Métricas</text>
+      <rect x="30" y="124" width="170" height="40" rx="10" class="caja solida"/><text x="115" y="150" class="t-s t-b t-w" text-anchor="middle">Elegir carpeta…</text>
+      <text x="216" y="150" class="t-xs">1.000 imágenes · 10 lotes</text>
+      <rect x="30" y="184" width="480" height="14" rx="7" class="caja"/><rect x="30" y="184" width="400" height="14" rx="7" class="relleno"/>
+      <rect x="30" y="210" width="480" height="14" rx="7" class="caja"/><rect x="30" y="210" width="250" height="14" rx="7" class="relleno"/>
+      <rect x="30" y="236" width="480" height="14" rx="7" class="caja"/><rect x="30" y="236" width="90" height="14" rx="7" class="relleno"/>
+      <g><rect x="30" y="278" width="112" height="64" rx="10" class="caja"/><text x="86" y="302" class="t-xs t-m" text-anchor="middle">Antes de IVA</text><text x="86" y="328" class="t-s t-b" text-anchor="middle">$419 M</text>
+        <rect x="152" y="278" width="112" height="64" rx="10" class="caja"/><text x="208" y="302" class="t-xs t-m" text-anchor="middle">IVA</text><text x="208" y="328" class="t-s t-b" text-anchor="middle">$80 M</text>
+        <rect x="274" y="278" width="112" height="64" rx="10" class="caja"/><text x="330" y="302" class="t-xs t-m" text-anchor="middle">Impoconsumo</text><text x="330" y="328" class="t-s t-b" text-anchor="middle">$0,7 M</text>
+        <rect x="396" y="278" width="114" height="64" rx="10" class="caja verde"/><text x="453" y="302" class="t-xs t-m" text-anchor="middle">Total</text><text x="453" y="328" class="t-s t-b" text-anchor="middle">$500 M</text></g>
+      <use href="#ico-check" x="30" y="356" width="28" height="28" style="color: var(--verde)"/><text x="66" y="377" class="t-xs">leídas correctamente · 88 %</text>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Segunda presentación.</b> La primera fue el concepto; esta es la construcción. Si alguien llegó tarde, resume en una frase: automatizar = reglas definidas una vez, ejecutadas por una máquina, con una persona para las excepciones.<br>
+    El dibujo es un boceto de la aplicación terminada: pestañas, avance por lotes y las cifras (antes de IVA, IVA, impoconsumo, total) que se acumulan en vivo. Las cifras del dibujo son ilustrativas.<br>
+    <b>Formato de la clase:</b> cada fase tiene objetivo, cómo se construye, por qué, y una verificación que se puede ejecutar. No avanzamos si la verificación no pasa.
+  </aside>
+</section>
+
+<section class="slide" id="que-construimos">
+  <span class="sobre">El resultado final</span>
+  <h2>Qué vamos a construir</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 440" width="1152" height="428" role="img" aria-label="Las dos pantallas de la aplicación: procesar facturas y métricas">
+      <g class="paso inicio">
+        <rect x="0" y="0" width="560" height="440" rx="16" class="papel"/>
+        <rect x="0" y="0" width="560" height="40" rx="16" class="caja azul"/><text x="20" y="27" class="t-s t-b">Procesar facturas</text>
+        <rect x="24" y="58" width="170" height="40" rx="10" class="caja solida"/><text x="109" y="84" class="t-s t-b t-w" text-anchor="middle">Elegir carpeta…</text>
+        <text x="212" y="84" class="t-s">1.000 imágenes · 108 MB</text>
+        <text x="24" y="130" class="t-s">Facturas por lote: <tspan class="t-b">100</tspan> → 10 lotes</text>
+        <text x="24" y="168" class="t-xs t-b">Lote 1</text><rect x="90" y="156" width="310" height="14" rx="7" class="caja"/><rect x="90" y="156" width="310" height="14" rx="7" class="relleno verde"/><text x="410" y="168" class="t-xs">terminado</text>
+        <text x="24" y="196" class="t-xs t-b">Lote 2</text><rect x="90" y="184" width="310" height="14" rx="7" class="caja"/><rect x="90" y="184" width="200" height="14" rx="7" class="relleno"/><text x="410" y="196" class="t-xs">procesando</text>
+        <text x="24" y="224" class="t-xs t-b">Lote 3</text><rect x="90" y="212" width="310" height="14" rx="7" class="caja"/><rect x="90" y="212" width="80" height="14" rx="7" class="relleno"/><text x="410" y="224" class="t-xs">subiendo</text>
+        <rect x="24" y="250" width="124" height="70" rx="10" class="caja"/><text x="86" y="274" class="t-xs t-m" text-anchor="middle">Antes de IVA</text><text x="86" y="304" class="t-s t-b" text-anchor="middle">$419 M</text>
+        <rect x="160" y="250" width="124" height="70" rx="10" class="caja"/><text x="222" y="274" class="t-xs t-m" text-anchor="middle">IVA</text><text x="222" y="304" class="t-s t-b" text-anchor="middle">$80 M</text>
+        <rect x="296" y="250" width="124" height="70" rx="10" class="caja"/><text x="358" y="274" class="t-xs t-m" text-anchor="middle">Impoconsumo</text><text x="358" y="304" class="t-s t-b" text-anchor="middle">$0,7 M</text>
+        <rect x="432" y="250" width="104" height="70" rx="10" class="caja verde"/><text x="484" y="274" class="t-xs t-m" text-anchor="middle">Total</text><text x="484" y="304" class="t-s t-b" text-anchor="middle">$500 M</text>
+        <text x="24" y="352" class="t-xs t-m">en vivo, mientras se procesa</text>
+        <rect x="24" y="372" width="512" height="48" rx="12" class="caja ambar"/><text x="40" y="402" class="t-xs">Sigue procesando en segundo plano si cambias de pestaña</text>
+      </g>
+      <g class="paso">
+        <rect x="592" y="0" width="560" height="440" rx="16" class="papel"/>
+        <rect x="592" y="0" width="560" height="40" rx="16" class="caja azul"/><text x="612" y="27" class="t-s t-b">Métricas</text>
+        <rect x="616" y="58" width="248" height="112" rx="12" class="caja"/><use href="#ico-check" x="628" y="68" width="22" height="22" style="color: var(--verde)"/><text x="658" y="86" class="t-xs t-b">Leídas correctamente</text><text x="628" y="130" class="t-l t-b">87,5 %</text><rect x="628" y="142" width="224" height="9" rx="4.5" class="caja"/><rect x="628" y="142" width="196" height="9" rx="4.5" class="relleno verde"/><text x="628" y="164" class="t-xs t-m">875 de 1.000</text>
+        <rect x="880" y="58" width="248" height="112" rx="12" class="caja"/><use href="#ico-equis" x="892" y="68" width="22" height="22" style="color: var(--rojo)"/><text x="922" y="86" class="t-xs t-b">Mal leídas (a revisión)</text><text x="892" y="130" class="t-l t-b">12,5 %</text><rect x="892" y="142" width="224" height="9" rx="4.5" class="caja"/><rect x="892" y="142" width="28" height="9" rx="4.5" class="relleno rojo"/><text x="892" y="164" class="t-xs t-m">125 de 1.000</text>
+        <text x="616" y="204" class="t-xs t-b">Por razón social</text>
+        <path class="linea fina" d="M616 214 H1128"/>
+        <text x="616" y="238" class="t-xs">Servicios Profesionales Leyva S.A.S.</text><rect x="940" y="228" width="188" height="9" rx="4.5" class="relleno"/>
+        <text x="616" y="266" class="t-xs">Digitalware Amaya Narváez S.A.S.</text><rect x="940" y="256" width="168" height="9" rx="4.5" class="relleno"/>
+        <text x="616" y="294" class="t-xs">Distribuidora de Acabados Parra Loera</text><rect x="940" y="284" width="52" height="9" rx="4.5" class="relleno"/>
+        <text x="616" y="322" class="t-xs">Becerra Casillas S.A.S.</text><rect x="940" y="312" width="18" height="9" rx="4.5" class="relleno"/>
+        <text x="616" y="366" class="t-xs t-b">Por lote</text><path class="linea fina" d="M616 376 H1128"/>
+        <text x="616" y="400" class="t-xs">Lote 1 · 100 facturas</text><rect x="900" y="390" width="130" height="9" rx="4.5" class="relleno verde"/><rect x="1030" y="390" width="10" height="9" class="relleno rojo"/>
+        <text x="616" y="426" class="t-xs">Lote 2 · 100 facturas</text><rect x="900" y="416" width="128" height="9" rx="4.5" class="relleno verde"/><rect x="1028" y="416" width="12" height="9" class="relleno rojo"/>
+      </g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Dos pantallas, una idea.</b> A la izquierda, procesar: eliges una carpeta (hasta 1000 imágenes), se divide en lotes de 100 y cada lote sube y se procesa; las cifras (antes de IVA, IVA, impoconsumo, total) se acumulan en vivo. A la derecha, métricas: cuántas facturas se leyeron bien y cuántas mal, por razón social y por lote.<br>
+    Las cifras del boceto son ilustrativas, con el mismo orden de magnitud que las 1000 facturas del curso (875 aceptadas = 87,5 %).<br>
+    <b>Pregunta:</b> «¿qué parte creen que fue la más difícil de construir?». (Suele sorprender que no es el OCR, sino que funcione en la nube y que no se dupliquen datos.)
+  </aside>
+</section>
+
+<section class="slide" id="con-ia">
+  <span class="sobre">Cómo vamos a trabajar</span>
+  <h2>Con IA, pero entendiendo lo que se construye</h2>
+  <div class="fila crece">
+    <div class="col" style="gap:12px; flex:1">
+      <div class="card verde paso inicio"><h3>Tu IA debe</h3><ul class="lista ok peq" style="gap:5px"><li>leer <code>AGENTS.md</code> / <code>CLAUDE.md</code> antes de empezar</li><li>trabajar <b>una fase a la vez</b></li><li>mirar la documentación de la versión instalada</li><li>mostrar la salida <b>real</b> de la verificación</li></ul></div>
+      <div class="card rojo paso"><h3>Y nunca</h3><ul class="lista mal peq" style="gap:5px"><li>imprimir o pedirte pegar credenciales</li><li>cambiar una prueba para que pase</li><li>borrar datos sin permiso</li></ul></div>
+    </div>
+    <div class="col" style="gap:12px; flex:1.15">
+      <div class="card azul paso"><h3>Tú debes</h3><ul class="lista peq" style="gap:5px"><li>ejecutar la verificación <b>tú mismo</b>, al menos una vez</li><li>pedir el <b>porqué</b> de cada decisión</li><li>leer el <code>git diff</code> antes del commit</li></ul></div>
+      <div class="term paso" style="font-size:16.5px; white-space:pre-wrap; line-height:1.45"><span class="c"># Prompt de arranque (copiar y pegar)</span>
+Lee AGENTS.md completo. Hoy trabajamos la
+<span class="n">Fase N</span>. Antes de escribir código:
+1) dime en máx. 8 líneas qué vas a construir y por qué,
+2) lista los archivos que vas a tocar,
+3) dime qué comando demuestra que terminó.
+Luego ejecuta la verificación y pégame la salida
+real. No avances de fase hasta que yo lo diga.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Postura sobre la IA en clase:</b> se permite y se anima, con una condición: tú diriges. Una IA escribe rápido y se equivoca con seguridad; sin verificación, el error llega a producción.<br>
+    <b>Señales de una IA que se equivoca:</b> usa funciones que no existen en la versión instalada; dice «debería funcionar» sin ejecutar; modifica las pruebas en vez del código; toca archivos que no tienen que ver.<br>
+    <b>Anécdota real del proyecto:</b> una IA imprimió la clave privada de Firebase al intentar «resumir» el archivo de configuración. Por eso la regla de nunca imprimir <code>.env</code>.<br>
+    Los archivos AGENTS.md y CLAUDE.md contienen exactamente la misma guía paso a paso (cualquier agente de IA puede leerla).
+  </aside>
+</section>
+
+<section class="slide" id="arquitectura">
+  <span class="sobre">La arquitectura</span>
+  <h2>Las piezas y cómo se hablan</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 470" width="1152" height="458" role="img" aria-label="Navegador, funciones de Vercel y servicios: Blob, Firestore y Firebase Auth">
+      <text x="150" y="14" class="t-s t-b t-m" text-anchor="middle">NAVEGADOR</text><text x="576" y="14" class="t-s t-b t-m" text-anchor="middle">FUNCIONES DE VERCEL (la API)</text><text x="1006" y="14" class="t-s t-b t-m" text-anchor="middle">SERVICIOS</text>
+      <g class="paso inicio">
+        <rect x="0" y="26" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="58" class="t-s t-b" text-anchor="middle">Elegir carpeta y</text><text x="150" y="80" class="t-s t-b" text-anchor="middle">dividir en lotes</text>
+        <rect x="0" y="118" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="150" class="t-s t-b" text-anchor="middle">Subir cada imagen</text><text x="150" y="172" class="t-s t-b" text-anchor="middle">(a través de la API)</text>
+        <rect x="0" y="210" width="300" height="72" rx="12" class="caja violeta"/><text x="150" y="242" class="t-s t-b" text-anchor="middle">Motor: 3 llamadas</text><text x="150" y="264" class="t-s t-b" text-anchor="middle">«lote» en paralelo</text>
+        <rect x="0" y="302" width="300" height="72" rx="12" class="caja azul"/><text x="150" y="334" class="t-s t-b" text-anchor="middle">Ver métricas, tabla</text><text x="150" y="356" class="t-s t-b" text-anchor="middle">y descargar el Excel</text>
+      </g>
+      <g class="paso inicio">
+        <rect x="860" y="26" width="292" height="104" rx="12" class="caja ambar"/><text x="1006" y="64" class="t-b" text-anchor="middle">Vercel Blob</text><text x="1006" y="92" class="t-xs" text-anchor="middle">imágenes y Excel</text><text x="1006" y="112" class="t-xs t-m" text-anchor="middle">almacén privado</text>
+        <rect x="860" y="156" width="292" height="126" rx="12" class="caja verde"/><text x="1006" y="196" class="t-b" text-anchor="middle">Firestore</text><text x="1006" y="224" class="t-xs" text-anchor="middle">facturas, clientes, índices,</text><text x="1006" y="244" class="t-xs" text-anchor="middle">lotes, cola y métricas</text><text x="1006" y="266" class="t-xs t-m" text-anchor="middle">solo desde el servidor</text>
+        <rect x="860" y="308" width="292" height="104" rx="12" class="caja violeta"/><text x="1006" y="346" class="t-b" text-anchor="middle">Firebase Auth</text><text x="1006" y="374" class="t-xs" text-anchor="middle">correo y contraseña</text><text x="1006" y="394" class="t-xs t-m" text-anchor="middle">cookie de sesión</text>
+      </g>
+      <g class="paso">
+        <rect x="430" y="26" width="290" height="52" rx="10" class="caja"/><text x="575" y="50" class="t-s t-b" text-anchor="middle">/procesos/…/imagenes</text><text x="575" y="68" class="t-xs t-m" text-anchor="middle">valida cada archivo y lo guarda</text>
+        <rect x="430" y="96" width="290" height="52" rx="10" class="caja"/><text x="575" y="128" class="t-s t-b" text-anchor="middle">/procesos/…/iniciar · crea cola</text>
+        <rect x="430" y="166" width="290" height="92" rx="10" class="caja azul"/><text x="575" y="200" class="t-s t-b" text-anchor="middle">/procesos/…/lote</text><text x="575" y="224" class="t-xs" text-anchor="middle">descarga → OCR → extrae →</text><text x="575" y="244" class="t-xs" text-anchor="middle">valida → guarda (transacción)</text>
+        <rect x="430" y="276" width="290" height="52" rx="10" class="caja"/><text x="575" y="308" class="t-s t-b" text-anchor="middle">/procesos/…/finalizar · Excel</text>
+        <rect x="430" y="346" width="290" height="52" rx="10" class="caja"/><text x="575" y="378" class="t-s t-b" text-anchor="middle">/api/metricas · /api/sesion…</text>
+        <path class="flecha azul" d="M302 246 H428"/><text x="365" y="236" class="t-xs t-b" style="fill:var(--acento)" text-anchor="middle">×3</text>
+        <path class="flecha" d="M722 212 H858"/><path class="flecha" d="M722 232 H858" style="display:none"/>
+        <path class="flecha ambar" d="M722 188 L858 100"/>
+        <path class="flecha violeta punteada" d="M722 372 L858 360" style="stroke:var(--violeta)"/>
+      </g>
+      <g class="paso">
+        <path class="flecha azul" d="M302 154 L428 62"/><text x="338" y="96" class="t-xs t-b" style="fill:var(--acento)">1 imagen</text><text x="338" y="112" class="t-xs t-b" style="fill:var(--acento)">por petición</text>
+        <path class="flecha ambar" d="M722 50 L858 66"/>
+        <rect x="430" y="420" width="722" height="40" rx="12" class="caja vacia"/><text x="791" y="446" class="t-s t-m" text-anchor="middle">todas las rutas exigen la sesión de Firebase Auth (cookie httpOnly)</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Mapa mental de todo el curso.</b> Recorre con →: primero navegador y servicios; luego las funciones que los conectan.<br>
+    <b>Tres ideas:</b> (1) las imágenes pasan por <b>nuestra API</b>, una por petición: la API valida cada archivo (sesión, lote, tamaño, tipo real) y es la única que escribe en Blob; el navegador nunca habla con el almacén. (2) El trabajo pesado (OCR, validar, guardar) ocurre en la función <code>lote</code>, que el motor del navegador llama tres veces en paralelo. (3) Firestore solo se toca desde el servidor; ningún navegador lo lee directamente.<br>
+    Vuelve a la anatomía de la primera presentación: el disparador es el botón, la entrada son las imágenes, las reglas están en <code>lote</code>, el registro es Firestore.
+  </aside>
+</section>
+
+<section class="slide" id="restricciones">
+  <span class="sobre">Por qué así</span>
+  <h2>Cuatro restricciones de Vercel moldean el diseño</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 440" width="1152" height="428" role="img" aria-label="Cuatro restricciones y la decisión de diseño que provoca cada una">
+      <text x="260" y="16" class="t-s t-b t-m" text-anchor="middle">RESTRICCIÓN</text><text x="860" y="16" class="t-s t-b t-m" text-anchor="middle">DECISIÓN DE DISEÑO</text>
+      <g class="paso inicio"><rect x="0" y="30" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-reloj" x="14" y="48" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="64" class="t-b">Funciones efímeras</text><text x="76" y="92" class="t-s">máximo 300 s por invocación</text>
+        <path class="flecha" d="M522 73 H576"/><rect x="580" y="30" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="64" class="t-b">Lotes pequeños e idempotentes</text><text x="600" y="92" class="t-s">el estado vive en la base de datos; el motor pide más</text></g>
+      <g class="paso"><rect x="0" y="136" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-documento" x="14" y="154" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="170" class="t-b">Cuerpo de petición ≤ 4,5 MB</text><text x="76" y="198" class="t-s">una sola petición no puede traer 1000 imágenes</text>
+        <path class="flecha" d="M522 179 H576"/><rect x="580" y="136" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="170" class="t-b">Una imagen por petición (≤ 4 MB)</text><text x="600" y="198" class="t-s">la API valida cada archivo y lo guarda en Blob</text></g>
+      <g class="paso"><rect x="0" y="242" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-candado" x="14" y="260" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="276" class="t-b">Disco de solo lectura</text><text x="76" y="304" class="t-s">no se puede guardar nada en el servidor</text>
+        <path class="flecha" d="M522 285 H576"/><rect x="580" y="242" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="276" class="t-b">Blob + Firestore para todo lo persistente</text><text x="600" y="304" class="t-s">incluido el Excel, que se descarga desde Blob</text></g>
+      <g class="paso"><rect x="0" y="348" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-engranaje" x="14" y="366" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="382" class="t-b">1 vCPU en el plan Hobby</text><text x="76" y="410" class="t-s">un pool de hilos propio no acelera</text>
+        <path class="flecha" d="M522 391 H576"/><rect x="580" y="348" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="382" class="t-b">Paralelismo con invocaciones concurrentes</text><text x="600" y="410" class="t-s">el motor lanza 3 llamadas «lote» a la vez</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Si solo recuerdan una diapositiva de diseño, que sea esta.</b> Cada decisión rara del proyecto sale de una de estas cuatro restricciones.<br>
+    Pregunta antes de revelar cada decisión: «si la función solo puede vivir 300 segundos y hay 1000 facturas, ¿cómo lo harías?». Deja que propongan antes de mostrar la respuesta.<br>
+    <b>Consecuencia de seguridad:</b> como no hay explorador de carpetas del servidor, desaparece ese riesgo; pero cualquiera con la URL podría gastar la cuota; por eso el login se construye <b>antes</b> de la subida.
+  </aside>
+</section>
+
+<section class="slide" id="pila">
+  <span class="sobre">La pila tecnológica</span>
+  <h2>Qué usamos y para qué</h2>
+  <div class="cols4 crece" style="grid-template-rows: 1fr 1fr; gap:14px">
+    <div class="card azul"><h3>Vercel</h3><p class="peq">hosting y funciones</p><span class="chip">Hobby · Node 24</span></div>
+    <div class="card azul"><h3>Next.js 16</h3><p class="peq">App Router, TypeScript estricto, React 19</p><span class="chip">16.4.5</span></div>
+    <div class="card ambar"><h3>Vercel Blob</h3><p class="peq">imágenes y Excel, almacén privado</p><span class="chip ambar">@vercel/blob 2.8.2</span></div>
+    <div class="card verde"><h3>Firestore</h3><p class="peq">base de datos, solo desde el servidor</p><span class="chip verde">firebase-admin 14.5.0</span></div>
+    <div class="card violeta"><h3>Firebase Auth</h3><p class="peq">correo y contraseña, cookie de sesión</p><span class="chip violeta">firebase 13.2.0</span></div>
+    <div class="card ambar"><h3>OCR</h3><p class="peq">de imagen a texto, sin red</p><span class="chip ambar">tesseract.js 7.0.0 · sharp 0.35.5</span></div>
+    <div class="card verde"><h3>Excel</h3><p class="peq">celdas numéricas con formato de moneda</p><span class="chip verde">exceljs 4.4.0</span></div>
+    <div class="card"><h3>Pruebas</h3><p class="peq">unitarias y de interfaz con navegador real</p><span class="chip">vitest 5.1.0 · playwright 1.65.0</span></div>
+  </div>
+  <div class="aviso azul" style="font-size:20px">Versiones exactas del repositorio de referencia. <b>Tu IA debe leer la documentación de la versión instalada</b>: Next.js 16 cambió cosas (por ejemplo, <code>middleware.ts</code> ahora es <code>proxy.ts</code>).</div>
+  <aside class="notas">
+    No leas las versiones; muestra que cada pieza resuelve un problema distinto. Solo menciona que se instalan versiones <b>exactas</b> y que son nuevas: el conocimiento de memoria de una IA puede estar desactualizado, por eso la regla de leer los tipos y la documentación en <code>node_modules</code>.<br>
+    El generador de facturas (faker, playwright, sharp) es solo del profesor; los estudiantes reciben las imágenes ya generadas.
+  </aside>
+</section>
+
+<section class="slide" id="ruta">
+  <span class="sobre">El plan</span>
+  <h2>Doce pasos, cada uno con su verificación</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 450" width="1152" height="440" role="img" aria-label="Ruta de once fases, de las cuentas a la operación">
+      <path class="linea" d="M60 110 H1092 C1130 110 1130 300 1092 300 H60" style="stroke-width:5; stroke:var(--linea)"/>
+      <g class="paso inicio"><circle cx="60" cy="110" r="26" class="relleno"/><text x="60" y="119" class="t-b t-w" text-anchor="middle">0</text><text x="60" y="162" class="t-s t-b" text-anchor="middle">Cuentas</text><text x="60" y="184" class="t-xs t-m" text-anchor="middle">y conexiones</text></g>
+      <g class="paso"><circle cx="248" cy="110" r="26" class="relleno"/><text x="248" y="119" class="t-b t-w" text-anchor="middle">1</text><text x="248" y="162" class="t-s t-b" text-anchor="middle">Base y</text><text x="248" y="184" class="t-xs t-m" text-anchor="middle">despliegue</text></g>
+      <g class="paso"><circle cx="436" cy="110" r="26" class="relleno"/><text x="436" y="119" class="t-b t-w" text-anchor="middle">2</text><text x="436" y="162" class="t-s t-b" text-anchor="middle">Modelo</text><text x="436" y="184" class="t-xs t-m" text-anchor="middle">de datos</text></g>
+      <g class="paso"><circle cx="624" cy="110" r="26" class="relleno"/><text x="624" y="119" class="t-b t-w" text-anchor="middle">A</text><text x="624" y="162" class="t-s t-b" text-anchor="middle">Autenticación</text><text x="624" y="184" class="t-xs t-m" text-anchor="middle">login seguro</text></g>
+      <g class="paso"><circle cx="812" cy="110" r="26" class="relleno ambar"/><text x="812" y="119" class="t-b t-w" text-anchor="middle">4</text><text x="812" y="162" class="t-s t-b" text-anchor="middle">Extractor</text><text x="812" y="184" class="t-xs t-m" text-anchor="middle">lógica pura</text></g>
+      <g class="paso"><circle cx="1000" cy="110" r="26" class="relleno ambar"/><text x="1000" y="119" class="t-b t-w" text-anchor="middle">5</text><text x="1000" y="162" class="t-s t-b" text-anchor="middle">OCR en</text><text x="1000" y="184" class="t-xs t-m" text-anchor="middle">Vercel</text></g>
+      <g class="paso"><circle cx="1000" cy="300" r="26" class="relleno verde"/><text x="1000" y="309" class="t-b t-w" text-anchor="middle">3</text><text x="1000" y="352" class="t-s t-b" text-anchor="middle">Subida</text><text x="1000" y="374" class="t-xs t-m" text-anchor="middle">a Blob</text></g>
+      <g class="paso"><circle cx="812" cy="300" r="26" class="relleno verde"/><text x="812" y="309" class="t-b t-w" text-anchor="middle">6</text><text x="812" y="352" class="t-s t-b" text-anchor="middle">Lotes y</text><text x="812" y="374" class="t-xs t-m" text-anchor="middle">guardado</text></g>
+      <g class="paso"><circle cx="624" cy="300" r="26" class="relleno verde"/><text x="624" y="309" class="t-b t-w" text-anchor="middle">7</text><text x="624" y="352" class="t-s t-b" text-anchor="middle">Excel</text><text x="624" y="374" class="t-xs t-m" text-anchor="middle">en Blob</text></g>
+      <g class="paso"><circle cx="436" cy="300" r="26" style="fill:var(--violeta)"/><text x="436" y="309" class="t-b t-w" text-anchor="middle">8</text><text x="436" y="352" class="t-s t-b" text-anchor="middle">Interfaz y</text><text x="436" y="374" class="t-xs t-m" text-anchor="middle">métricas</text></g>
+      <g class="paso"><circle cx="248" cy="300" r="26" style="fill:var(--violeta)"/><text x="248" y="309" class="t-b t-w" text-anchor="middle">9</text><text x="248" y="352" class="t-s t-b" text-anchor="middle">Revisión</text><text x="248" y="374" class="t-xs t-m" text-anchor="middle">manual</text></g>
+      <g class="paso"><circle cx="60" cy="300" r="26" style="fill:var(--violeta)"/><text x="60" y="309" class="t-b t-w" text-anchor="middle">D</text><text x="60" y="352" class="t-s t-b" text-anchor="middle">Operación</text><text x="60" y="374" class="t-xs t-m" text-anchor="middle">en Vercel</text></g>
+      <text x="576" y="236" class="t-s t-m" text-anchor="middle">las fases conservan su número histórico: por eso la 3 va después de la 5</text>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>El orden importa.</b> Primero cuentas y despliegue (para que los problemas de la nube aparezcan temprano), luego datos y login, luego la lógica pura (extractor) que se prueba sin nube, después OCR en la nube, la subida, el procesamiento por lotes, el Excel y, al final, la interfaz y la operación.<br>
+    <b>Regla:</b> una fase termina cuando su verificación se ejecuta y pasa. Se hace commit con el mensaje <code>fase-N: …</code> y se etiqueta.<br>
+    La fase 3 (subida) aparece después de la 5 porque necesitamos saber que el OCR funciona en Vercel antes de invertir en la subida masiva.
+  </aside>
+</section>
+
+<section class="slide" id="fase-0">
+  <span class="sobre">Fase 0 · Cuentas y conexiones</span>
+  <h2>Antes de escribir código: los servicios y el <code>.env</code></h2>
+  <div class="fila crece" style="gap:26px">
+    <svg viewBox="0 0 640 410" width="620" height="396" style="flex:none" role="img" aria-label="Cuatro servicios que alimentan el archivo .env y las variables de Vercel">
+      <g class="paso inicio"><rect x="0" y="0" width="210" height="96" rx="12" class="caja verde"/><text x="105" y="40" class="t-b" text-anchor="middle">Firestore</text><text x="105" y="66" class="t-xs" text-anchor="middle">+ clave de servicio</text><text x="105" y="84" class="t-xs t-m" text-anchor="middle">(3 campos del JSON)</text>
+        <path class="flecha" d="M150 98 L240 160"/></g>
+      <g class="paso inicio"><rect x="430" y="0" width="210" height="96" rx="12" class="caja violeta"/><text x="535" y="40" class="t-b" text-anchor="middle">Firebase Auth</text><text x="535" y="66" class="t-xs" text-anchor="middle">+ configuración web</text><text x="535" y="84" class="t-xs t-m" text-anchor="middle">(variables públicas)</text>
+        <path class="flecha" d="M490 98 L400 160"/></g>
+      <g class="paso"><rect x="0" y="314" width="210" height="96" rx="12" class="caja ambar"/><text x="105" y="354" class="t-b" text-anchor="middle">Vercel Blob</text><text x="105" y="380" class="t-xs" text-anchor="middle">almacén privado</text><text x="105" y="398" class="t-xs t-m" text-anchor="middle">+ token</text>
+        <path class="flecha" d="M150 312 L240 250"/></g>
+      <g class="paso"><rect x="430" y="314" width="210" height="96" rx="12" class="caja azul"/><text x="535" y="354" class="t-b" text-anchor="middle">Vercel</text><text x="535" y="380" class="t-xs" text-anchor="middle">las mismas variables</text><text x="535" y="398" class="t-xs t-m" text-anchor="middle">en los 3 entornos</text>
+        <path class="flecha punteada" d="M400 250 L490 312"/></g>
+      <g class="paso inicio"><rect x="220" y="150" width="200" height="110" rx="14" class="caja solida" style="fill:var(--fg);stroke:var(--fg)"/><use href="#ico-candado" x="240" y="168" width="40" height="40" style="color: var(--papel)"/><text x="292" y="196" class="t-b" style="fill:var(--papel)">.env</text><text x="320" y="236" class="t-xs" style="fill:var(--papel)" text-anchor="middle">nunca va a Git</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="term paso" style="font-size:17.5px"><span class="c">$ npx tsx scripts/probar-conexion.ts</span>
+<span class="ok">Firestore OK</span> — escritura, lectura y borrado
+<span class="ok">Auth OK</span> — 1 usuario(s) registrado(s)
+<span class="ok">Blob OK</span> — 0 archivo(s) en el almacén</div>
+      <div class="card rojo paso"><h3>Reglas de oro</h3><ul class="lista mal peq" style="gap:4px"><li>Nunca pegues credenciales en el chat con la IA</li><li>Nunca imprimas el contenido de <code>.env</code></li><li>La clave privada: solo en el servidor</li></ul></div>
+      <div class="card ambar paso"><p class="peq"><b>Trampas:</b> la clave lleva <code>\n</code> literales entre comillas; en el panel de Vercel se pega <b>sin comillas</b> y hay que hacer <b>Redeploy</b> tras cambiar variables.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Esta fase la hace el estudiante en las consolas; la IA solo guía.</b> Nunca se piden ni se escriben valores de credenciales.<br>
+    Los servicios: Firestore (con una clave de servicio de la que solo se usan tres campos), Firebase Authentication (con la configuración web, que es pública por diseño), Vercel Blob (almacén privado) y Vercel (donde se repiten las mismas variables).<br>
+    <b>La verificación</b> es el script <code>probar-conexion.ts</code>: escribe, lee y borra un documento de prueba, lista usuarios y lista el almacén. Si algo falla, no se avanza.<br>
+    <b>Cuéntales el incidente real:</b> la clave privada se imprimió en una conversación con una IA al «inspeccionar» el archivo con un comando que partía las líneas por el signo igual. Una clave filtrada se debe considerar comprometida y rotarse.
+  </aside>
+</section>
+
+<section class="slide" id="fase-1">
+  <span class="sobre">Fase 1 · Proyecto base y primer despliegue</span>
+  <h2>Despliega pronto: los problemas aparecen temprano</h2>
+  <svg viewBox="0 0 1152 120" width="1152" height="112" role="img" aria-label="De crear el proyecto a ver la URL desplegada">
+    <g class="paso inicio"><rect x="0" y="16" width="200" height="84" rx="12" class="caja azul"/><text x="100" y="52" class="t-s t-b" text-anchor="middle">create-next-app</text><text x="100" y="76" class="t-xs t-m" text-anchor="middle">TypeScript, Tailwind</text></g>
+    <g class="paso inicio"><path class="flecha" d="M202 58 H250"/><rect x="252" y="16" width="220" height="84" rx="12" class="caja azul"/><text x="362" y="52" class="t-s t-b" text-anchor="middle">Configurar Next</text><text x="362" y="76" class="t-xs t-m" text-anchor="middle">next.config.ts, Node 24</text></g>
+    <g class="paso"><path class="flecha" d="M474 58 H522"/><rect x="524" y="16" width="220" height="84" rx="12" class="caja azul"/><text x="634" y="52" class="t-s t-b" text-anchor="middle">/api/salud</text><text x="634" y="76" class="t-xs t-m" text-anchor="middle">diagnóstico del despliegue</text></g>
+    <g class="paso"><path class="flecha" d="M746 58 H794"/><rect x="796" y="16" width="160" height="84" rx="12" class="caja"/><text x="876" y="52" class="t-s t-b" text-anchor="middle">git push</text><text x="876" y="76" class="t-xs t-m" text-anchor="middle">a GitHub</text></g>
+    <g class="paso"><path class="flecha verde" d="M958 58 H1006"/><rect x="1008" y="16" width="144" height="84" rx="12" class="caja verde"/><text x="1080" y="52" class="t-s t-b" text-anchor="middle">Vercel</text><text x="1080" y="76" class="t-xs t-m" text-anchor="middle">despliega solo</text></g>
+  </svg>
+  <div class="fila crece" style="gap:22px">
+    <div class="term paso" style="flex:1.25; font-size:17px; white-space:pre-wrap"><span class="c">// next.config.ts</span>
+cacheComponents: <span class="n">true</span>,
+serverExternalPackages: [<span class="n">"tesseract.js"</span>],
+outputFileTracingIncludes: {
+  <span class="n">"/api/procesos/**"</span>: [ <span class="c">/* ver Fase 5 */</span> ],
+},
+<span class="c">// package.json</span>
+<span class="n">"engines"</span>: { <span class="n">"node"</span>: <span class="n">"24.x"</span> },
+<span class="n">"overrides"</span>: { <span class="n">"firebase-admin"</span>: { <span class="n">"jwks-rsa"</span>: <span class="n">"3.2.2"</span> } }</div>
+    <div class="col" style="flex:1; gap:12px">
+      <div class="card verde paso"><h3>Verificación</h3><ul class="lista ok peq" style="gap:4px"><li><code>npm run build</code> sin errores</li><li>la URL de Vercel abre la página</li><li><code>/api/salud</code> dice qué falta</li></ul></div>
+      <div class="card ambar paso"><p class="peq"><b>Con <code>cacheComponents</code></b> no existe <code>export const dynamic</code>: se usa <code>await connection()</code>.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Por qué desplegar tan pronto:</b> casi todos los problemas difíciles de este proyecto aparecieron <b>solo en Vercel</b> y habrían sido mucho más caros de descubrir al final.<br>
+    <code>serverExternalPackages</code> evita que el empaquetador rompa paquetes con hilos o WASM (tesseract). <code>outputFileTracingIncludes</code> lo completaremos en la Fase 5. El <code>overrides</code> de <code>jwks-rsa</code> lo explicamos en la Fase A (es la solución de un error real).<br>
+    <code>/api/salud</code> devuelve solo booleanos y nombres de variables que faltan: convierte «no sé qué pasa en Vercel» en un JSON legible.
+  </aside>
+</section>
+
+<section class="slide" id="fase-2">
+  <span class="sobre">Fase 2 · Modelo de datos (Firestore)</span>
+  <h2>La unicidad sale del ID del documento</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 436" width="1152" height="424" role="img" aria-label="Colecciones de Firestore y cómo se relacionan">
+      <g class="paso inicio"><rect x="0" y="30" width="300" height="146" rx="12" class="caja verde"/><text x="150" y="60" class="t-b" text-anchor="middle">clientes</text><text x="150" y="86" class="t-xs t-b" text-anchor="middle" style="fill:var(--verde)">ID = documento (NIT/CC sin DV)</text><text x="20" y="116" class="t-xs">nombre, dv</text><text x="20" y="138" class="t-xs">creadoEn, primerProcesoId</text><text x="20" y="160" class="t-xs t-m">no pueden existir dos iguales</text></g>
+      <g class="paso inicio"><rect x="420" y="10" width="330" height="262" rx="12" class="caja azul"/><text x="585" y="40" class="t-b" text-anchor="middle">facturas</text><text x="585" y="66" class="t-xs t-b" text-anchor="middle" style="fill:var(--acento)">ID = SHA-256 de la imagen</text>
+        <text x="20" y="0"/><text x="440" y="96" class="t-xs">número · fecha · proveedor · NIT</text><text x="440" y="118" class="t-xs">clienteDocumento (null si no pasó el DV)</text><text x="440" y="140" class="t-xs">subtotal · iva · impoconsumo · total</text><text x="440" y="162" class="t-xs">estado: aceptada | revisión</text><text x="440" y="184" class="t-xs">motivos[] · confianzaOcr · uid</text><text x="440" y="206" class="t-xs">items[] (embebidos en la factura)</text><text x="440" y="236" class="t-xs t-m">el mismo archivo no se duplica</text>
+        <path class="flecha verde" d="M418 100 H302"/><text x="360" y="92" class="t-xs t-m" text-anchor="middle">cliente</text></g>
+      <g class="paso"><rect x="850" y="30" width="302" height="118" rx="12" class="caja ambar"/><text x="1001" y="60" class="t-b" text-anchor="middle">indices_numero</text><text x="1001" y="86" class="t-xs t-b" text-anchor="middle" style="fill:var(--ambar)">ID = número de factura</text><text x="870" y="116" class="t-xs">{ hashArchivo }</text><text x="870" y="136" class="t-xs t-m">hace único el número</text>
+        <path class="flecha ambar" d="M848 90 H752"/></g>
+      <g class="paso"><rect x="0" y="236" width="300" height="190" rx="12" class="caja violeta"/><text x="150" y="266" class="t-b" text-anchor="middle">procesos (un lote)</text><text x="20" y="296" class="t-xs">uid · carpeta · estado</text><text x="20" y="318" class="t-xs">totalArchivos · rutaExcel</text><text x="20" y="340" class="t-xs">metricas (Fase 8)</text>
+        <rect x="14" y="356" width="272" height="56" rx="10" class="caja" style="fill:var(--papel)"/><text x="150" y="380" class="t-xs t-b" text-anchor="middle">archivos = la cola de trabajo</text><text x="150" y="400" class="t-xs t-m" text-anchor="middle">subcolección, un doc por imagen</text>
+        <path class="flecha" d="M302 384 H418"/></g>
+      <g class="paso"><rect x="420" y="320" width="330" height="106" rx="12" class="caja vacia"/><text x="440" y="350" class="t-s t-b">Documento de la cola</text><text x="440" y="374" class="t-xs">estado · resultado · hashArchivo</text><text x="440" y="396" class="t-xs">disponibleDesde = arrendamiento</text><text x="440" y="416" class="t-xs t-m">(0 espera · ahora+5 min · MAX terminado)</text>
+        <path class="flecha" d="M585 318 V274"/><text x="600" y="302" class="t-xs t-m">hashArchivo</text></g>
+      <g class="paso"><rect x="850" y="186" width="302" height="240" rx="12" class="caja rojo"/><use href="#ico-candado" x="866" y="202" width="40" height="40" style="color: var(--rojo)"/><text x="916" y="230" class="t-b" style="font-size:19px">Reglas: denegar todo</text>
+        <text x="868" y="270" class="t-xs">Ningún navegador toca</text><text x="868" y="290" class="t-xs">Firestore directamente.</text><text x="868" y="322" class="t-xs">Todo pasa por el servidor,</text><text x="868" y="342" class="t-xs">que verifica la sesión.</text><text x="868" y="384" class="t-xs t-b">Se prueba con peticiones</text><text x="868" y="404" class="t-xs t-b">anónimas: deben dar 403.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Cambio mental respecto a SQL:</b> en Firestore no hay <code>UNIQUE</code>. La unicidad se consigue usando el valor único como <b>ID del documento</b> y creándolo dentro de una <b>transacción</b>.<br>
+    <b>Tres IDs inteligentes:</b> la factura se identifica por el hash (SHA-256) de su imagen; el cliente, por su documento (nunca por su nombre, porque el OCR altera los nombres); el número de factura tiene su propio índice. Así el mismo archivo no se guarda dos veces ni se crean clientes duplicados, aunque dos lotes lo intenten a la vez.<br>
+    <b>La cola</b> (subcolección <code>archivos</code>) guarda el estado de cada imagen; su campo <code>disponibleDesde</code> actúa como arrendamiento (lo veremos en la Fase 6).<br>
+    <b>Reglas:</b> «denegar todo» y se comprueba con peticiones anónimas, que deben recibir 403.
+  </aside>
+</section>
+
+<section class="slide" id="fase-a">
+  <span class="sobre">Fase A · Autenticación</span>
+  <h2>Un login que el servidor puede verificar</h2>
+  <svg viewBox="0 0 1152 346" width="1152" height="334" role="img" aria-label="Diagrama de secuencia del inicio de sesión con Firebase y cookie de sesión">
+    <rect x="40" y="0" width="200" height="44" rx="10" class="caja azul"/><text x="140" y="29" class="t-b" text-anchor="middle">Navegador</text>
+    <rect x="470" y="0" width="200" height="44" rx="10" class="caja violeta"/><text x="570" y="29" class="t-b" text-anchor="middle">Firebase Auth</text>
+    <rect x="900" y="0" width="200" height="44" rx="10" class="caja verde"/><text x="1000" y="29" class="t-b" text-anchor="middle" style="font-size:19px">Servidor (Vercel)</text>
+    <path class="linea punteada fina" d="M140 44 V346 M570 44 V346 M1000 44 V346"/>
+    <g class="paso inicio"><path class="flecha azul" d="M142 84 H566"/><text x="354" y="74" class="t-xs t-b" text-anchor="middle">1 · correo y contraseña</text></g>
+    <g class="paso"><path class="flecha violeta" d="M568 128 H144" style="stroke:var(--violeta)"/><text x="356" y="118" class="t-xs t-b" text-anchor="middle">2 · ID token</text></g>
+    <g class="paso"><path class="flecha azul" d="M142 172 H996"/><text x="569" y="162" class="t-xs t-b" text-anchor="middle">3 · POST /api/sesion { idToken }</text></g>
+    <g class="paso"><rect x="780" y="190" width="400" height="52" rx="10" class="caja ambar"/><text x="980" y="213" class="t-xs t-b" text-anchor="middle">4 · verifica el token y que el correo</text><text x="980" y="232" class="t-xs t-b" text-anchor="middle">esté en USUARIOS_PERMITIDOS</text></g>
+    <g class="paso"><path class="flecha verde" d="M998 276 H144"/><text x="570" y="266" class="t-xs t-b" text-anchor="middle">5 · cookie de sesión (httpOnly, 5 días)</text></g>
+    <g class="paso"><path class="flecha azul" d="M142 322 H996"/><text x="569" y="312" class="t-xs t-b" text-anchor="middle">6 · cada petición lleva la cookie → exigirUsuario la verifica</text></g>
+  </svg>
+  <div class="fila" style="gap:16px">
+    <div class="aviso azul" style="flex:1.3; font-size:19px"><b>¿Por qué una lista de correos si ya hay Firebase Auth?</b> Firebase Auth <b>autentica</b> (¿quién eres?). La lista <b>autoriza</b> (¿puedes usar la app?): la <code>apiKey</code> es pública y <b>cualquiera puede crear una cuenta</b>.</div>
+    <div class="aviso rojo" style="flex:1; font-size:19px"><b>Error real, solo en Vercel:</b> <code>jose</code> (solo ESM) rompía <code>firebase-admin/auth</code> → <b>500</b>. Solución: <code>overrides</code> de <code>jwks-rsa</code>.</div>
+  </div>
+  <aside class="notas">
+    <b>Recorre el diagrama con →.</b> El navegador se autentica con Firebase y recibe un ID token; se lo entrega a nuestro servidor, que lo verifica, comprueba la lista de correos permitidos y lo cambia por una <b>cookie de sesión</b> que el navegador no puede leer (<code>httpOnly</code>). Desde ahí, cada ruta de la API llama <code>exigirUsuario</code>.<br>
+    <b>Autenticar vs autorizar:</b> comprobamos en vivo que la <code>apiKey</code> pública permite crear una cuenta nueva; por eso la lista. Sin la variable definida, nadie entra (falla cerrado).<br>
+    <b>La lección del error de jose:</b> pasó todas las pruebas locales y falló en Vercel; <b>verifica siempre en el despliegue</b>.<br>
+    Verificación: sin cookie las rutas responden 401, un correo fuera de la lista recibe 403 y la página redirige a /login. Se repite contra la URL desplegada.
+  </aside>
+</section>
+
+<section class="slide" id="fase-4a">
+  <span class="sobre">Fase 4 · Extractor (lógica pura)</span>
+  <h2>Del texto desordenado del OCR a campos validados</h2>
+  <div class="fila crece" style="gap:22px">
+    <div class="col" style="flex:0 0 430px; gap:8px">
+      <p class="mini">Texto real que entrega el OCR (una factura, recortada)</p>
+      <div class="term paso inicio" style="font-size:15.5px; line-height:1.5; padding:12px 16px">COMUNICACIONES MÓVILES ZÚÑIGA ORTEGA
+LTDA.
+<span class="n">NIT: 821361310-5</span>
+FACTURA ELECTRONICA DE VENTA
+<span class="n">No. FE-000009</span>
+Res. DIAN 18764280109817
+17 de febrero de 2026 Pref. FE
+<span class="n">Fecha: 9 de julio de 2026</span>
+CLIENTE: Corporación Montoya Luevano
+<span class="n">NIT: 845990123-1</span>
+<span class="n">SUBTOTAL $585.000</span>
+<span class="n">IVA 19% $111.150</span>
+<span class="n">IMPOCONSUMO 4% $23.400</span>
+<span class="n">TOTAL $719.550</span></div>
+      <p class="mini">Ojo: hay otra fecha (la de la resolución DIAN) y cifras largas que NO son lo buscado.</p>
+    </div>
+    <svg viewBox="0 0 660 460" width="640" height="446" role="img" aria-label="Tuberías: normalizar, extraer, validar y decidir">
+      <g class="paso inicio"><rect x="0" y="0" width="660" height="78" rx="12" class="caja azul"/><text x="20" y="32" class="t-b">1 · Normalizar el texto</text><text x="20" y="60" class="t-xs">«$496 .000» → «$496.000» · «3$146.500» → «3 $146.500» · quitar líneas vacías</text></g>
+      <path class="flecha" d="M330 80 V102"/>
+      <g class="paso"><rect x="0" y="104" width="660" height="124" rx="12" class="caja azul"/><text x="20" y="136" class="t-b">2 · Extraer cada campo</text>
+        <rect x="20" y="152" width="96" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="68" y="171" class="t-xs t-b" text-anchor="middle">número</text>
+        <rect x="124" y="152" width="144" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="196" y="171" class="t-xs t-b" text-anchor="middle">fecha de emisión</text>
+        <rect x="276" y="152" width="100" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="326" y="171" class="t-xs t-b" text-anchor="middle">proveedor</text>
+        <rect x="384" y="152" width="108" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="438" y="171" class="t-xs t-b" text-anchor="middle">NIT y cliente</text>
+        <rect x="500" y="152" width="64" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="532" y="171" class="t-xs t-b" text-anchor="middle">ítems</text>
+        <rect x="572" y="152" width="72" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="608" y="171" class="t-xs t-b" text-anchor="middle">totales</text>
+        <text x="20" y="206" class="t-xs t-m">lo que no se encuentra queda en null: nunca se inventa un valor</text></g>
+      <path class="flecha" d="M330 230 V252"/>
+      <g class="paso"><rect x="0" y="254" width="660" height="86" rx="12" class="caja ambar"/><text x="20" y="286" class="t-b">3 · Validar con reglas de negocio</text><text x="20" y="314" class="t-xs">IVA 19 % · INC 4 % · ítems = subtotal · subtotal + IVA + INC = total</text><text x="20" y="332" class="t-xs">dígito de verificación del NIT · campos obligatorios · razón social legible</text></g>
+      <path class="flecha verde" d="M180 342 V372"/><path class="flecha rojo" d="M480 342 V372"/>
+      <g class="paso"><rect x="0" y="374" width="320" height="76" rx="12" class="caja verde"/><use href="#ico-check" x="14" y="392" width="38" height="38" style="color: var(--verde)"/><text x="62" y="408" class="t-s t-b">motivos = []</text><text x="62" y="432" class="t-xs">→ aceptada</text>
+        <rect x="340" y="374" width="320" height="76" rx="12" class="caja rojo"/><use href="#ico-alerta" x="354" y="392" width="38" height="38" style="color: var(--rojo)"/><text x="402" y="408" class="t-s t-b">hay motivos</text><text x="402" y="432" class="t-xs">→ revisión (no se pierde)</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Es la fase donde más se aprende.</b> La lógica es una función pura: recibe texto, devuelve campos y motivos. Sin OCR ni base de datos, se prueba con texto de ejemplo.<br>
+    Mira el texto de la izquierda: es lo que entrega el OCR de verdad (con su desorden). El extractor debe tomar la fecha de <b>emisión</b> (no la de la resolución DIAN), el número de factura (no el rango), el NIT del proveedor y el del cliente, y los importes.<br>
+    <b>Validar</b> es lo que permite confiar: si las cuentas no cuadran, la factura no se acepta a ciegas; queda «en revisión».<br>
+    <b>Método:</b> primero mira textos reales; escribe la prueba que falla; luego el código mínimo que la hace pasar.
+  </aside>
+</section>
+
+<section class="slide" id="fase-4b">
+  <span class="sobre">Fase 4 · Extractor (lógica pura)</span>
+  <h2>Impuestos, dígito de verificación y lecciones</h2>
+  <div class="fila crece" style="gap:22px">
+    <div class="col" style="flex:0.95; gap:12px">
+      <div class="card azul paso inicio"><h3>Impoconsumo (INC) 4 %</h3><p class="peq">Solo en telefonía móvil y datos; sobre el valor <b>sin IVA</b>. Convive con el IVA (19 %):</p>
+        <p class="peq" style="margin-top:6px"><b>total = subtotal + IVA + impoconsumo</b></p>
+        <p class="peq cifra">585.000 + 111.150 + 23.400 = <b>719.550</b></p></div>
+      <div class="card violeta paso"><h3>Dígito de verificación del NIT</h3><p class="peq">pesos 3, 7, 13, 17, 19, 23, 29… de derecha a izquierda; <b>r = suma mod 11</b>; <b>dv = r &gt; 1 ? 11 − r : r</b></p><p class="peq cifra">890903938 → <b>8</b> · 860034313 → <b>7</b></p><p class="mini">Detecta ~98 % de los errores de un dígito, no todos.</p></div>
+    </div>
+    <div class="col" style="flex:1.1; gap:10px">
+      <h3 class="paso inicio">Lecciones que salieron de errores verdaderos</h3>
+      <ul class="lista mal chica" style="gap:7px">
+        <li class="paso"><b>Falsos positivos de palabras</b>: «Mo<u>nit</u>or» contiene «nit»; «<u>Imp</u>resora» se tomó por impoconsumo; «Responsable de IVA» por la línea del IVA.</li>
+        <li class="paso"><b>Etiquetas pegadas</b>: <code>IVA19%</code> sin espacio.</li>
+        <li class="paso"><b>Razón social partida</b> en dos líneas con el título de la factura en medio.</li>
+        <li class="paso"><b>Fechas y cifras largas</b> que no son lo buscado: vencimiento, resolución, rango, CUFE.</li>
+        <li class="paso"><b>Una dirección</b> («Cra 115 $ 48-7») leída como ítem.</li>
+        <li class="paso"><b>Una cantidad mal leída</b> que la aritmética puede reparar.</li>
+      </ul>
+      <div class="aviso paso" style="font-size:18px"><b>Mide con facturas nuevas:</b> 98 % → 82 % → (tras arreglarlo) 93 %.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Contexto tributario:</b> el IVA general es del 19 %; el impoconsumo del 4 % aplica a telefonía móvil y datos y se calcula sobre el valor sin IVA; en esas facturas el total es subtotal + IVA + impoconsumo. Las tarifas se dejan como constantes parametrizadas y se verifican con un contador.<br>
+    <b>El DV:</b> es el algoritmo oficial de la DIAN; sirve para detectar NIT mal leídos (si el DV no cuadra, la factura va a revisión y no se crea ningún cliente). No es una garantía: detecta cerca del 98 % de los errores de un dígito.<br>
+    <b>Las lecciones</b> son anécdotas verdaderas del desarrollo: cada una terminó en una prueba automática. Insiste en la última: sin medir con datos nuevos, uno cree que ya terminó.
+  </aside>
+</section>
+
+<section class="slide" id="fase-5">
+  <span class="sobre">Fase 5 · OCR dentro de una función de Vercel</span>
+  <h2>El OCR se cuelga en silencio si faltan archivos</h2>
+  <svg viewBox="0 0 1152 262" width="1152" height="252" style="flex:none" role="img" aria-label="Sin configurar, el núcleo WASM no entra al paquete y el hilo muere; con outputFileTracingIncludes entra todo">
+    <g class="paso inicio"><rect x="0" y="0" width="560" height="262" rx="14" class="caja rojo"/><text x="20" y="32" class="t-b" style="fill:var(--rojo)">Sin configurar</text>
+      <rect x="20" y="48" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="130" y="75" class="t-xs t-b" text-anchor="middle">route.js (tu código)</text>
+      <rect x="20" y="100" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="130" y="127" class="t-xs t-b" text-anchor="middle">tesseract.js</text>
+      <rect x="20" y="152" width="220" height="42" rx="9" class="caja azul"/><text x="130" y="179" class="t-xs t-b" text-anchor="middle">hilo del worker</text>
+      <path class="flecha rojo" d="M242 173 L316 122"/><path class="flecha rojo" d="M242 173 L316 176"/>
+      <rect x="318" y="98" width="220" height="42" rx="9" class="caja rojo vacia"/><text x="428" y="125" class="t-xs t-b" text-anchor="middle">núcleo WASM  ✗ falta</text>
+      <rect x="318" y="156" width="220" height="42" rx="9" class="caja rojo vacia"/><text x="428" y="183" class="t-xs t-b" text-anchor="middle">datos del idioma  ✗ falta</text>
+      <text x="20" y="232" class="t-s t-b" style="fill:var(--rojo)">el trazador no los ve → el hilo muere → 504</text></g>
+    <g class="paso"><rect x="592" y="0" width="560" height="262" rx="14" class="caja verde"/><text x="612" y="32" class="t-b" style="fill:var(--verde)">Con outputFileTracingIncludes</text>
+      <rect x="612" y="48" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="722" y="75" class="t-xs t-b" text-anchor="middle">route.js (tu código)</text>
+      <rect x="612" y="100" width="220" height="42" rx="9" class="caja" style="fill:var(--papel)"/><text x="722" y="127" class="t-xs t-b" text-anchor="middle">tesseract.js</text>
+      <rect x="612" y="152" width="220" height="42" rx="9" class="caja azul"/><text x="722" y="179" class="t-xs t-b" text-anchor="middle">hilo del worker</text>
+      <path class="flecha verde" d="M834 173 L908 122"/><path class="flecha verde" d="M834 173 L908 176"/>
+      <rect x="910" y="98" width="220" height="42" rx="9" class="caja verde"/><text x="1020" y="125" class="t-xs t-b" text-anchor="middle">núcleo WASM  ✓</text>
+      <rect x="910" y="156" width="220" height="42" rx="9" class="caja verde"/><text x="1020" y="183" class="t-xs t-b" text-anchor="middle">datos del idioma  ✓</text>
+      <text x="612" y="232" class="t-s t-b" style="fill:var(--verde)">todo dentro del paquete (≈113 MB de 250)</text></g>
+  </svg>
+  <div class="cols3">
+    <div class="card paso" style="padding:12px 16px"><h3 style="font-size:21px">1 · Original</h3><p class="peq" style="font-size:19px">la imagen tal cual</p></div>
+    <div class="card azul paso" style="padding:12px 16px"><h3 style="font-size:21px">2 · Preprocesada</h3><p class="peq" style="font-size:19px">gris, contraste, ×1,5 y nitidez</p></div>
+    <div class="card ambar paso" style="padding:12px 16px"><h3 style="font-size:21px">3 · Encabezado invertido</h3><p class="peq" style="font-size:19px">franja superior en negativo</p></div>
+  </div>
+  <div class="aviso azul paso" style="font-size:18px">Se reintenta solo si hay motivos y se queda el resultado con <b>menos motivos</b>. Topes de 60 s: fallar con un mensaje claro.</div>
+  <aside class="notas">
+    <b>La historia del 504:</b> en local todo funcionaba. En Vercel, la función se colgaba hasta agotar el tiempo. La causa: tesseract lanza un <b>hilo aparte</b> que carga con <code>require</code> dinámico el núcleo WASM; el trazador de archivos de Next no ve esas dependencias, así que no entran al paquete; y el hilo muere <b>sin avisar</b>.<br>
+    <b>Dos arreglos:</b> incluir los archivos con <code>outputFileTracingIncludes</code> (todo el núcleo, porque la variante que se carga depende de la CPU) y poner <b>topes de tiempo</b> para que una falla sea un error claro y no un cuelgue.<br>
+    <b>Estrategia de lectura:</b> original → preprocesada → encabezado invertido; se acepta la mejor. Referencia medida en Vercel Hobby: ~1,5 s por factura con 3 lotes concurrentes.
+  </aside>
+</section>
+
+<section class="slide" id="fase-3">
+  <span class="sobre">Fase 3 · Subida de la carpeta a Blob</span>
+  <h2>Cada imagen pasa por la API, que la valida y la guarda</h2>
+  <svg viewBox="0 0 1152 330" width="1152" height="320" role="img" aria-label="Secuencia: el navegador envía una imagen a la API, que valida y la guarda en Blob">
+    <rect x="40" y="0" width="200" height="44" rx="10" class="caja azul"/><text x="140" y="29" class="t-b" text-anchor="middle">Navegador</text>
+    <rect x="470" y="0" width="200" height="44" rx="10" class="caja verde"/><text x="570" y="29" class="t-b" text-anchor="middle">Nuestra API</text>
+    <rect x="900" y="0" width="200" height="44" rx="10" class="caja ambar"/><text x="1000" y="29" class="t-b" text-anchor="middle">Vercel Blob</text>
+    <path class="linea punteada fina" d="M140 44 V330 M570 44 V330 M1000 44 V330"/>
+    <g class="paso inicio"><path class="flecha azul" d="M142 84 H566"/><text x="354" y="74" class="t-xs t-b" text-anchor="middle">1 · POST …/imagenes?indice=1  (los bytes de UNA imagen)</text></g>
+    <g class="paso"><rect x="250" y="100" width="640" height="84" rx="10" class="caja ambar"/><text x="570" y="124" class="t-xs t-b" text-anchor="middle">2 · valida, en este orden: sesión · lote propio en «subiendo» · tamaño ≤ 4 MB</text><text x="570" y="146" class="t-xs t-b" text-anchor="middle">tipo REAL por los primeros bytes (PNG o JPG) · la imagen se puede leer</text><text x="570" y="168" class="t-xs t-m" text-anchor="middle">si algo falla: 401, 404, 413 o 415 con el motivo, y no se guarda nada</text></g>
+    <g class="paso"><path class="flecha ambar" d="M572 214 H996"/><text x="784" y="204" class="t-xs t-b" text-anchor="middle">3 · el servidor guarda la imagen (put privado)</text></g>
+    <g class="paso"><path class="flecha verde" d="M998 254 H574"/><text x="786" y="244" class="t-xs t-b" text-anchor="middle">listo</text><path class="flecha verde" d="M568 296 H144"/><text x="356" y="286" class="t-xs t-b" text-anchor="middle">4 · { pathname }  (el navegador nunca habló con Blob)</text></g>
+  </svg>
+  <div class="cols3">
+    <div class="card azul paso"><h3>6 a la vez</h3><p class="peq">seis peticiones concurrentes por lote</p></div>
+    <div class="card verde paso"><h3>3 reintentos</h3><p class="peq">solo ante fallas de red o 5xx</p></div>
+    <div class="card ambar paso"><h3>Un rechazo no se reintenta</h3><p class="peq">el archivo es el problema: queda en una lista con su motivo</p></div>
+  </div>
+  <aside class="notas">
+    <b>Decisión de arquitectura:</b> las imágenes pasan por <b>nuestra API</b>. Así el servidor aplica las reglas del negocio antes de guardar nada, y el navegador nunca recibe permisos sobre el almacén.<br>
+    <b>Validaciones del paso 2</b> (cada una evita un ataque): sesión (sin login no se sube nada); lote propio y en estado «subiendo» (no se sube al lote de otro ni a uno cerrado); tamaño (no se llena el almacén con archivos enormes); <b>tipo real por los bytes</b> (un archivo malicioso renombrado a .png se rechaza: el nombre no prueba nada); imagen legible (no se guardan archivos dañados).<br>
+    <b>La contrapartida:</b> una invocación de función por imagen y un tope de tamaño (4 MB, porque una petición no puede pasar de 4,5 MB en Vercel). Las facturas pesan ~100 KB (la mayor, 192 KB), así que sobra margen; con archivos de decenas de MB habría que reconsiderarlo.<br>
+    <b>Medido:</b> 1000 imágenes (108 MB) subieron en 68 s en producción sin bloquear el navegador. <b>Detalle práctico:</b> el selector de carpeta se envuelve en un botón visible; un input de archivos sin estilo parece solo texto.
+  </aside>
+</section>
+
+<section class="slide" id="fase-6a">
+  <span class="sobre">Fase 6 · Lotes y guardado (1 de 2)</span>
+  <h2>La cola de trabajo con arrendamiento</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Estados de un archivo en la cola: pendiente, procesando con arrendamiento y terminado">
+      <g class="paso inicio"><rect x="0" y="132" width="220" height="116" rx="14" class="caja"/><text x="110" y="168" class="t-b" text-anchor="middle">pendiente</text><text x="110" y="198" class="t-xs" text-anchor="middle">disponibleDesde = 0</text><text x="110" y="220" class="t-xs t-m" text-anchor="middle">espera su turno</text></g>
+      <g class="paso"><path class="flecha azul" d="M222 190 H338"/><text x="280" y="176" class="t-xs t-b" style="fill:var(--acento)" text-anchor="middle">reclamar</text><text x="280" y="214" class="t-xs t-m" text-anchor="middle">(transacción)</text>
+        <rect x="340" y="132" width="250" height="116" rx="14" class="caja azul"/><use href="#ico-reloj" x="354" y="146" width="34" height="34" style="color: var(--acento)"/><text x="400" y="170" class="t-b">procesando</text><text x="465" y="204" class="t-xs" text-anchor="middle">disponibleDesde = ahora + 5 min</text><text x="465" y="226" class="t-xs t-m" text-anchor="middle">(arrendamiento)</text></g>
+      <g class="paso"><path class="flecha verde" d="M592 160 L728 76"/><path class="flecha ambar" d="M592 190 H728"/><path class="flecha rojo" d="M592 220 L728 312"/>
+        <rect x="730" y="30" width="250" height="90" rx="12" class="caja verde"/><text x="855" y="66" class="t-b" text-anchor="middle" style="font-size:19px">aceptada / duplicada</text><text x="855" y="94" class="t-xs t-m" text-anchor="middle">OCR + validación OK, o ya existía</text>
+        <rect x="730" y="150" width="250" height="90" rx="12" class="caja ambar"/><text x="855" y="186" class="t-b" text-anchor="middle">revisión</text><text x="855" y="214" class="t-xs t-m" text-anchor="middle">algo no cuadra: la ve una persona</text>
+        <rect x="730" y="270" width="250" height="90" rx="12" class="caja rojo"/><text x="855" y="306" class="t-b" text-anchor="middle">error (3 intentos)</text><text x="855" y="334" class="t-xs t-m" text-anchor="middle">queda en revisión con el motivo</text>
+        <rect x="1000" y="30" width="152" height="330" rx="12" class="caja vacia"/><text x="1076" y="170" class="t-s t-b" text-anchor="middle">terminado</text><text x="1076" y="196" class="t-xs t-m" text-anchor="middle">disponibleDesde</text><text x="1076" y="214" class="t-xs t-m" text-anchor="middle">= MAX</text></g>
+      <g class="paso"><path class="flecha ambar punteada" d="M465 130 C465 52 110 52 110 130"/><rect x="146" y="20" width="290" height="48" rx="12" class="caja ambar" style="fill:var(--papel)"/><text x="291" y="41" class="t-xs t-b" style="fill:var(--ambar)" text-anchor="middle">la función se cae: caduca el</text><text x="291" y="60" class="t-xs t-b" style="fill:var(--ambar)" text-anchor="middle">arrendamiento y vuelve a la cola</text>
+        <path class="flecha punteada" d="M465 250 C465 336 110 336 110 250"/><text x="291" y="338" class="t-xs t-b t-m" text-anchor="middle">falló y quedan intentos: vuelve a pendiente</text></g>
+      <g class="paso"><text x="0" y="392" class="t-s t-b" style="fill:var(--acento)">Dos invocaciones concurrentes nunca reclaman el mismo archivo.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>La cola vive en Firestore (no en memoria), porque las funciones de Vercel mueren.</b> Cada imagen es un documento con un estado.<br>
+    <b>Reclamar:</b> una invocación toma hasta 4 archivos <b>dentro de una transacción</b>: los marca «procesando» y les pone un <b>arrendamiento</b> (<code>disponibleDesde = ahora + 5 min</code>). Otra invocación, al consultar los disponibles, no los ve.<br>
+    <b>¿Y si la función se cae a mitad?</b> El arrendamiento caduca solo y el archivo vuelve a estar disponible para otra invocación. No hace falta un proceso vigilante.<br>
+    <b>Errores:</b> se reintenta hasta 3 veces; si sigue fallando, la factura queda en revisión con el motivo (no se pierde).<br>
+    Esto es lo que hace seguro reintentar: la <b>idempotencia</b>.
+  </aside>
+</section>
+
+<section class="slide" id="fase-6b">
+  <span class="sobre">Fase 6 · Lotes y guardado (2 de 2)</span>
+  <h2>Guardar: una transacción que lee y luego escribe</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Flujo de decisión del guardado transaccional de una factura">
+      <g class="paso inicio"><rect x="0" y="120" width="230" height="140" rx="12" class="caja azul"/><text x="115" y="150" class="t-b" text-anchor="middle">LEE (3 docs)</text><text x="115" y="180" class="t-xs" text-anchor="middle">facturas/{hash}</text><text x="115" y="202" class="t-xs" text-anchor="middle">indices_numero/{número}</text><text x="115" y="224" class="t-xs" text-anchor="middle">clientes/{documento}</text><text x="115" y="248" class="t-xs t-m" text-anchor="middle">todas las lecturas primero</text></g>
+      <g class="paso"><path class="flecha" d="M232 190 H280"/><path d="M282 190 L412 120 L542 190 L412 260 Z" class="caja ambar"/><text x="412" y="184" class="t-xs t-b" text-anchor="middle">¿ya existe</text><text x="412" y="204" class="t-xs t-b" text-anchor="middle">esa imagen?</text>
+        <path class="flecha" d="M412 262 V318"/><text x="426" y="296" class="t-xs t-b">sí</text>
+        <rect x="302" y="320" width="220" height="68" rx="12" class="caja"/><text x="412" y="350" class="t-s t-b" text-anchor="middle">duplicada</text><text x="412" y="372" class="t-xs t-m" text-anchor="middle">no se escribe nada</text></g>
+      <g class="paso"><path class="flecha" d="M544 190 H592"/><text x="568" y="178" class="t-xs t-b" text-anchor="middle">no</text><path d="M594 190 L724 120 L854 190 L724 260 Z" class="caja ambar"/><text x="724" y="184" class="t-xs t-b" text-anchor="middle">¿ese número ya</text><text x="724" y="204" class="t-xs t-b" text-anchor="middle">está en otra?</text>
+        <path class="flecha" d="M724 262 V318"/><text x="738" y="296" class="t-xs t-b">sí</text>
+        <rect x="604" y="320" width="240" height="68" rx="12" class="caja ambar"/><text x="724" y="350" class="t-s t-b" text-anchor="middle">revisión</text><text x="724" y="372" class="t-xs t-m" text-anchor="middle">«número repetido»</text></g>
+      <g class="paso"><path class="flecha verde" d="M856 190 H904"/><text x="880" y="178" class="t-xs t-b" text-anchor="middle">no</text><rect x="906" y="90" width="246" height="200" rx="12" class="caja verde"/><text x="1029" y="122" class="t-b" text-anchor="middle">ESCRIBE</text>
+        <text x="1029" y="154" class="t-xs" text-anchor="middle">factura (con sus ítems)</text><text x="1029" y="176" class="t-xs" text-anchor="middle">índice del número</text><text x="1029" y="198" class="t-xs" text-anchor="middle">cliente, solo si no existe</text><text x="1029" y="220" class="t-xs" text-anchor="middle">archivo → ok</text><text x="1029" y="242" class="t-xs" text-anchor="middle">+1 en las métricas del lote</text><text x="1029" y="272" class="t-xs t-m" text-anchor="middle">todo o nada</text></g>
+      <g class="paso"><rect x="0" y="8" width="1152" height="54" rx="12" class="caja vacia"/><text x="576" y="42" class="t-s t-b" text-anchor="middle">IDs deterministas (hash, documento, número) + transacción = repetir cualquier paso no duplica nada</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>La idea más importante de la fase:</b> la <b>idempotencia</b>. Repetir cualquier paso (por un reintento, una caída o un reproceso) no puede duplicar ni perder nada.<br>
+    <b>Cómo se logra:</b> IDs deterministas (el hash de la imagen, el documento del cliente, el número de factura) y una <b>transacción</b> que primero lee los tres documentos y después escribe.<br>
+    <b>Dos decisiones de diseño:</b> si la <i>misma imagen</i> ya existe, es duplicada y no se escribe nada. Pero si solo el <i>número</i> coincide con el de otra imagen distinta, <b>no se descarta</b>: puede ser un número mal leído y descartarla perdería una factura; queda en revisión con ese motivo.<br>
+    El cliente se crea solo si no existe y solo si su documento pasa el dígito de verificación.<br>
+    <b>Atajo previo al OCR:</b> antes de leer la imagen, se mira si su hash ya existe; reprocesar una carpeta pasa de minutos a segundos.
+  </aside>
+</section>
+
+<section class="slide" id="fase-7">
+  <span class="sobre">Fase 7 · Excel en Blob</span>
+  <h2>Un Excel por lote, generado desde la base de datos</h2>
+  <svg viewBox="0 0 1152 110" width="1152" height="104" role="img" aria-label="De Firestore al Excel descargable">
+    <g class="paso inicio"><rect x="0" y="14" width="240" height="82" rx="12" class="caja verde"/><text x="120" y="50" class="t-b" text-anchor="middle">Firestore</text><text x="120" y="76" class="t-xs t-m" text-anchor="middle">facturas y clientes del lote</text></g>
+    <g class="paso inicio"><path class="flecha" d="M242 55 H316"/><rect x="318" y="14" width="260" height="82" rx="12" class="caja azul"/><text x="448" y="50" class="t-b" text-anchor="middle">Generar con exceljs</text><text x="448" y="76" class="t-xs t-m" text-anchor="middle">en memoria (Buffer)</text></g>
+    <g class="paso"><path class="flecha" d="M580 55 H654"/><rect x="656" y="14" width="240" height="82" rx="12" class="caja ambar"/><text x="776" y="50" class="t-b" text-anchor="middle">Vercel Blob</text><text x="776" y="76" class="t-xs t-m" text-anchor="middle">resultado_AAAA-MM-DD_HHmm</text></g>
+    <g class="paso"><path class="flecha" d="M898 55 H972"/><rect x="974" y="14" width="178" height="82" rx="12" class="caja"/><text x="1063" y="50" class="t-b" text-anchor="middle">Descarga</text><text x="1063" y="76" class="t-xs t-m" text-anchor="middle">desde la interfaz</text></g>
+  </svg>
+  <div class="fila crece" style="gap:24px">
+    <svg viewBox="0 0 660 290" width="640" height="280" style="flex:none" role="img" aria-label="Una hoja de Excel con cuatro pestañas">
+      <g class="paso inicio"><rect x="0" y="0" width="120" height="34" rx="8" class="caja solida"/><text x="60" y="23" class="t-xs t-b t-w" text-anchor="middle">Facturas</text>
+        <rect x="126" y="0" width="100" height="34" rx="8" class="caja"/><text x="176" y="23" class="t-xs t-b" text-anchor="middle">Ítems</text>
+        <rect x="232" y="0" width="110" height="34" rx="8" class="caja"/><text x="287" y="23" class="t-xs t-b" text-anchor="middle">Clientes</text>
+        <rect x="348" y="0" width="110" height="34" rx="8" class="caja"/><text x="403" y="23" class="t-xs t-b" text-anchor="middle">Resumen</text>
+        <rect x="0" y="40" width="660" height="240" rx="8" class="papel"/><rect x="0" y="40" width="660" height="32" rx="8" class="caja azul"/>
+        <text x="12" y="62" class="t-xs t-b">Número</text><text x="110" y="62" class="t-xs t-b">Fecha</text><text x="200" y="62" class="t-xs t-b">Proveedor</text><text x="410" y="62" class="t-xs t-b" text-anchor="end">Antes de IVA</text><text x="500" y="62" class="t-xs t-b" text-anchor="end">IVA</text><text x="648" y="62" class="t-xs t-b" text-anchor="end">Total</text>
+        <path class="linea fina" d="M0 102 H660 M0 134 H660 M0 166 H660 M0 198 H660"/>
+        <text x="12" y="94" class="t-xs">FE-000009</text><text x="110" y="94" class="t-xs">2026-07-09</text><text x="200" y="94" class="t-xs">Comunicaciones Móviles…</text><text x="410" y="94" class="t-xs cifra" text-anchor="end">$585.000</text><text x="500" y="94" class="t-xs" text-anchor="end">$111.150</text><text x="648" y="94" class="t-xs t-b" text-anchor="end">$719.550</text>
+        <text x="12" y="126" class="t-xs">FE-000010</text><text x="110" y="126" class="t-xs">2026-09-14</text><text x="200" y="126" class="t-xs">Comunicaciones Móviles…</text><text x="410" y="126" class="t-xs" text-anchor="end">$1.340.200</text><text x="500" y="126" class="t-xs" text-anchor="end">$254.638</text><text x="648" y="126" class="t-xs t-b" text-anchor="end">$1.648.446</text>
+        <text x="12" y="158" class="t-xs t-m">…</text>
+        <text x="12" y="262" class="t-xs t-m">celdas numéricas con formato $#,##0 · filtros y fila fija</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="card azul paso" style="padding:10px 16px"><h3 style="font-size:21px">Cuatro hojas</h3><p class="peq" style="font-size:18px">Facturas · Ítems · Clientes · Resumen (totales, aceptadas, en revisión, duración).</p></div>
+      <div class="card verde paso" style="padding:10px 16px"><h3 style="font-size:21px">Verificación</h3><p class="peq" style="font-size:18px">La <b>suma de la columna Total</b> del Excel debe coincidir con <code>sum()</code> en Firestore.</p></div>
+      <div class="card ambar paso" style="padding:10px 16px"><p class="peq" style="font-size:18px"><b>Detalles:</b> importes como números, no texto; hora de Colombia en el nombre; un reproceso incluye las duplicadas.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Generar el Excel desde la base de datos</b> (no desde la memoria de quien procesó) garantiza que el archivo muestra lo realmente guardado, aunque el lote se haya procesado en muchas invocaciones distintas.<br>
+    <b>Importes como números:</b> un Excel con importes en texto no se puede sumar ni filtrar; es un error muy común.<br>
+    El almacén es privado: la ruta de descarga lee el archivo con el SDK y se lo entrega a quien tiene sesión.<br>
+    <b>Medido:</b> con 10 facturas, la suma del Excel (43.040.649) coincidió con la suma en Firestore y con la verdad conocida del conjunto de prueba.
+  </aside>
+</section>
+
+<section class="slide" id="fase-8a">
+  <span class="sobre">Fase 8 · Interfaz (1 de 3)</span>
+  <h2>Subir el siguiente lote mientras se procesa el anterior</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Diagrama de tiempo: las subidas de los lotes se solapan con el procesamiento en segundo plano">
+      <text x="230" y="14" class="t-xs t-b t-m">tiempo → (sin escala)</text>
+      <path class="flecha" d="M230 24 H1130"/>
+      <g class="paso inicio"><text x="0" y="68" class="t-s t-b">Subida lote 1</text><rect x="230" y="46" width="110" height="34" rx="8" class="caja solida"/>
+        <text x="0" y="116" class="t-s t-b">Subida lote 2</text><rect x="340" y="94" width="110" height="34" rx="8" class="caja solida"/>
+        <text x="0" y="164" class="t-s t-b">Subida lote 3</text><rect x="450" y="142" width="110" height="34" rx="8" class="caja solida"/></g>
+      <g class="paso"><text x="0" y="236" class="t-s t-b">Procesar lote 1</text><rect x="340" y="214" width="330" height="34" rx="8" class="caja solida-v"/><text x="505" y="237" class="t-xs t-b t-w" text-anchor="middle">Motor · 3 trabajadores</text>
+        <text x="0" y="284" class="t-s t-b">Procesar lote 2</text><rect x="670" y="262" width="330" height="34" rx="8" class="caja solida-v"/>
+        <text x="0" y="332" class="t-s t-b">Procesar lote 3</text><rect x="1000" y="310" width="130" height="34" rx="8" class="caja solida-v"/><text x="1100" y="364" class="t-xs t-m" text-anchor="end">…y así hasta el lote 10</text></g>
+      <g class="paso"><path class="linea ambar punteada" d="M340 40 V350"/><text x="350" y="388" class="t-xs t-b" style="fill:var(--ambar)">el lote 1 ya se procesa mientras se sube el 2</text></g>
+    </svg>
+  </div>
+  <div class="fila" style="gap:14px">
+    <div class="aviso azul paso" style="flex:1; font-size:18px"><b>Motor</b> (en el layout): 3 llamadas <code>lote</code> a la vez; sigue al cambiar de pestaña.</div>
+    <div class="aviso verde paso" style="flex:1; font-size:18px"><b>Si cierras la pestaña</b>, al volver retoma lo pendiente: todo es idempotente.</div>
+  </div>
+  <aside class="notas">
+    <b>«Sin bloquearse»:</b> subir y procesar están <b>desacoplados</b>. Al terminar de subir el lote 1, el motor ya empieza a procesarlo mientras el navegador sube el lote 2.<br>
+    <b>El motor</b> es un componente que vive en el layout de la aplicación, así que no se desmonta al cambiar de página. Lanza 3 trabajadores asíncronos; cada uno pide al servidor que procese un lote pequeño; el servidor responde cuántos archivos tomó; cuando ya no quedan, pide el cierre (Excel).<br>
+    <b>Medido:</b> la subida de 1000 imágenes (108 MB) en 10 lotes tomó 68 s en producción, pasando cada imagen por la API, y el navegador nunca se bloqueó (retraso máximo de 9 ms). El procesamiento depende del OCR: unos 1,5 s por factura en Vercel Hobby.
+  </aside>
+</section>
+
+<section class="slide" id="fase-8b">
+  <span class="sobre">Fase 8 · Interfaz (2 de 3)</span>
+  <h2>Métricas: contadores dentro de la transacción</h2>
+  <div class="fila crece" style="gap:22px">
+    <svg viewBox="0 0 560 410" width="540" height="396" style="flex:none" role="img" aria-label="Una transacción que guarda la factura y suma los contadores del lote">
+      <g class="paso inicio"><rect x="0" y="0" width="560" height="410" rx="16" class="caja vacia"/><text x="20" y="34" class="t-b">Transacción de Firestore · todo o nada</text>
+        <rect x="24" y="52" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="82" class="t-s t-b">crear la factura (con sus ítems)</text>
+        <rect x="24" y="110" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="140" class="t-s t-b">crear el índice del número</text>
+        <rect x="24" y="168" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="198" class="t-s t-b">crear el cliente (si es nuevo)</text>
+        <rect x="24" y="226" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="256" class="t-s t-b">marcar el archivo como terminado</text></g>
+      <g class="paso"><rect x="24" y="288" width="512" height="100" rx="10" class="caja verde"/><text x="40" y="318" class="t-s t-b">+1 en las métricas del lote (increment)</text><text x="40" y="344" class="t-xs">aceptadas.n · aceptadas.subtotal · iva · impoconsumo · total</text><text x="40" y="364" class="t-xs">y el desglose por NIT del proveedor (solo aceptadas)</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="card verde paso"><div class="fila" style="align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Leída correctamente</h3><p class="peq">pasó <b>todas</b> las validaciones</p></div></div></div>
+      <div class="card rojo paso"><div class="fila" style="align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true" style="flex:none"><use href="#ico-equis" width="100" height="100" style="color: var(--rojo)"/></svg><div><h3>Mal leída</h3><p class="peq">quedó en revisión o dio error</p></div></div></div>
+      <div class="card paso"><p class="peq">Las <b>duplicadas</b> no cuentan: ya estaban. Abrir el panel cuesta <b>1 lectura por lote</b>, no una por factura.</p></div>
+      <div class="aviso paso" style="font-size:18px"><b>Honestidad:</b> «correcta» no se compara con una respuesta conocida; un error que cuadre aritméticamente podría pasar.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cómo darle métricas a un proceso sin recorrer miles de facturas:</b> contadores que se actualizan <b>en la misma transacción</b> que guarda cada factura. Como son parte de la misma operación «todo o nada», nunca se desincronizan de los datos.<br>
+    <b>Costo:</b> abrir el panel lee un documento por lote, no una factura por cada una. Con 1000 facturas son 10 lecturas, no 1000.<br>
+    <b>Definiciones (hay que ponerlas en la interfaz):</b> leída correctamente = pasó todas las validaciones; mal leída = revisión o error; porcentaje sobre las facturas distintas procesadas.<br>
+    <b>Humildad con los números:</b> en el conjunto del curso, 875 de 1000 pasaron la validación; de esas, 3 tenían un error que la validación no detectó (por ejemplo, un dígito mal leído en el número de factura). La métrica mide aceptación, no exactitud perfecta.
+  </aside>
+</section>
+
+<section class="slide" id="fase-8c">
+  <span class="sobre">Fase 8 · Interfaz (3 de 3)</span>
+  <h2>Borrar con seguridad y diseño sin depender del color</h2>
+  <div class="fila crece" style="gap:24px">
+    <div class="col" style="gap:10px; flex:1">
+      <h3 class="paso inicio">«Borrar todo» para que los estudiantes practiquen</h3>
+      <div class="card paso inicio" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">1</span> exige <b>sesión</b></p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">2</span> hay que <b>escribir BORRAR</b> exactamente</p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">3</span> se niega si hay lotes <b>procesándose</b> (pide confirmación extra)</p></div>
+      <div class="card rojo paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px;background:var(--rojo)">4</span> borra <b>todo</b>: Firestore y Blob, de todos los usuarios. Irreversible.</p></div>
+      <div class="aviso paso" style="font-size:17px">Una prueba automática <b>no debe ejecutarlo</b> contra datos reales: prueba el botón tú mismo.</div>
+    </div>
+    <svg viewBox="0 0 520 400" width="500" height="386" style="flex:none" role="img" aria-label="Paleta de colores por rol y estados con icono y texto">
+      <g class="paso inicio"><text x="0" y="22" class="t-s t-b t-m">COLORES POR ROL (claro y oscuro)</text>
+        <rect x="0" y="36" width="76" height="52" rx="10" class="relleno"/><text x="38" y="106" class="t-xs" text-anchor="middle">acento</text>
+        <rect x="88" y="36" width="76" height="52" rx="10" class="relleno verde"/><text x="126" y="106" class="t-xs" text-anchor="middle">bueno</text>
+        <rect x="176" y="36" width="76" height="52" rx="10" class="relleno rojo"/><text x="214" y="106" class="t-xs" text-anchor="middle">malo</text>
+        <rect x="264" y="36" width="76" height="52" rx="10" class="relleno ambar"/><text x="302" y="106" class="t-xs" text-anchor="middle">aviso</text>
+        <rect x="352" y="36" width="76" height="52" rx="10" class="relleno muted"/><text x="390" y="106" class="t-xs" text-anchor="middle">texto 2</text>
+        <rect x="440" y="36" width="76" height="52" rx="10" class="caja"/><text x="478" y="106" class="t-xs" text-anchor="middle">superficie</text></g>
+      <g class="paso"><text x="0" y="158" class="t-s t-b t-m">NUNCA SOLO COLOR: ICONO + TEXTO</text>
+        <rect x="0" y="174" width="250" height="56" rx="12" class="caja verde"/><use href="#ico-check" x="14" y="188" width="28" height="28" style="color: var(--verde)"/><text x="52" y="209" class="t-s t-b">Aceptada</text>
+        <rect x="266" y="174" width="250" height="56" rx="12" class="caja rojo"/><use href="#ico-equis" x="280" y="188" width="28" height="28" style="color: var(--rojo)"/><text x="318" y="209" class="t-s t-b">Revisión</text>
+        <rect x="0" y="244" width="516" height="56" rx="12" class="caja"/><text x="16" y="266" class="t-xs t-b">Leídas correctamente</text><text x="500" y="266" class="t-xs t-b" text-anchor="end">91,5 %</text><rect x="16" y="278" width="484" height="10" rx="5" class="caja"/><rect x="16" y="278" width="443" height="10" rx="5" class="relleno verde"/></g>
+      <g class="paso"><text x="0" y="338" class="t-xs">• importes con cifras tabulares (alineadas)</text><text x="0" y="362" class="t-xs">• tablas largas con scroll horizontal</text><text x="0" y="386" class="t-xs">• modo oscuro automático según el sistema</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Borrar todo:</b> lo pidió el profesor para que los estudiantes puedan «jugar» desde cero. Por eso la acción es deliberadamente incómoda: requiere sesión, una confirmación escrita y un chequeo de que no haya lotes procesándose. Es una acción destructiva e irreversible; las pruebas automáticas no deben ejecutarla contra datos reales (limpian solo lo que ellas mismas crean).<br>
+    <b>Diseño accesible:</b> los colores se definen por <b>rol</b> (acento, bueno, malo, aviso) con variantes para modo oscuro; los estados siempre llevan icono y texto, porque hay personas que no distinguen ciertos colores y porque un proyector puede deformarlos.<br>
+    Este es el tipo de decisión que una IA no toma por ti si no se lo pides: dilo explícitamente en tus prompts.
+  </aside>
+</section>
+
+<section class="slide" id="fase-9">
+  <span class="sobre">Fase 9 · Revisión manual</span>
+  <h2>La máquina duda; una persona decide</h2>
+  <div class="fila crece" style="gap:24px">
+    <svg viewBox="0 0 620 420" width="600" height="408" style="flex:none" role="img" aria-label="Boceto del formulario de revisión: imagen a la izquierda, datos y validación a la derecha">
+      <g class="paso inicio"><rect x="0" y="0" width="620" height="420" rx="14" class="papel"/><rect x="0" y="0" width="620" height="34" rx="14" class="caja azul"/><text x="16" y="23" class="t-xs t-b">Revisar factura · factura_0007.jpg</text>
+        <rect x="14" y="48" width="270" height="270" rx="8" class="caja"/><rect x="26" y="62" width="246" height="24" rx="4" class="relleno linea"/><path class="linea fina" d="M26 104 H272 M26 120 H272 M26 136 H272 M26 152 H272 M26 168 H272"/><rect x="26" y="190" width="246" height="64" rx="4" class="relleno linea"/><rect x="170" y="272" width="102" height="30" rx="4" class="relleno linea"/></g>
+      <g class="paso"><rect x="298" y="48" width="308" height="30" rx="6" class="caja"/><text x="308" y="68" class="t-xs">Número · FE-000147</text>
+        <rect x="298" y="86" width="308" height="30" rx="6" class="caja"/><text x="308" y="106" class="t-xs">Proveedor · Redes Móviles Hernández…</text>
+        <rect x="298" y="124" width="150" height="30" rx="6" class="caja"/><text x="308" y="144" class="t-xs">NIT · 856296577</text><rect x="456" y="124" width="150" height="30" rx="6" class="caja"/><text x="466" y="144" class="t-xs">Doc · 828667108</text>
+        <rect x="298" y="162" width="308" height="30" rx="6" class="caja"/><text x="308" y="182" class="t-xs">Ítem 1 · Plan postpago · 1 × 82.100</text>
+        <rect x="298" y="200" width="308" height="30" rx="6" class="caja"/><text x="308" y="220" class="t-xs">Total · 4.266.704   (sugerido: 4.261.704)</text></g>
+      <g class="paso"><rect x="14" y="326" width="592" height="90" rx="10" class="caja rojo"/><use href="#ico-equis" x="26" y="340" width="24" height="24" style="color: var(--rojo)"/><text x="60" y="358" class="t-xs t-b">Subtotal + IVA + INC = 4.261.704; el total dice 4.266.704</text><text x="60" y="381" class="t-xs">☑ Revisé la imagen: estos datos son los de la factura</text><text x="60" y="402" class="t-xs t-b">→ el botón pasa a «Guardar de todos modos»</text></g>
+    </svg>
+    <div class="col" style="gap:10px">
+      <div class="card azul paso inicio" style="padding:10px 16px"><p class="peq"><b>1 ·</b> Lista de pendientes y formulario con la <b>imagen al lado</b> y lo que la máquina sí leyó, precargado.</p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><b>2 ·</b> Validación en vivo con <b>las mismas reglas</b> del OCR. Si no cuadra, hay que <b>confirmar</b> que se revisó la imagen.</p></div>
+      <div class="card verde paso" style="padding:10px 16px"><p class="peq"><b>3 ·</b> Una <b>transacción</b>: factura, índice del número, cliente y contadores. Queda quién la corrigió y qué decía la máquina.</p></div>
+      <div class="aviso azul paso" style="font-size:18px"><b>Métricas honestas:</b> «leídas correctamente» sigue midiendo a la <b>máquina</b>; lo corregido se cuenta aparte («revisadas a mano»).</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cierra el ciclo humano.</b> Hasta esta fase, una factura «en revisión» era un callejón sin salida: esperaba para siempre y sus cifras no entraban nunca en lo procesado. Ahora hay una persona, una pantalla y un registro.<br>
+    <b>Cómo se usa:</b> la pestaña «Revisión» lista las pendientes; cada una abre un formulario con la imagen a la izquierda y los datos a la derecha. Lo que la máquina alcanzó a leer llega precargado, así que la persona solo corrige lo que está mal. Los totales se proponen desde los ítems (IVA 19 %, impoconsumo 4 % si aplica).<br>
+    <b>La validación es la misma</b> función que usa el OCR, ejecutada en el navegador mientras se escribe; el servidor la repite al guardar (no confía en el navegador). Si no cuadra, la persona puede aun así guardar, pero debe confirmar explícitamente que revisó la imagen, y eso queda registrado.<br>
+    <b>La decisión de métricas es la más importante:</b> si lo corregido a mano se sumara a «leídas correctamente», la métrica dejaría de medir la calidad de la máquina y no sabríamos si el OCR mejora o empeora. Por eso se cuenta aparte.<br>
+    <b>No es opcional:</b> de las 1000 facturas del curso, 40 traen un problema puesto a propósito y la máquina nunca las acepta: 10 con el total impreso que no cuadra, 10 con IVA al 5 % o exento, 10 con el dígito de verificación del cliente equivocado y 10 con la imagen girada (para estas, el formulario tiene botones ↺ ↻ que la giran). Así los estudiantes <b>tienen que</b> usar esta pantalla.<br>
+    <b>Un error real:</b> al pasar de una factura a la siguiente, React reutilizaba el formulario y arrastraba los campos de la anterior (se podían guardar datos de una factura sobre otra). Se arregló con <code>key</code> por factura.
+  </aside>
+</section>
+
+<section class="slide" id="fase-d">
+  <span class="sobre">Fase D · Operación en Vercel</span>
+  <h2>Lista de comprobación antes de dar por terminado</h2>
+  <div class="cols4 crece" style="grid-template-rows: 1fr 1fr; gap:14px">
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Variables</h3><p class="peq">en Producción, Preview y Development</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Sin secretos</h3><p class="peq">ninguna clave en el repositorio ni en su historial</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Duración</h3><p class="peq"><code>maxDuration</code> 300 s en lote y cierre</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Acceso</h3><p class="peq">toda ruta de API sin sesión responde 401</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Reglas</h3><p class="peq">Firestore sigue en «denegar todo»</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Imágenes</h3><p class="peq">política de qué pasa con los blobs viejos</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Logs</h3><p class="peq">sin 500, 504 ni 413 tras una corrida completa</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Cuota</h3><p class="peq">anotar lecturas, escrituras y borrados gastados</p></div></div></div>
+  </div>
+  <div class="aviso azul paso" style="font-size:19px"><b>Aceptación final en producción:</b> 1000 facturas procesadas · 850 clientes · un Excel por lote · reprocesar la misma carpeta no duplica nada.</div>
+  <aside class="notas">
+    Esta lista se va cumpliendo desde la Fase 1; al final debe estar completa.<br>
+    <b>Cuota:</b> una corrida de 1000 facturas gasta del orden de 5000 lecturas y 6000 escrituras de Firestore (estimado). Borrar los datos gasta además el límite de borrados. En el plan gratuito, varias corridas el mismo día pueden agotar la cuota.<br>
+    <b>Sé transparente sobre el estado real:</b> en el repositorio de referencia, la corrida completa de 1000 facturas en producción todavía <b>no</b> se ha ejecutado (se midió la subida de 1000, y el procesamiento de 200 en producción); es parte del ejercicio de aceptación.
+  </aside>
+</section>
+
+<section class="slide" id="errores-reales">
+  <span class="sobre">Lo que te va a pasar (y ya nos pasó)</span>
+  <h2>Errores reales, causa y solución</h2>
+  <table class="t" style="font-size:19.5px">
+    <tr><th style="width:30%">Síntoma</th><th style="width:36%">Causa</th><th>Solución</th></tr>
+    <tr class="paso inicio"><td><b>500</b> en todas las rutas, solo en Vercel</td><td><code>jose</code> (solo ESM) rompe <code>firebase-admin/auth</code></td><td><code>overrides</code> de <code>jwks-rsa</code> a 3.2.2</td></tr>
+    <tr class="paso inicio"><td><b>504</b> en <code>lote</code></td><td>faltan el núcleo WASM y sus dependencias en el paquete</td><td><code>outputFileTracingIncludes</code> + topes de tiempo</td></tr>
+    <tr class="paso"><td>Login correcto pero <b>403</b></td><td><code>USUARIOS_PERMITIDOS</code> ausente, con comillas o sin Redeploy</td><td>definirla sin comillas y redesplegar</td></tr>
+    <tr class="paso"><td>«La consulta requiere un <b>índice</b>»</td><td>filtro combinado, o filtro + <code>sum()</code></td><td>crear el índice del enlace, o rediseñar</td></tr>
+    <tr class="paso"><td>TypeScript: <code>RouteContext</code> no existe</td><td>los tipos de rutas se generan</td><td><code>npx next typegen</code></td></tr>
+    <tr class="paso"><td>Una variable nueva «no llega»</td><td>solo se aplica a despliegues nuevos</td><td>Redeploy</td></tr>
+  </table>
+  <div class="aviso azul paso" style="font-size:19px">Dos de ellos <b>pasaban todas las pruebas locales</b>. Por eso cada fase se verifica también <b>en el despliegue</b>.</div>
+  <aside class="notas">
+    Esta diapositiva es un regalo de tiempo: son los errores que más horas costaron. Si un estudiante se atasca, la tabla completa (con más casos) está en la sección «Problemas conocidos» de AGENTS.md y CLAUDE.md.<br>
+    <b>Moraleja:</b> los dos primeros funcionaban perfecto en local. El entorno de ejecución en la nube es distinto (empaquetado de archivos, módulos ESM, tiempos). Verificar solo en local da una falsa sensación de seguridad.<br>
+    Pídele a la IA que cite la causa raíz, no solo el parche: «¿por qué falla solo en Vercel?».
+  </aside>
+</section>
+
+<section class="slide" id="resultados">
+  <span class="sobre">Resultados medidos</span>
+  <h2>Qué se midió de verdad (y qué no)</h2>
+  <div class="cols3" style="gap:14px">
+    <div class="card verde paso inicio"><span class="peq muted">Lectura automática de las 1000 facturas</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">88 %</span><span class="peq">875 aceptadas · 125 a revisión (40 a propósito)</span></div>
+    <div class="card ambar paso inicio"><span class="peq muted">Aceptadas con un error no detectado</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">3</span><span class="peq">de 875 (872 totalmente correctas)</span></div>
+    <div class="card azul paso inicio"><span class="peq muted">Subida de 1000 imágenes (108 MB, conjunto anterior)</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">68 s</span><span class="peq">10 lotes, por la API · sin bloquearse</span></div>
+    <div class="card azul paso"><span class="peq muted">200 facturas, 2 lotes, en producción</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">≈ 7 min</span><span class="peq">94/100 correctas en cada lote</span></div>
+    <div class="card violeta paso"><span class="peq muted">Reprocesar las mismas imágenes</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">0</span><span class="peq">duplicados (10/10 duplicadas)</span></div>
+    <div class="card paso"><span class="peq muted">Pruebas automáticas del proyecto</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">98</span><span class="peq">extractor, métricas, revisión manual, documentación…</span></div>
+  </div>
+  <div class="aviso paso" style="font-size:19px"><b>Pendiente (no medido):</b> procesar las 1000 completas en producción (estimado: 25 a 35 minutos y ≈ 5000 lecturas / 6000 escrituras de cuota) y probar el botón «Borrar todo» contra la base real.</div>
+  <aside class="notas">
+    <b>Honestidad con los números es parte de la lección.</b><br>
+    El 88 % es la medición del extractor sobre las 1000 facturas del curso (sin base de datos): 875 aceptadas, 125 a revisión; de las aceptadas, 872 totalmente correctas y 3 con un error que la validación no pudo ver. Una muestra de 100 del mismo conjunto había dado 85 %: las muestras pequeñas engañan.<br>
+    El 94/100 y los 7 minutos son de una prueba en producción (Vercel Hobby) con 200 facturas en dos lotes. La subida de 1000 se midió bloqueando el OCR a propósito para no gastar cuota.<br>
+    <b>Lo que no se hizo</b> está dicho en la franja amarilla. Pide a los estudiantes que, cuando terminen, ejecuten la corrida completa y comparen sus cifras con estas.
+  </aside>
+</section>
+
+<section class="slide" id="verificacion">
+  <span class="sobre">Cómo se demuestra que cada fase terminó</span>
+  <h2>Una verificación ejecutable por fase</h2>
+  <table class="t" style="font-size:19px">
+    <tr><th style="width:9%">Fase</th><th style="width:50%">Comando o prueba</th><th>Resultado esperado</th></tr>
+    <tr class="paso inicio"><td><b>0</b></td><td><code>npx tsx scripts/probar-conexion.ts</code></td><td>Firestore OK · Auth OK · Blob OK</td></tr>
+    <tr class="paso inicio"><td><b>1</b></td><td><code>npm run build</code> y abrir la URL de Vercel</td><td>sin errores; la página abre</td></tr>
+    <tr class="paso"><td><b>2</b></td><td><code>npx tsx scripts/verificar-reglas.ts</code></td><td>403 en lecturas y escrituras anónimas</td></tr>
+    <tr class="paso"><td><b>A</b></td><td><code>curl -i …/api/procesos</code> sin cookie</td><td>401 (y las páginas redirigen a /login)</td></tr>
+    <tr class="paso"><td><b>4</b></td><td><code>npm test</code></td><td>todas las pruebas pasan</td></tr>
+    <tr class="paso"><td><b>5·3·6·7</b></td><td><code>npx tsx scripts/probar-http.ts &lt;url&gt; &lt;carpeta&gt;</code></td><td>login, subida, 10/10 aceptadas, Excel de 4 hojas</td></tr>
+    <tr class="paso"><td><b>6</b></td><td><code>npx tsx scripts/probar-pipeline.ts …</code></td><td>reproceso: 10/10 duplicadas, sin filas nuevas</td></tr>
+    <tr class="paso"><td><b>8</b></td><td><code>npx tsx scripts/probar-ui.ts …</code> (navegador real)</td><td>0 errores de consola</td></tr>
+    <tr class="paso"><td><b>9</b></td><td><code>probar-correccion.ts</code> y <code>probar-revision-ui.ts</code></td><td>transacción y formulario OK; Excel regenerado</td></tr>
+    <tr class="paso"><td><b>D</b></td><td>revisar los <i>runtime logs</i> de Vercel</td><td>sin 500, 504 ni 413</td></tr>
+  </table>
+  <aside class="notas">
+    <b>La regla de oro:</b> una fase no está terminada hasta que su verificación se <b>ejecuta</b> y pasa; y si toca el servidor, se ejecuta también contra la URL desplegada.<br>
+    Estos scripts son los del repositorio de referencia; los estudiantes pueden escribir los suyos (la guía describe qué debe comprobar cada uno) o pedirle a su IA que los escriba y luego <b>leer qué hacen</b> antes de confiar en ellos.<br>
+    Los scripts de prueba limpian <b>solo lo que ellos mismos crean</b>; ninguno ejecuta el borrado total.
+  </aside>
+</section>
+
+<section class="slide" id="cierre">
+  <span class="sobre">Para terminar</span>
+  <h2>Lo que construyes… y por dónde seguir</h2>
+  <div class="cols2 crece" style="gap:24px">
+    <div class="col" style="gap:10px">
+      <h3>Lo que aprendiste a construir</h3>
+      <ul class="lista chica" style="gap:8px">
+        <li class="paso inicio">una automatización completa: <b>disparador, reglas, excepciones, registro y salida</b></li>
+        <li class="paso inicio">un sistema que <b>no duplica</b> aunque se repita (idempotencia)</li>
+        <li class="paso">una IA <b>rodeada de validaciones</b> y de una persona que revisa</li>
+        <li class="paso">métricas honestas para <b>medir si funciona</b></li>
+        <li class="paso">verificación <b>en el despliegue</b>, no solo en tu computador</li>
+      </ul>
+    </div>
+    <div class="col" style="gap:10px">
+      <h3>Ideas para seguir mejorando</h3>
+      <ul class="lista ok chica" style="gap:8px">
+        <li class="paso">un comando <code>verificar</code> que compare la base con el <code>verdad.json</code></li>
+        <li class="paso">una <b>cola de revisión manual</b>: corregir y aprobar las facturas dudosas</li>
+        <li class="paso">procesar sin depender del navegador abierto (tareas programadas)</li>
+        <li class="paso">subir la tasa de aceptación atacando los motivos de revisión más comunes</li>
+      </ul>
+      <div class="paso" style="margin-top:10px; display:flex; gap:16px; align-items:center; flex-wrap:wrap">
+        <a class="boton" href="01-automatizacion.html" style="font-size:21px; padding:10px 22px">← Volver al concepto</a>
+      </div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cierre:</b> vuelve a la pregunta de la primera presentación: ¿qué proceso repetitivo automatizarías ahora? Pide a cada estudiante que lo diga en una frase.<br>
+    <b>Tarea sugerida:</b> construir el proyecto fase por fase con su IA, ejecutar la verificación de cada fase y entregar la URL de su despliegue con la corrida de las 1000 facturas y su nota de cuota.<br>
+    <b>Evaluación sugerida:</b> no solo «¿funciona?», sino «¿puedes explicar por qué cada pieza está ahí?» (usa las preguntas «Por qué» de cada fase de la guía).
+  </aside>
+</section>
+</div></div>
+<div id="barra"><i></i></div>
+<div id="ayuda">← → avanzar · N notas del profesor · T tema · F pantalla completa</div>
+<div id="contador"></div>
+<div id="notas"></div>
+<script src="deck.js"></script>
+</body>
+</html>

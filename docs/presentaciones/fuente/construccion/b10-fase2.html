@@ -1,0 +1,27 @@
+<section class="slide" id="fase-2">
+  <span class="sobre">Fase 2 · Modelo de datos (Firestore)</span>
+  <h2>La unicidad sale del ID del documento</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 436" width="1152" height="424" role="img" aria-label="Colecciones de Firestore y cómo se relacionan">
+      <g class="paso inicio"><rect x="0" y="30" width="300" height="146" rx="12" class="caja verde"/><text x="150" y="60" class="t-b" text-anchor="middle">clientes</text><text x="150" y="86" class="t-xs t-b" text-anchor="middle" style="fill:var(--verde)">ID = documento (NIT/CC sin DV)</text><text x="20" y="116" class="t-xs">nombre, dv</text><text x="20" y="138" class="t-xs">creadoEn, primerProcesoId</text><text x="20" y="160" class="t-xs t-m">no pueden existir dos iguales</text></g>
+      <g class="paso inicio"><rect x="420" y="10" width="330" height="262" rx="12" class="caja azul"/><text x="585" y="40" class="t-b" text-anchor="middle">facturas</text><text x="585" y="66" class="t-xs t-b" text-anchor="middle" style="fill:var(--acento)">ID = SHA-256 de la imagen</text>
+        <text x="20" y="0"/><text x="440" y="96" class="t-xs">número · fecha · proveedor · NIT</text><text x="440" y="118" class="t-xs">clienteDocumento (null si no pasó el DV)</text><text x="440" y="140" class="t-xs">subtotal · iva · impoconsumo · total</text><text x="440" y="162" class="t-xs">estado: aceptada | revisión</text><text x="440" y="184" class="t-xs">motivos[] · confianzaOcr · uid</text><text x="440" y="206" class="t-xs">items[] (embebidos en la factura)</text><text x="440" y="236" class="t-xs t-m">el mismo archivo no se duplica</text>
+        <path class="flecha verde" d="M418 100 H302"/><text x="360" y="92" class="t-xs t-m" text-anchor="middle">cliente</text></g>
+      <g class="paso"><rect x="850" y="30" width="302" height="118" rx="12" class="caja ambar"/><text x="1001" y="60" class="t-b" text-anchor="middle">indices_numero</text><text x="1001" y="86" class="t-xs t-b" text-anchor="middle" style="fill:var(--ambar)">ID = número de factura</text><text x="870" y="116" class="t-xs">{ hashArchivo }</text><text x="870" y="136" class="t-xs t-m">hace único el número</text>
+        <path class="flecha ambar" d="M848 90 H752"/></g>
+      <g class="paso"><rect x="0" y="236" width="300" height="190" rx="12" class="caja violeta"/><text x="150" y="266" class="t-b" text-anchor="middle">procesos (un lote)</text><text x="20" y="296" class="t-xs">uid · carpeta · estado</text><text x="20" y="318" class="t-xs">totalArchivos · rutaExcel</text><text x="20" y="340" class="t-xs">metricas (Fase 8)</text>
+        <rect x="14" y="356" width="272" height="56" rx="10" class="caja" style="fill:var(--papel)"/><text x="150" y="380" class="t-xs t-b" text-anchor="middle">archivos = la cola de trabajo</text><text x="150" y="400" class="t-xs t-m" text-anchor="middle">subcolección, un doc por imagen</text>
+        <path class="flecha" d="M302 384 H418"/></g>
+      <g class="paso"><rect x="420" y="320" width="330" height="106" rx="12" class="caja vacia"/><text x="440" y="350" class="t-s t-b">Documento de la cola</text><text x="440" y="374" class="t-xs">estado · resultado · hashArchivo</text><text x="440" y="396" class="t-xs">disponibleDesde = arrendamiento</text><text x="440" y="416" class="t-xs t-m">(0 espera · ahora+5 min · MAX terminado)</text>
+        <path class="flecha" d="M585 318 V274"/><text x="600" y="302" class="t-xs t-m">hashArchivo</text></g>
+      <g class="paso"><rect x="850" y="186" width="302" height="240" rx="12" class="caja rojo"/><use href="#ico-candado" x="866" y="202" width="40" height="40" style="color: var(--rojo)"/><text x="916" y="230" class="t-b" style="font-size:19px">Reglas: denegar todo</text>
+        <text x="868" y="270" class="t-xs">Ningún navegador toca</text><text x="868" y="290" class="t-xs">Firestore directamente.</text><text x="868" y="322" class="t-xs">Todo pasa por el servidor,</text><text x="868" y="342" class="t-xs">que verifica la sesión.</text><text x="868" y="384" class="t-xs t-b">Se prueba con peticiones</text><text x="868" y="404" class="t-xs t-b">anónimas: deben dar 403.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Cambio mental respecto a SQL:</b> en Firestore no hay <code>UNIQUE</code>. La unicidad se consigue usando el valor único como <b>ID del documento</b> y creándolo dentro de una <b>transacción</b>.<br>
+    <b>Tres IDs inteligentes:</b> la factura se identifica por el hash (SHA-256) de su imagen; el cliente, por su documento (nunca por su nombre, porque el OCR altera los nombres); el número de factura tiene su propio índice. Así el mismo archivo no se guarda dos veces ni se crean clientes duplicados, aunque dos lotes lo intenten a la vez.<br>
+    <b>La cola</b> (subcolección <code>archivos</code>) guarda el estado de cada imagen; su campo <code>disponibleDesde</code> actúa como arrendamiento (lo veremos en la Fase 6).<br>
+    <b>Reglas:</b> «denegar todo» y se comprueba con peticiones anónimas, que deben recibir 403.
+  </aside>
+</section>

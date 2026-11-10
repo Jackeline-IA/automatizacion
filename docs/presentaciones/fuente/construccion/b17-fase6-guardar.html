@@ -1,0 +1,25 @@
+<section class="slide" id="fase-6b">
+  <span class="sobre">Fase 6 · Lotes y guardado (2 de 2)</span>
+  <h2>Guardar: una transacción que lee y luego escribe</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 400" width="1152" height="390" role="img" aria-label="Flujo de decisión del guardado transaccional de una factura">
+      <g class="paso inicio"><rect x="0" y="120" width="230" height="140" rx="12" class="caja azul"/><text x="115" y="150" class="t-b" text-anchor="middle">LEE (3 docs)</text><text x="115" y="180" class="t-xs" text-anchor="middle">facturas/{hash}</text><text x="115" y="202" class="t-xs" text-anchor="middle">indices_numero/{número}</text><text x="115" y="224" class="t-xs" text-anchor="middle">clientes/{documento}</text><text x="115" y="248" class="t-xs t-m" text-anchor="middle">todas las lecturas primero</text></g>
+      <g class="paso"><path class="flecha" d="M232 190 H280"/><path d="M282 190 L412 120 L542 190 L412 260 Z" class="caja ambar"/><text x="412" y="184" class="t-xs t-b" text-anchor="middle">¿ya existe</text><text x="412" y="204" class="t-xs t-b" text-anchor="middle">esa imagen?</text>
+        <path class="flecha" d="M412 262 V318"/><text x="426" y="296" class="t-xs t-b">sí</text>
+        <rect x="302" y="320" width="220" height="68" rx="12" class="caja"/><text x="412" y="350" class="t-s t-b" text-anchor="middle">duplicada</text><text x="412" y="372" class="t-xs t-m" text-anchor="middle">no se escribe nada</text></g>
+      <g class="paso"><path class="flecha" d="M544 190 H592"/><text x="568" y="178" class="t-xs t-b" text-anchor="middle">no</text><path d="M594 190 L724 120 L854 190 L724 260 Z" class="caja ambar"/><text x="724" y="184" class="t-xs t-b" text-anchor="middle">¿ese número ya</text><text x="724" y="204" class="t-xs t-b" text-anchor="middle">está en otra?</text>
+        <path class="flecha" d="M724 262 V318"/><text x="738" y="296" class="t-xs t-b">sí</text>
+        <rect x="604" y="320" width="240" height="68" rx="12" class="caja ambar"/><text x="724" y="350" class="t-s t-b" text-anchor="middle">revisión</text><text x="724" y="372" class="t-xs t-m" text-anchor="middle">«número repetido»</text></g>
+      <g class="paso"><path class="flecha verde" d="M856 190 H904"/><text x="880" y="178" class="t-xs t-b" text-anchor="middle">no</text><rect x="906" y="90" width="246" height="200" rx="12" class="caja verde"/><text x="1029" y="122" class="t-b" text-anchor="middle">ESCRIBE</text>
+        <text x="1029" y="154" class="t-xs" text-anchor="middle">factura (con sus ítems)</text><text x="1029" y="176" class="t-xs" text-anchor="middle">índice del número</text><text x="1029" y="198" class="t-xs" text-anchor="middle">cliente, solo si no existe</text><text x="1029" y="220" class="t-xs" text-anchor="middle">archivo → ok</text><text x="1029" y="242" class="t-xs" text-anchor="middle">+1 en las métricas del lote</text><text x="1029" y="272" class="t-xs t-m" text-anchor="middle">todo o nada</text></g>
+      <g class="paso"><rect x="0" y="8" width="1152" height="54" rx="12" class="caja vacia"/><text x="576" y="42" class="t-s t-b" text-anchor="middle">IDs deterministas (hash, documento, número) + transacción = repetir cualquier paso no duplica nada</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>La idea más importante de la fase:</b> la <b>idempotencia</b>. Repetir cualquier paso (por un reintento, una caída o un reproceso) no puede duplicar ni perder nada.<br>
+    <b>Cómo se logra:</b> IDs deterministas (el hash de la imagen, el documento del cliente, el número de factura) y una <b>transacción</b> que primero lee los tres documentos y después escribe.<br>
+    <b>Dos decisiones de diseño:</b> si la <i>misma imagen</i> ya existe, es duplicada y no se escribe nada. Pero si solo el <i>número</i> coincide con el de otra imagen distinta, <b>no se descarta</b>: puede ser un número mal leído y descartarla perdería una factura; queda en revisión con ese motivo.<br>
+    El cliente se crea solo si no existe y solo si su documento pasa el dígito de verificación.<br>
+    <b>Atajo previo al OCR:</b> antes de leer la imagen, se mira si su hash ya existe; reprocesar una carpeta pasa de minutos a segundos.
+  </aside>
+</section>

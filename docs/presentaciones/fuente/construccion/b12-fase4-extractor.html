@@ -1,0 +1,47 @@
+<section class="slide" id="fase-4a">
+  <span class="sobre">Fase 4 · Extractor (lógica pura)</span>
+  <h2>Del texto desordenado del OCR a campos validados</h2>
+  <div class="fila crece" style="gap:22px">
+    <div class="col" style="flex:0 0 430px; gap:8px">
+      <p class="mini">Texto real que entrega el OCR (una factura, recortada)</p>
+      <div class="term paso inicio" style="font-size:15.5px; line-height:1.5; padding:12px 16px">COMUNICACIONES MÓVILES ZÚÑIGA ORTEGA
+LTDA.
+<span class="n">NIT: 821361310-5</span>
+FACTURA ELECTRONICA DE VENTA
+<span class="n">No. FE-000009</span>
+Res. DIAN 18764280109817
+17 de febrero de 2026 Pref. FE
+<span class="n">Fecha: 9 de julio de 2026</span>
+CLIENTE: Corporación Montoya Luevano
+<span class="n">NIT: 845990123-1</span>
+<span class="n">SUBTOTAL $585.000</span>
+<span class="n">IVA 19% $111.150</span>
+<span class="n">IMPOCONSUMO 4% $23.400</span>
+<span class="n">TOTAL $719.550</span></div>
+      <p class="mini">Ojo: hay otra fecha (la de la resolución DIAN) y cifras largas que NO son lo buscado.</p>
+    </div>
+    <svg viewBox="0 0 660 460" width="640" height="446" role="img" aria-label="Tuberías: normalizar, extraer, validar y decidir">
+      <g class="paso inicio"><rect x="0" y="0" width="660" height="78" rx="12" class="caja azul"/><text x="20" y="32" class="t-b">1 · Normalizar el texto</text><text x="20" y="60" class="t-xs">«$496 .000» → «$496.000» · «3$146.500» → «3 $146.500» · quitar líneas vacías</text></g>
+      <path class="flecha" d="M330 80 V102"/>
+      <g class="paso"><rect x="0" y="104" width="660" height="124" rx="12" class="caja azul"/><text x="20" y="136" class="t-b">2 · Extraer cada campo</text>
+        <rect x="20" y="152" width="96" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="68" y="171" class="t-xs t-b" text-anchor="middle">número</text>
+        <rect x="124" y="152" width="144" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="196" y="171" class="t-xs t-b" text-anchor="middle">fecha de emisión</text>
+        <rect x="276" y="152" width="100" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="326" y="171" class="t-xs t-b" text-anchor="middle">proveedor</text>
+        <rect x="384" y="152" width="108" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="438" y="171" class="t-xs t-b" text-anchor="middle">NIT y cliente</text>
+        <rect x="500" y="152" width="64" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="532" y="171" class="t-xs t-b" text-anchor="middle">ítems</text>
+        <rect x="572" y="152" width="72" height="28" rx="14" class="caja" style="fill:var(--papel)"/><text x="608" y="171" class="t-xs t-b" text-anchor="middle">totales</text>
+        <text x="20" y="206" class="t-xs t-m">lo que no se encuentra queda en null: nunca se inventa un valor</text></g>
+      <path class="flecha" d="M330 230 V252"/>
+      <g class="paso"><rect x="0" y="254" width="660" height="86" rx="12" class="caja ambar"/><text x="20" y="286" class="t-b">3 · Validar con reglas de negocio</text><text x="20" y="314" class="t-xs">IVA 19 % · INC 4 % · ítems = subtotal · subtotal + IVA + INC = total</text><text x="20" y="332" class="t-xs">dígito de verificación del NIT · campos obligatorios · razón social legible</text></g>
+      <path class="flecha verde" d="M180 342 V372"/><path class="flecha rojo" d="M480 342 V372"/>
+      <g class="paso"><rect x="0" y="374" width="320" height="76" rx="12" class="caja verde"/><use href="#ico-check" x="14" y="392" width="38" height="38" style="color: var(--verde)"/><text x="62" y="408" class="t-s t-b">motivos = []</text><text x="62" y="432" class="t-xs">→ aceptada</text>
+        <rect x="340" y="374" width="320" height="76" rx="12" class="caja rojo"/><use href="#ico-alerta" x="354" y="392" width="38" height="38" style="color: var(--rojo)"/><text x="402" y="408" class="t-s t-b">hay motivos</text><text x="402" y="432" class="t-xs">→ revisión (no se pierde)</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Es la fase donde más se aprende.</b> La lógica es una función pura: recibe texto, devuelve campos y motivos. Sin OCR ni base de datos, se prueba con texto de ejemplo.<br>
+    Mira el texto de la izquierda: es lo que entrega el OCR de verdad (con su desorden). El extractor debe tomar la fecha de <b>emisión</b> (no la de la resolución DIAN), el número de factura (no el rango), el NIT del proveedor y el del cliente, y los importes.<br>
+    <b>Validar</b> es lo que permite confiar: si las cuentas no cuadran, la factura no se acepta a ciegas; queda «en revisión».<br>
+    <b>Método:</b> primero mira textos reales; escribe la prueba que falla; luego el código mínimo que la hace pasar.
+  </aside>
+</section>

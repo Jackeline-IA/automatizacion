@@ -1,0 +1,33 @@
+<section class="slide" id="fase-8c">
+  <span class="sobre">Fase 8 · Interfaz (3 de 3)</span>
+  <h2>Borrar con seguridad y diseño sin depender del color</h2>
+  <div class="fila crece" style="gap:24px">
+    <div class="col" style="gap:10px; flex:1">
+      <h3 class="paso inicio">«Borrar todo» para que los estudiantes practiquen</h3>
+      <div class="card paso inicio" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">1</span> exige <b>sesión</b></p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">2</span> hay que <b>escribir BORRAR</b> exactamente</p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px">3</span> se niega si hay lotes <b>procesándose</b> (pide confirmación extra)</p></div>
+      <div class="card rojo paso" style="padding:10px 16px"><p class="peq"><span class="num" style="width:30px;height:30px;font-size:17px;background:var(--rojo)">4</span> borra <b>todo</b>: Firestore y Blob, de todos los usuarios. Irreversible.</p></div>
+      <div class="aviso paso" style="font-size:17px">Una prueba automática <b>no debe ejecutarlo</b> contra datos reales: prueba el botón tú mismo.</div>
+    </div>
+    <svg viewBox="0 0 520 400" width="500" height="386" style="flex:none" role="img" aria-label="Paleta de colores por rol y estados con icono y texto">
+      <g class="paso inicio"><text x="0" y="22" class="t-s t-b t-m">COLORES POR ROL (claro y oscuro)</text>
+        <rect x="0" y="36" width="76" height="52" rx="10" class="relleno"/><text x="38" y="106" class="t-xs" text-anchor="middle">acento</text>
+        <rect x="88" y="36" width="76" height="52" rx="10" class="relleno verde"/><text x="126" y="106" class="t-xs" text-anchor="middle">bueno</text>
+        <rect x="176" y="36" width="76" height="52" rx="10" class="relleno rojo"/><text x="214" y="106" class="t-xs" text-anchor="middle">malo</text>
+        <rect x="264" y="36" width="76" height="52" rx="10" class="relleno ambar"/><text x="302" y="106" class="t-xs" text-anchor="middle">aviso</text>
+        <rect x="352" y="36" width="76" height="52" rx="10" class="relleno muted"/><text x="390" y="106" class="t-xs" text-anchor="middle">texto 2</text>
+        <rect x="440" y="36" width="76" height="52" rx="10" class="caja"/><text x="478" y="106" class="t-xs" text-anchor="middle">superficie</text></g>
+      <g class="paso"><text x="0" y="158" class="t-s t-b t-m">NUNCA SOLO COLOR: ICONO + TEXTO</text>
+        <rect x="0" y="174" width="250" height="56" rx="12" class="caja verde"/><use href="#ico-check" x="14" y="188" width="28" height="28" style="color: var(--verde)"/><text x="52" y="209" class="t-s t-b">Aceptada</text>
+        <rect x="266" y="174" width="250" height="56" rx="12" class="caja rojo"/><use href="#ico-equis" x="280" y="188" width="28" height="28" style="color: var(--rojo)"/><text x="318" y="209" class="t-s t-b">Revisión</text>
+        <rect x="0" y="244" width="516" height="56" rx="12" class="caja"/><text x="16" y="266" class="t-xs t-b">Leídas correctamente</text><text x="500" y="266" class="t-xs t-b" text-anchor="end">91,5 %</text><rect x="16" y="278" width="484" height="10" rx="5" class="caja"/><rect x="16" y="278" width="443" height="10" rx="5" class="relleno verde"/></g>
+      <g class="paso"><text x="0" y="338" class="t-xs">• importes con cifras tabulares (alineadas)</text><text x="0" y="362" class="t-xs">• tablas largas con scroll horizontal</text><text x="0" y="386" class="t-xs">• modo oscuro automático según el sistema</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Borrar todo:</b> lo pidió el profesor para que los estudiantes puedan «jugar» desde cero. Por eso la acción es deliberadamente incómoda: requiere sesión, una confirmación escrita y un chequeo de que no haya lotes procesándose. Es una acción destructiva e irreversible; las pruebas automáticas no deben ejecutarla contra datos reales (limpian solo lo que ellas mismas crean).<br>
+    <b>Diseño accesible:</b> los colores se definen por <b>rol</b> (acento, bueno, malo, aviso) con variantes para modo oscuro; los estados siempre llevan icono y texto, porque hay personas que no distinguen ciertos colores y porque un proyector puede deformarlos.<br>
+    Este es el tipo de decisión que una IA no toma por ti si no se lo pides: dilo explícitamente en tus prompts.
+  </aside>
+</section>

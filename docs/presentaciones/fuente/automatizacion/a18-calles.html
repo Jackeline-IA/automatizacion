@@ -1,0 +1,34 @@
+<section class="slide" id="calles">
+  <span class="sobre">La empresa por dentro</span>
+  <h2>Los procesos atraviesan varias áreas</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 452" width="1152" height="440" role="img" aria-label="Diagrama de calles: comprar y pagar a un proveedor, pasando por cuatro áreas">
+      <g class="paso inicio">
+        <rect x="0" y="0" width="1152" height="104" class="caja"/><rect x="0" y="0" width="150" height="104" class="caja azul"/><text x="75" y="58" class="t-b" text-anchor="middle" style="font-size:19px">Compras</text>
+        <rect x="0" y="116" width="1152" height="104" class="caja"/><rect x="0" y="116" width="150" height="104" class="caja azul"/><text x="75" y="174" class="t-b" text-anchor="middle" style="font-size:19px">Almacén</text>
+        <rect x="0" y="232" width="1152" height="104" class="caja"/><rect x="0" y="232" width="150" height="104" class="caja azul"/><text x="75" y="282" class="t-b" text-anchor="middle" style="font-size:19px">Contabilidad</text>
+        <rect x="0" y="348" width="1152" height="104" class="caja"/><rect x="0" y="348" width="150" height="104" class="caja azul"/><text x="75" y="398" class="t-b" text-anchor="middle" style="font-size:19px">Tesorería</text>
+      </g>
+      <g class="paso inicio"><rect x="190" y="26" width="190" height="52" rx="10" class="caja solida"/><text x="285" y="58" class="t-s t-b t-w" text-anchor="middle">Hace el pedido</text></g>
+      <g class="paso"><path class="flecha" d="M285 78 V142 H410"/><use href="#ico-alerta" x="262" y="94" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="412" y="142" width="190" height="52" rx="10" class="caja solida"/><text x="507" y="174" class="t-s t-b t-w" text-anchor="middle">Recibe la mercancía</text></g>
+      <g class="paso"><path class="flecha" d="M507 194 V258 H632"/><use href="#ico-alerta" x="484" y="210" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="634" y="258" width="190" height="52" rx="10" class="caja solida-v"/><text x="729" y="290" class="t-s t-b t-w" text-anchor="middle">Registra la factura</text>
+        <text x="729" y="246" class="t-xs t-b" style="fill:var(--verde)" text-anchor="middle">★ nuestro proyecto</text></g>
+      <g class="paso"><path class="flecha" d="M826 284 H864"/>
+        <rect x="866" y="258" width="190" height="52" rx="10" class="caja solida"/><text x="961" y="290" class="t-s t-b t-w" text-anchor="middle">Aprueba el pago</text></g>
+      <g class="paso"><path class="flecha" d="M961 310 V374 H982"/><use href="#ico-alerta" x="938" y="326" width="26" height="26" style="color: var(--ambar)"/>
+        <rect x="984" y="374" width="150" height="52" rx="10" class="caja solida"/><text x="1059" y="406" class="t-s t-b t-w" text-anchor="middle">Paga</text></g>
+      <g class="paso"><rect x="480" y="10" width="640" height="88" rx="12" class="caja ambar"/>
+        <use href="#ico-alerta" x="496" y="30" width="38" height="38" style="color: var(--ambar)"/>
+        <text x="548" y="46" class="t-b">Cada traspaso entre áreas</text><text x="548" y="72" class="t-s">= una espera, un papel extraviado o un error de digitación.</text>
+        <text x="548" y="92" class="t-xs t-m">Los traspasos son los mejores sitios para buscar qué automatizar.</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Diagrama de calles (swimlane):</b> cada calle es un área; las flechas son traspasos de trabajo entre áreas. Léelo de izquierda a derecha con →.<br>
+    <b>Idea fuerte:</b> los procesos no viven dentro de un área, la cruzan. Y en cada traspaso aparece lo malo: esperas, pérdidas, errores. Ahí es donde la automatización suele dar más resultado.<br>
+    <b>Nuestro proyecto vive en el cuadro verde:</b> «Registra la factura», en Contabilidad. Antes de llegar ahí, alguien hizo el pedido y alguien recibió la mercancía; después, alguien aprueba y alguien paga.<br>
+    Pregunta: «¿qué pasa si la factura llega mal registrada?» (se paga mal, se descuadra la contabilidad, hay que rehacer).
+  </aside>
+</section>

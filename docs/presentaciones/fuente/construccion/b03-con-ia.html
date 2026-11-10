@@ -1,0 +1,27 @@
+<section class="slide" id="con-ia">
+  <span class="sobre">Cómo vamos a trabajar</span>
+  <h2>Con IA, pero entendiendo lo que se construye</h2>
+  <div class="fila crece">
+    <div class="col" style="gap:12px; flex:1">
+      <div class="card verde paso inicio"><h3>Tu IA debe</h3><ul class="lista ok peq" style="gap:5px"><li>leer <code>AGENTS.md</code> / <code>CLAUDE.md</code> antes de empezar</li><li>trabajar <b>una fase a la vez</b></li><li>mirar la documentación de la versión instalada</li><li>mostrar la salida <b>real</b> de la verificación</li></ul></div>
+      <div class="card rojo paso"><h3>Y nunca</h3><ul class="lista mal peq" style="gap:5px"><li>imprimir o pedirte pegar credenciales</li><li>cambiar una prueba para que pase</li><li>borrar datos sin permiso</li></ul></div>
+    </div>
+    <div class="col" style="gap:12px; flex:1.15">
+      <div class="card azul paso"><h3>Tú debes</h3><ul class="lista peq" style="gap:5px"><li>ejecutar la verificación <b>tú mismo</b>, al menos una vez</li><li>pedir el <b>porqué</b> de cada decisión</li><li>leer el <code>git diff</code> antes del commit</li></ul></div>
+      <div class="term paso" style="font-size:16.5px; white-space:pre-wrap; line-height:1.45"><span class="c"># Prompt de arranque (copiar y pegar)</span>
+Lee AGENTS.md completo. Hoy trabajamos la
+<span class="n">Fase N</span>. Antes de escribir código:
+1) dime en máx. 8 líneas qué vas a construir y por qué,
+2) lista los archivos que vas a tocar,
+3) dime qué comando demuestra que terminó.
+Luego ejecuta la verificación y pégame la salida
+real. No avances de fase hasta que yo lo diga.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Postura sobre la IA en clase:</b> se permite y se anima, con una condición: tú diriges. Una IA escribe rápido y se equivoca con seguridad; sin verificación, el error llega a producción.<br>
+    <b>Señales de una IA que se equivoca:</b> usa funciones que no existen en la versión instalada; dice «debería funcionar» sin ejecutar; modifica las pruebas en vez del código; toca archivos que no tienen que ver.<br>
+    <b>Anécdota real del proyecto:</b> una IA imprimió la clave privada de Firebase al intentar «resumir» el archivo de configuración. Por eso la regla de nunca imprimir <code>.env</code>.<br>
+    Los archivos AGENTS.md y CLAUDE.md contienen exactamente la misma guía paso a paso (cualquier agente de IA puede leerla).
+  </aside>
+</section>

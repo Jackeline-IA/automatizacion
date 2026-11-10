@@ -1,0 +1,31 @@
+<section class="slide" id="medir">
+  <span class="sobre">Objetivo de la automatización</span>
+  <h2>Si no se mide, no se sabe si funcionó</h2>
+  <div class="fila crece">
+    <div class="col" style="flex:1.1; gap:12px">
+      <div class="cols2" style="gap:12px">
+        <div class="card azul paso inicio"><h3>Tiempo</h3><p class="peq">minutos de persona por unidad</p></div>
+        <div class="card verde paso inicio"><h3>Calidad</h3><p class="peq">% bien hecho a la primera</p></div>
+        <div class="card ambar paso inicio"><h3>Costo</h3><p class="peq">pesos por unidad procesada</p></div>
+        <div class="card violeta paso inicio"><h3>Capacidad</h3><p class="peq">cuántas unidades al día</p></div>
+      </div>
+      <div class="aviso azul paso"><b>Fórmula básica</b><br>Ahorro de tiempo = (tiempo antes − tiempo después) × volumen</div>
+      <p class="peq paso">En nuestro proyecto: <b>leídas correctamente / total</b> y <b>mal leídas / total</b>, por lote.</p>
+    </div>
+    <div class="col" style="flex:1.1">
+      <table class="t paso">
+        <tr><th colspan="3">Ejemplo ilustrativo: 1000 facturas</th></tr>
+        <tr><td></td><td><b>A mano</b></td><td><b>Automatizado</b></td></tr>
+        <tr><td>Trabajo de la máquina</td><td>—</td><td>≈ 30 min</td></tr>
+        <tr><td>Trabajo de una persona</td><td>≈ 50 h <span class="mini">(3 min c/u)</span></td><td>≈ 5 h <span class="mini">(revisa ~10 %)</span></td></tr>
+        <tr><td>Ahorro de persona</td><td colspan="2"><b>≈ 45 horas</b> por cada 1000 facturas</td></tr>
+      </table>
+      <div class="aviso paso" style="font-size:19px">Cifras de ejemplo con supuestos explícitos (3 min por factura, 10 % a revisión). Con datos reales, <b>mide tú</b> el antes y el después.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Por qué medir:</b> sin una línea base («antes»), no se puede demostrar que la automatización mejoró algo, ni detectar cuándo empieza a fallar.<br>
+    Recorre el ejemplo: 1000 facturas × 3 min = 50 h a mano. Automatizado: la máquina trabaja ~30 min y una persona revisa solo el ~10 % dudoso (100 × 3 min = 5 h). Ahorro ≈ 45 h. Insiste en que son <b>supuestos</b> para razonar.<br>
+    <b>Conexión con el proyecto:</b> la pestaña «Métricas» muestra, por lote, cuántas facturas se leyeron correctamente y cuántas no. Esa es la vara con la que juzgamos si la automatización sirve.
+  </aside>
+</section>

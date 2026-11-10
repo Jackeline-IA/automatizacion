@@ -1,0 +1,26 @@
+<section class="slide" id="fase-8b">
+  <span class="sobre">Fase 8 · Interfaz (2 de 3)</span>
+  <h2>Métricas: contadores dentro de la transacción</h2>
+  <div class="fila crece" style="gap:22px">
+    <svg viewBox="0 0 560 410" width="540" height="396" style="flex:none" role="img" aria-label="Una transacción que guarda la factura y suma los contadores del lote">
+      <g class="paso inicio"><rect x="0" y="0" width="560" height="410" rx="16" class="caja vacia"/><text x="20" y="34" class="t-b">Transacción de Firestore · todo o nada</text>
+        <rect x="24" y="52" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="82" class="t-s t-b">crear la factura (con sus ítems)</text>
+        <rect x="24" y="110" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="140" class="t-s t-b">crear el índice del número</text>
+        <rect x="24" y="168" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="198" class="t-s t-b">crear el cliente (si es nuevo)</text>
+        <rect x="24" y="226" width="512" height="48" rx="10" class="caja azul"/><text x="40" y="256" class="t-s t-b">marcar el archivo como terminado</text></g>
+      <g class="paso"><rect x="24" y="288" width="512" height="100" rx="10" class="caja verde"/><text x="40" y="318" class="t-s t-b">+1 en las métricas del lote (increment)</text><text x="40" y="344" class="t-xs">aceptadas.n · aceptadas.subtotal · iva · impoconsumo · total</text><text x="40" y="364" class="t-xs">y el desglose por NIT del proveedor (solo aceptadas)</text></g>
+    </svg>
+    <div class="col" style="gap:12px">
+      <div class="card verde paso"><div class="fila" style="align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Leída correctamente</h3><p class="peq">pasó <b>todas</b> las validaciones</p></div></div></div>
+      <div class="card rojo paso"><div class="fila" style="align-items:center"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true" style="flex:none"><use href="#ico-equis" width="100" height="100" style="color: var(--rojo)"/></svg><div><h3>Mal leída</h3><p class="peq">quedó en revisión o dio error</p></div></div></div>
+      <div class="card paso"><p class="peq">Las <b>duplicadas</b> no cuentan: ya estaban. Abrir el panel cuesta <b>1 lectura por lote</b>, no una por factura.</p></div>
+      <div class="aviso paso" style="font-size:18px"><b>Honestidad:</b> «correcta» no se compara con una respuesta conocida; un error que cuadre aritméticamente podría pasar.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cómo darle métricas a un proceso sin recorrer miles de facturas:</b> contadores que se actualizan <b>en la misma transacción</b> que guarda cada factura. Como son parte de la misma operación «todo o nada», nunca se desincronizan de los datos.<br>
+    <b>Costo:</b> abrir el panel lee un documento por lote, no una factura por cada una. Con 1000 facturas son 10 lecturas, no 1000.<br>
+    <b>Definiciones (hay que ponerlas en la interfaz):</b> leída correctamente = pasó todas las validaciones; mal leída = revisión o error; porcentaje sobre las facturas distintas procesadas.<br>
+    <b>Humildad con los números:</b> en el conjunto del curso, 875 de 1000 pasaron la validación; de esas, 3 tenían un error que la validación no detectó (por ejemplo, un dígito mal leído en el número de factura). La métrica mide aceptación, no exactitud perfecta.
+  </aside>
+</section>

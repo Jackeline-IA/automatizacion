@@ -1,0 +1,19 @@
+<section class="slide" id="resultados">
+  <span class="sobre">Resultados medidos</span>
+  <h2>Qué se midió de verdad (y qué no)</h2>
+  <div class="cols3" style="gap:14px">
+    <div class="card verde paso inicio"><span class="peq muted">Lectura automática de las 1000 facturas</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">88 %</span><span class="peq">875 aceptadas · 125 a revisión (40 a propósito)</span></div>
+    <div class="card ambar paso inicio"><span class="peq muted">Aceptadas con un error no detectado</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">3</span><span class="peq">de 875 (872 totalmente correctas)</span></div>
+    <div class="card azul paso inicio"><span class="peq muted">Subida de 1000 imágenes (108 MB, conjunto anterior)</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">68 s</span><span class="peq">10 lotes, por la API · sin bloquearse</span></div>
+    <div class="card azul paso"><span class="peq muted">200 facturas, 2 lotes, en producción</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">≈ 7 min</span><span class="peq">94/100 correctas en cada lote</span></div>
+    <div class="card violeta paso"><span class="peq muted">Reprocesar las mismas imágenes</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">0</span><span class="peq">duplicados (10/10 duplicadas)</span></div>
+    <div class="card paso"><span class="peq muted">Pruebas automáticas del proyecto</span><span class="cifra" style="font-size:44px; font-weight:800; line-height:1.1">98</span><span class="peq">extractor, métricas, revisión manual, documentación…</span></div>
+  </div>
+  <div class="aviso paso" style="font-size:19px"><b>Pendiente (no medido):</b> procesar las 1000 completas en producción (estimado: 25 a 35 minutos y ≈ 5000 lecturas / 6000 escrituras de cuota) y probar el botón «Borrar todo» contra la base real.</div>
+  <aside class="notas">
+    <b>Honestidad con los números es parte de la lección.</b><br>
+    El 88 % es la medición del extractor sobre las 1000 facturas del curso (sin base de datos): 875 aceptadas, 125 a revisión; de las aceptadas, 872 totalmente correctas y 3 con un error que la validación no pudo ver. Una muestra de 100 del mismo conjunto había dado 85 %: las muestras pequeñas engañan.<br>
+    El 94/100 y los 7 minutos son de una prueba en producción (Vercel Hobby) con 200 facturas en dos lotes. La subida de 1000 se midió bloqueando el OCR a propósito para no gastar cuota.<br>
+    <b>Lo que no se hizo</b> está dicho en la franja amarilla. Pide a los estudiantes que, cuando terminen, ejecuten la corrida completa y comparen sus cifras con estas.
+  </aside>
+</section>

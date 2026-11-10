@@ -1,0 +1,22 @@
+<section class="slide" id="restricciones">
+  <span class="sobre">Por qué así</span>
+  <h2>Cuatro restricciones de Vercel moldean el diseño</h2>
+  <div class="crece centrado">
+    <svg viewBox="0 0 1152 440" width="1152" height="428" role="img" aria-label="Cuatro restricciones y la decisión de diseño que provoca cada una">
+      <text x="260" y="16" class="t-s t-b t-m" text-anchor="middle">RESTRICCIÓN</text><text x="860" y="16" class="t-s t-b t-m" text-anchor="middle">DECISIÓN DE DISEÑO</text>
+      <g class="paso inicio"><rect x="0" y="30" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-reloj" x="14" y="48" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="64" class="t-b">Funciones efímeras</text><text x="76" y="92" class="t-s">máximo 300 s por invocación</text>
+        <path class="flecha" d="M522 73 H576"/><rect x="580" y="30" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="64" class="t-b">Lotes pequeños e idempotentes</text><text x="600" y="92" class="t-s">el estado vive en la base de datos; el motor pide más</text></g>
+      <g class="paso"><rect x="0" y="136" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-documento" x="14" y="154" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="170" class="t-b">Cuerpo de petición ≤ 4,5 MB</text><text x="76" y="198" class="t-s">una sola petición no puede traer 1000 imágenes</text>
+        <path class="flecha" d="M522 179 H576"/><rect x="580" y="136" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="170" class="t-b">Una imagen por petición (≤ 4 MB)</text><text x="600" y="198" class="t-s">la API valida cada archivo y lo guarda en Blob</text></g>
+      <g class="paso"><rect x="0" y="242" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-candado" x="14" y="260" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="276" class="t-b">Disco de solo lectura</text><text x="76" y="304" class="t-s">no se puede guardar nada en el servidor</text>
+        <path class="flecha" d="M522 285 H576"/><rect x="580" y="242" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="276" class="t-b">Blob + Firestore para todo lo persistente</text><text x="600" y="304" class="t-s">incluido el Excel, que se descarga desde Blob</text></g>
+      <g class="paso"><rect x="0" y="348" width="520" height="86" rx="12" class="caja rojo"/><use href="#ico-engranaje" x="14" y="366" width="48" height="48" style="color: var(--rojo)"/><text x="76" y="382" class="t-b">1 vCPU en el plan Hobby</text><text x="76" y="410" class="t-s">un pool de hilos propio no acelera</text>
+        <path class="flecha" d="M522 391 H576"/><rect x="580" y="348" width="572" height="86" rx="12" class="caja verde"/><text x="600" y="382" class="t-b">Paralelismo con invocaciones concurrentes</text><text x="600" y="410" class="t-s">el motor lanza 3 llamadas «lote» a la vez</text></g>
+    </svg>
+  </div>
+  <aside class="notas">
+    <b>Si solo recuerdan una diapositiva de diseño, que sea esta.</b> Cada decisión rara del proyecto sale de una de estas cuatro restricciones.<br>
+    Pregunta antes de revelar cada decisión: «si la función solo puede vivir 300 segundos y hay 1000 facturas, ¿cómo lo harías?». Deja que propongan antes de mostrar la respuesta.<br>
+    <b>Consecuencia de seguridad:</b> como no hay explorador de carpetas del servidor, desaparece ese riesgo; pero cualquiera con la URL podría gastar la cuota; por eso el login se construye <b>antes</b> de la subida.
+  </aside>
+</section>

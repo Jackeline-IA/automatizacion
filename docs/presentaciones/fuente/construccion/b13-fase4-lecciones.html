@@ -1,0 +1,29 @@
+<section class="slide" id="fase-4b">
+  <span class="sobre">Fase 4 · Extractor (lógica pura)</span>
+  <h2>Impuestos, dígito de verificación y lecciones</h2>
+  <div class="fila crece" style="gap:22px">
+    <div class="col" style="flex:0.95; gap:12px">
+      <div class="card azul paso inicio"><h3>Impoconsumo (INC) 4 %</h3><p class="peq">Solo en telefonía móvil y datos; sobre el valor <b>sin IVA</b>. Convive con el IVA (19 %):</p>
+        <p class="peq" style="margin-top:6px"><b>total = subtotal + IVA + impoconsumo</b></p>
+        <p class="peq cifra">585.000 + 111.150 + 23.400 = <b>719.550</b></p></div>
+      <div class="card violeta paso"><h3>Dígito de verificación del NIT</h3><p class="peq">pesos 3, 7, 13, 17, 19, 23, 29… de derecha a izquierda; <b>r = suma mod 11</b>; <b>dv = r &gt; 1 ? 11 − r : r</b></p><p class="peq cifra">890903938 → <b>8</b> · 860034313 → <b>7</b></p><p class="mini">Detecta ~98 % de los errores de un dígito, no todos.</p></div>
+    </div>
+    <div class="col" style="flex:1.1; gap:10px">
+      <h3 class="paso inicio">Lecciones que salieron de errores verdaderos</h3>
+      <ul class="lista mal chica" style="gap:7px">
+        <li class="paso"><b>Falsos positivos de palabras</b>: «Mo<u>nit</u>or» contiene «nit»; «<u>Imp</u>resora» se tomó por impoconsumo; «Responsable de IVA» por la línea del IVA.</li>
+        <li class="paso"><b>Etiquetas pegadas</b>: <code>IVA19%</code> sin espacio.</li>
+        <li class="paso"><b>Razón social partida</b> en dos líneas con el título de la factura en medio.</li>
+        <li class="paso"><b>Fechas y cifras largas</b> que no son lo buscado: vencimiento, resolución, rango, CUFE.</li>
+        <li class="paso"><b>Una dirección</b> («Cra 115 $ 48-7») leída como ítem.</li>
+        <li class="paso"><b>Una cantidad mal leída</b> que la aritmética puede reparar.</li>
+      </ul>
+      <div class="aviso paso" style="font-size:18px"><b>Mide con facturas nuevas:</b> 98 % → 82 % → (tras arreglarlo) 93 %.</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Contexto tributario:</b> el IVA general es del 19 %; el impoconsumo del 4 % aplica a telefonía móvil y datos y se calcula sobre el valor sin IVA; en esas facturas el total es subtotal + IVA + impoconsumo. Las tarifas se dejan como constantes parametrizadas y se verifican con un contador.<br>
+    <b>El DV:</b> es el algoritmo oficial de la DIAN; sirve para detectar NIT mal leídos (si el DV no cuadra, la factura va a revisión y no se crea ningún cliente). No es una garantía: detecta cerca del 98 % de los errores de un dígito.<br>
+    <b>Las lecciones</b> son anécdotas verdaderas del desarrollo: cada una terminó en una prueba automática. Insiste en la última: sin medir con datos nuevos, uno cree que ya terminó.
+  </aside>
+</section>

@@ -1,0 +1,19 @@
+<section class="slide" id="errores-reales">
+  <span class="sobre">Lo que te va a pasar (y ya nos pasó)</span>
+  <h2>Errores reales, causa y solución</h2>
+  <table class="t" style="font-size:19.5px">
+    <tr><th style="width:30%">Síntoma</th><th style="width:36%">Causa</th><th>Solución</th></tr>
+    <tr class="paso inicio"><td><b>500</b> en todas las rutas, solo en Vercel</td><td><code>jose</code> (solo ESM) rompe <code>firebase-admin/auth</code></td><td><code>overrides</code> de <code>jwks-rsa</code> a 3.2.2</td></tr>
+    <tr class="paso inicio"><td><b>504</b> en <code>lote</code></td><td>faltan el núcleo WASM y sus dependencias en el paquete</td><td><code>outputFileTracingIncludes</code> + topes de tiempo</td></tr>
+    <tr class="paso"><td>Login correcto pero <b>403</b></td><td><code>USUARIOS_PERMITIDOS</code> ausente, con comillas o sin Redeploy</td><td>definirla sin comillas y redesplegar</td></tr>
+    <tr class="paso"><td>«La consulta requiere un <b>índice</b>»</td><td>filtro combinado, o filtro + <code>sum()</code></td><td>crear el índice del enlace, o rediseñar</td></tr>
+    <tr class="paso"><td>TypeScript: <code>RouteContext</code> no existe</td><td>los tipos de rutas se generan</td><td><code>npx next typegen</code></td></tr>
+    <tr class="paso"><td>Una variable nueva «no llega»</td><td>solo se aplica a despliegues nuevos</td><td>Redeploy</td></tr>
+  </table>
+  <div class="aviso azul paso" style="font-size:19px">Dos de ellos <b>pasaban todas las pruebas locales</b>. Por eso cada fase se verifica también <b>en el despliegue</b>.</div>
+  <aside class="notas">
+    Esta diapositiva es un regalo de tiempo: son los errores que más horas costaron. Si un estudiante se atasca, la tabla completa (con más casos) está en la sección «Problemas conocidos» de AGENTS.md y CLAUDE.md.<br>
+    <b>Moraleja:</b> los dos primeros funcionaban perfecto en local. El entorno de ejecución en la nube es distinto (empaquetado de archivos, módulos ESM, tiempos). Verificar solo en local da una falsa sensación de seguridad.<br>
+    Pídele a la IA que cite la causa raíz, no solo el parche: «¿por qué falla solo en Vercel?».
+  </aside>
+</section>

@@ -1,0 +1,20 @@
+<section class="slide" id="fase-d">
+  <span class="sobre">Fase D · Operación en Vercel</span>
+  <h2>Lista de comprobación antes de dar por terminado</h2>
+  <div class="cols4 crece" style="grid-template-rows: 1fr 1fr; gap:14px">
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Variables</h3><p class="peq">en Producción, Preview y Development</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Sin secretos</h3><p class="peq">ninguna clave en el repositorio ni en su historial</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Duración</h3><p class="peq"><code>maxDuration</code> 300 s en lote y cierre</p></div></div></div>
+    <div class="card paso inicio"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Acceso</h3><p class="peq">toda ruta de API sin sesión responde 401</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Reglas</h3><p class="peq">Firestore sigue en «denegar todo»</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Imágenes</h3><p class="peq">política de qué pasa con los blobs viejos</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Logs</h3><p class="peq">sin 500, 504 ni 413 tras una corrida completa</p></div></div></div>
+    <div class="card paso"><div class="fila"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true" style="flex:none"><use href="#ico-check" width="100" height="100" style="color: var(--verde)"/></svg><div><h3>Cuota</h3><p class="peq">anotar lecturas, escrituras y borrados gastados</p></div></div></div>
+  </div>
+  <div class="aviso azul paso" style="font-size:19px"><b>Aceptación final en producción:</b> 1000 facturas procesadas · 850 clientes · un Excel por lote · reprocesar la misma carpeta no duplica nada.</div>
+  <aside class="notas">
+    Esta lista se va cumpliendo desde la Fase 1; al final debe estar completa.<br>
+    <b>Cuota:</b> una corrida de 1000 facturas gasta del orden de 5000 lecturas y 6000 escrituras de Firestore (estimado). Borrar los datos gasta además el límite de borrados. En el plan gratuito, varias corridas el mismo día pueden agotar la cuota.<br>
+    <b>Sé transparente sobre el estado real:</b> en el repositorio de referencia, la corrida completa de 1000 facturas en producción todavía <b>no</b> se ha ejecutado (se midió la subida de 1000, y el procesamiento de 200 en producción); es parte del ejercicio de aceptación.
+  </aside>
+</section>

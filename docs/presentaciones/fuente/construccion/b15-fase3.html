@@ -1,0 +1,25 @@
+<section class="slide" id="fase-3">
+  <span class="sobre">Fase 3 · Subida de la carpeta a Blob</span>
+  <h2>Cada imagen pasa por la API, que la valida y la guarda</h2>
+  <svg viewBox="0 0 1152 330" width="1152" height="320" role="img" aria-label="Secuencia: el navegador envía una imagen a la API, que valida y la guarda en Blob">
+    <rect x="40" y="0" width="200" height="44" rx="10" class="caja azul"/><text x="140" y="29" class="t-b" text-anchor="middle">Navegador</text>
+    <rect x="470" y="0" width="200" height="44" rx="10" class="caja verde"/><text x="570" y="29" class="t-b" text-anchor="middle">Nuestra API</text>
+    <rect x="900" y="0" width="200" height="44" rx="10" class="caja ambar"/><text x="1000" y="29" class="t-b" text-anchor="middle">Vercel Blob</text>
+    <path class="linea punteada fina" d="M140 44 V330 M570 44 V330 M1000 44 V330"/>
+    <g class="paso inicio"><path class="flecha azul" d="M142 84 H566"/><text x="354" y="74" class="t-xs t-b" text-anchor="middle">1 · POST …/imagenes?indice=1  (los bytes de UNA imagen)</text></g>
+    <g class="paso"><rect x="250" y="100" width="640" height="84" rx="10" class="caja ambar"/><text x="570" y="124" class="t-xs t-b" text-anchor="middle">2 · valida, en este orden: sesión · lote propio en «subiendo» · tamaño ≤ 4 MB</text><text x="570" y="146" class="t-xs t-b" text-anchor="middle">tipo REAL por los primeros bytes (PNG o JPG) · la imagen se puede leer</text><text x="570" y="168" class="t-xs t-m" text-anchor="middle">si algo falla: 401, 404, 413 o 415 con el motivo, y no se guarda nada</text></g>
+    <g class="paso"><path class="flecha ambar" d="M572 214 H996"/><text x="784" y="204" class="t-xs t-b" text-anchor="middle">3 · el servidor guarda la imagen (put privado)</text></g>
+    <g class="paso"><path class="flecha verde" d="M998 254 H574"/><text x="786" y="244" class="t-xs t-b" text-anchor="middle">listo</text><path class="flecha verde" d="M568 296 H144"/><text x="356" y="286" class="t-xs t-b" text-anchor="middle">4 · { pathname }  (el navegador nunca habló con Blob)</text></g>
+  </svg>
+  <div class="cols3">
+    <div class="card azul paso"><h3>6 a la vez</h3><p class="peq">seis peticiones concurrentes por lote</p></div>
+    <div class="card verde paso"><h3>3 reintentos</h3><p class="peq">solo ante fallas de red o 5xx</p></div>
+    <div class="card ambar paso"><h3>Un rechazo no se reintenta</h3><p class="peq">el archivo es el problema: queda en una lista con su motivo</p></div>
+  </div>
+  <aside class="notas">
+    <b>Decisión de arquitectura:</b> las imágenes pasan por <b>nuestra API</b>. Así el servidor aplica las reglas del negocio antes de guardar nada, y el navegador nunca recibe permisos sobre el almacén.<br>
+    <b>Validaciones del paso 2</b> (cada una evita un ataque): sesión (sin login no se sube nada); lote propio y en estado «subiendo» (no se sube al lote de otro ni a uno cerrado); tamaño (no se llena el almacén con archivos enormes); <b>tipo real por los bytes</b> (un archivo malicioso renombrado a .png se rechaza: el nombre no prueba nada); imagen legible (no se guardan archivos dañados).<br>
+    <b>La contrapartida:</b> una invocación de función por imagen y un tope de tamaño (4 MB, porque una petición no puede pasar de 4,5 MB en Vercel). Las facturas pesan ~100 KB (la mayor, 192 KB), así que sobra margen; con archivos de decenas de MB habría que reconsiderarlo.<br>
+    <b>Medido:</b> 1000 imágenes (108 MB) subieron en 68 s en producción sin bloquear el navegador. <b>Detalle práctico:</b> el selector de carpeta se envuelve en un botón visible; un input de archivos sin estilo parece solo texto.
+  </aside>
+</section>

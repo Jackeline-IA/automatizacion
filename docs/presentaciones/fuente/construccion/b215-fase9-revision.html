@@ -1,0 +1,30 @@
+<section class="slide" id="fase-9">
+  <span class="sobre">Fase 9 · Revisión manual</span>
+  <h2>La máquina duda; una persona decide</h2>
+  <div class="fila crece" style="gap:24px">
+    <svg viewBox="0 0 620 420" width="600" height="408" style="flex:none" role="img" aria-label="Boceto del formulario de revisión: imagen a la izquierda, datos y validación a la derecha">
+      <g class="paso inicio"><rect x="0" y="0" width="620" height="420" rx="14" class="papel"/><rect x="0" y="0" width="620" height="34" rx="14" class="caja azul"/><text x="16" y="23" class="t-xs t-b">Revisar factura · factura_0007.jpg</text>
+        <rect x="14" y="48" width="270" height="270" rx="8" class="caja"/><rect x="26" y="62" width="246" height="24" rx="4" class="relleno linea"/><path class="linea fina" d="M26 104 H272 M26 120 H272 M26 136 H272 M26 152 H272 M26 168 H272"/><rect x="26" y="190" width="246" height="64" rx="4" class="relleno linea"/><rect x="170" y="272" width="102" height="30" rx="4" class="relleno linea"/></g>
+      <g class="paso"><rect x="298" y="48" width="308" height="30" rx="6" class="caja"/><text x="308" y="68" class="t-xs">Número · FE-000147</text>
+        <rect x="298" y="86" width="308" height="30" rx="6" class="caja"/><text x="308" y="106" class="t-xs">Proveedor · Redes Móviles Hernández…</text>
+        <rect x="298" y="124" width="150" height="30" rx="6" class="caja"/><text x="308" y="144" class="t-xs">NIT · 856296577</text><rect x="456" y="124" width="150" height="30" rx="6" class="caja"/><text x="466" y="144" class="t-xs">Doc · 828667108</text>
+        <rect x="298" y="162" width="308" height="30" rx="6" class="caja"/><text x="308" y="182" class="t-xs">Ítem 1 · Plan postpago · 1 × 82.100</text>
+        <rect x="298" y="200" width="308" height="30" rx="6" class="caja"/><text x="308" y="220" class="t-xs">Total · 4.266.704   (sugerido: 4.261.704)</text></g>
+      <g class="paso"><rect x="14" y="326" width="592" height="90" rx="10" class="caja rojo"/><use href="#ico-equis" x="26" y="340" width="24" height="24" style="color: var(--rojo)"/><text x="60" y="358" class="t-xs t-b">Subtotal + IVA + INC = 4.261.704; el total dice 4.266.704</text><text x="60" y="381" class="t-xs">☑ Revisé la imagen: estos datos son los de la factura</text><text x="60" y="402" class="t-xs t-b">→ el botón pasa a «Guardar de todos modos»</text></g>
+    </svg>
+    <div class="col" style="gap:10px">
+      <div class="card azul paso inicio" style="padding:10px 16px"><p class="peq"><b>1 ·</b> Lista de pendientes y formulario con la <b>imagen al lado</b> y lo que la máquina sí leyó, precargado.</p></div>
+      <div class="card paso" style="padding:10px 16px"><p class="peq"><b>2 ·</b> Validación en vivo con <b>las mismas reglas</b> del OCR. Si no cuadra, hay que <b>confirmar</b> que se revisó la imagen.</p></div>
+      <div class="card verde paso" style="padding:10px 16px"><p class="peq"><b>3 ·</b> Una <b>transacción</b>: factura, índice del número, cliente y contadores. Queda quién la corrigió y qué decía la máquina.</p></div>
+      <div class="aviso azul paso" style="font-size:18px"><b>Métricas honestas:</b> «leídas correctamente» sigue midiendo a la <b>máquina</b>; lo corregido se cuenta aparte («revisadas a mano»).</div>
+    </div>
+  </div>
+  <aside class="notas">
+    <b>Cierra el ciclo humano.</b> Hasta esta fase, una factura «en revisión» era un callejón sin salida: esperaba para siempre y sus cifras no entraban nunca en lo procesado. Ahora hay una persona, una pantalla y un registro.<br>
+    <b>Cómo se usa:</b> la pestaña «Revisión» lista las pendientes; cada una abre un formulario con la imagen a la izquierda y los datos a la derecha. Lo que la máquina alcanzó a leer llega precargado, así que la persona solo corrige lo que está mal. Los totales se proponen desde los ítems (IVA 19 %, impoconsumo 4 % si aplica).<br>
+    <b>La validación es la misma</b> función que usa el OCR, ejecutada en el navegador mientras se escribe; el servidor la repite al guardar (no confía en el navegador). Si no cuadra, la persona puede aun así guardar, pero debe confirmar explícitamente que revisó la imagen, y eso queda registrado.<br>
+    <b>La decisión de métricas es la más importante:</b> si lo corregido a mano se sumara a «leídas correctamente», la métrica dejaría de medir la calidad de la máquina y no sabríamos si el OCR mejora o empeora. Por eso se cuenta aparte.<br>
+    <b>No es opcional:</b> de las 1000 facturas del curso, 40 traen un problema puesto a propósito y la máquina nunca las acepta: 10 con el total impreso que no cuadra, 10 con IVA al 5 % o exento, 10 con el dígito de verificación del cliente equivocado y 10 con la imagen girada (para estas, el formulario tiene botones ↺ ↻ que la giran). Así los estudiantes <b>tienen que</b> usar esta pantalla.<br>
+    <b>Un error real:</b> al pasar de una factura a la siguiente, React reutilizaba el formulario y arrastraba los campos de la anterior (se podían guardar datos de una factura sobre otra). Se arregló con <code>key</code> por factura.
+  </aside>
+</section>

@@ -1,0 +1,28 @@
+## 2. Reglas de trabajo (para la IA y para ti)
+
+Estas reglas existen porque cada una evitó (o habría evitado) un problema real durante la construcción del proyecto de referencia.
+
+1. **Trabaja por fases (sección 6) y detente al terminar cada una.** Al terminar: ejecuta la verificación de la fase, muestra la salida real, haz un commit (`fase-N: …`), etiqueta (`git tag fase-N`), súbelo a GitHub (Vercel despliega solo) y **espera** a que el estudiante diga que continúe.
+2. **Nunca inventes credenciales ni valores de conexión.** Los crea el estudiante en las consolas (Fase 0); tú solo guías. **Nunca escribas secretos en el código ni en Git.**
+3. **Nunca imprimas el contenido de `.env`** (ni con `cat`, ni con `awk`, ni con `grep` que muestre valores, ni en logs). Para saber qué variables existen, muestra solo los nombres: `grep -v '^#' .env | cut -d= -f1`. Para saber si funcionan, ejecuta `npx tsx scripts/probar-conexion.ts`. (Un `awk` que partía cada línea en el primer `=` imprimió la clave privada de Firebase, porque su contenido base64 trae `=`.) Mantén `.env*` en `.gitignore` (con la excepción `!.env.example`) **antes** de que existan archivos con secretos, y mantén `.env.example` con los nombres y valores falsos. La clave privada de Firebase solo se usa en el servidor y **jamás** lleva el prefijo `NEXT_PUBLIC_`.
+4. **No escribas de memoria APIs de librerías.** Tu conocimiento puede estar desactualizado y estas versiones son nuevas. Antes de usar Next.js, `firebase-admin`, `firebase`, `@vercel/blob`, `tesseract.js`, `exceljs` o `zod`: comprueba la versión instalada (`npm ls <paquete>`) y lee los tipos en `node_modules/<paquete>` o su documentación oficial. Para Next.js, lee `node_modules/next/dist/docs/`. Instala versiones **exactas** (`npm install --save-exact`) tras mirar la última (`npm view <paquete> version`).
+5. **Los límites de Vercel cambian.** Antes de decidir duración, tamaño de lote o tamaño de paquete, consulta https://vercel.com/docs/functions/limitations y https://vercel.com/docs/vercel-blob/usage-and-pricing.
+6. **Pide permiso antes de acciones difíciles de deshacer o que salgan de tu computador**: crear cuentas o recursos en la nube, cambiar variables de entorno, desplegar, `git push --force`, y sobre todo **borrar datos** (incluido el botón «Borrar todo» de la aplicación, que vacía Firestore y Blob completos). Las pruebas automáticas deben **limpiar solo lo que ellas mismas crearon**, nunca "todo"; y «lo que crearon» se comprueba, no se supone: un número de factura o un cliente pueden pertenecer a otro lote (dos conjuntos de facturas numeran ambos desde `FE-000001`), así que se borra un índice solo si apunta a una factura del lote y un cliente solo si lo creó ese lote.
+7. **Sé honesto con los resultados.** Si una prueba falla, muestra la salida. Si un paso de esta guía no funciona como dice, dilo y explica qué cambiaste. **Nunca modifiques una prueba para que pase** sin explicar por qué la prueba estaba mal. **Mide, no supongas**: las cifras de exactitud de esta guía son de un conjunto concreto; el tuyo puede variar.
+8. **Verifica en el despliegue, no solo en local.** Dos fallos de este proyecto solo aparecían en Vercel (Fase A y Fase 5) y pasaban todas las pruebas locales. Una fase que toca servidor no está terminada hasta que funciona en la URL desplegada.
+9. **No te adelantes ni agregues funciones que no pidió la fase.** Si ves una mejora, propónla al final; no la hagas sin que te la pidan.
+10. **Código**: TypeScript en modo estricto, sin `any` (salvo justificación en un comentario). `camelCase` para variables y funciones, `PascalCase` para tipos y componentes, colecciones de Firestore en `snake_case` plural (`clientes`, `facturas`, `indices_numero`, `procesos`), campos en `camelCase`, importes en pesos COP como **enteros** (nunca decimales). Comentarios en español que expliquen el *porqué*, no el *qué*.
+11. **Commits**: uno por fase, mensaje `fase-3: subida de carpeta a Blob`, y etiqueta `fase-N`. Antes de commitear: `npm run lint`, `npx tsc --noEmit` y `npm test` deben pasar.
+12. **Si una credencial se imprime o se pega por error** en un chat, un log o un commit, considérala comprometida: genera una nueva en la consola del servicio, borra la anterior y actualiza `.env` y Vercel.
+
+### Detector de código desactualizado (Next.js 16)
+
+Si vas a escribir algo de esta lista, **para y lee la documentación** en `node_modules/next/dist/docs/`:
+
+- `middleware.ts` ahora es **`proxy.ts`** (exporta `proxy`, no `middleware`).
+- `params` y `searchParams` son **`Promise`**: hay que hacer `await`. Las rutas dinámicas de Route Handlers reciben `RouteContext<"/api/…/[id]">`; ese tipo lo genera `npx next typegen` (si TypeScript dice que no existe, ejecútalo).
+- No uses `getServerSideProps`, `pages/` ni `next lint` (no existe: usa ESLint directo, `npm run lint`).
+- Paquetes nativos o con WASM/hilos del servidor se declaran en `serverExternalPackages` (aquí: `tesseract.js`; `firebase-admin` y `sharp` ya vienen excluidos por defecto).
+- Con `cacheComponents: true` (que usa este proyecto): **no existen** `export const dynamic`, `revalidate` ni `fetchCache` (dan error de compilación); una ruta es dinámica si lee algo de la petición o si llama `await connection()` de `next/server`; las páginas con segmentos dinámicos (`/procesos/[id]`) leen `params` dentro de un `<Suspense>`. `export const maxDuration` sí funciona.
+- `cookies()` y `headers()` son asíncronas.
+- React 19 + reglas de lint del proyecto: no llamar `setState` de forma síncrona dentro de un `useEffect`; no llamar funciones impuras (`Date.now()`) al renderizar.

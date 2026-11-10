@@ -1,0 +1,26 @@
+<section class="slide" id="fase-a">
+  <span class="sobre">Fase A · Autenticación</span>
+  <h2>Un login que el servidor puede verificar</h2>
+  <svg viewBox="0 0 1152 346" width="1152" height="334" role="img" aria-label="Diagrama de secuencia del inicio de sesión con Firebase y cookie de sesión">
+    <rect x="40" y="0" width="200" height="44" rx="10" class="caja azul"/><text x="140" y="29" class="t-b" text-anchor="middle">Navegador</text>
+    <rect x="470" y="0" width="200" height="44" rx="10" class="caja violeta"/><text x="570" y="29" class="t-b" text-anchor="middle">Firebase Auth</text>
+    <rect x="900" y="0" width="200" height="44" rx="10" class="caja verde"/><text x="1000" y="29" class="t-b" text-anchor="middle" style="font-size:19px">Servidor (Vercel)</text>
+    <path class="linea punteada fina" d="M140 44 V346 M570 44 V346 M1000 44 V346"/>
+    <g class="paso inicio"><path class="flecha azul" d="M142 84 H566"/><text x="354" y="74" class="t-xs t-b" text-anchor="middle">1 · correo y contraseña</text></g>
+    <g class="paso"><path class="flecha violeta" d="M568 128 H144" style="stroke:var(--violeta)"/><text x="356" y="118" class="t-xs t-b" text-anchor="middle">2 · ID token</text></g>
+    <g class="paso"><path class="flecha azul" d="M142 172 H996"/><text x="569" y="162" class="t-xs t-b" text-anchor="middle">3 · POST /api/sesion { idToken }</text></g>
+    <g class="paso"><rect x="780" y="190" width="400" height="52" rx="10" class="caja ambar"/><text x="980" y="213" class="t-xs t-b" text-anchor="middle">4 · verifica el token y que el correo</text><text x="980" y="232" class="t-xs t-b" text-anchor="middle">esté en USUARIOS_PERMITIDOS</text></g>
+    <g class="paso"><path class="flecha verde" d="M998 276 H144"/><text x="570" y="266" class="t-xs t-b" text-anchor="middle">5 · cookie de sesión (httpOnly, 5 días)</text></g>
+    <g class="paso"><path class="flecha azul" d="M142 322 H996"/><text x="569" y="312" class="t-xs t-b" text-anchor="middle">6 · cada petición lleva la cookie → exigirUsuario la verifica</text></g>
+  </svg>
+  <div class="fila" style="gap:16px">
+    <div class="aviso azul" style="flex:1.3; font-size:19px"><b>¿Por qué una lista de correos si ya hay Firebase Auth?</b> Firebase Auth <b>autentica</b> (¿quién eres?). La lista <b>autoriza</b> (¿puedes usar la app?): la <code>apiKey</code> es pública y <b>cualquiera puede crear una cuenta</b>.</div>
+    <div class="aviso rojo" style="flex:1; font-size:19px"><b>Error real, solo en Vercel:</b> <code>jose</code> (solo ESM) rompía <code>firebase-admin/auth</code> → <b>500</b>. Solución: <code>overrides</code> de <code>jwks-rsa</code>.</div>
+  </div>
+  <aside class="notas">
+    <b>Recorre el diagrama con →.</b> El navegador se autentica con Firebase y recibe un ID token; se lo entrega a nuestro servidor, que lo verifica, comprueba la lista de correos permitidos y lo cambia por una <b>cookie de sesión</b> que el navegador no puede leer (<code>httpOnly</code>). Desde ahí, cada ruta de la API llama <code>exigirUsuario</code>.<br>
+    <b>Autenticar vs autorizar:</b> comprobamos en vivo que la <code>apiKey</code> pública permite crear una cuenta nueva; por eso la lista. Sin la variable definida, nadie entra (falla cerrado).<br>
+    <b>La lección del error de jose:</b> pasó todas las pruebas locales y falló en Vercel; <b>verifica siempre en el despliegue</b>.<br>
+    Verificación: sin cookie las rutas responden 401, un correo fuera de la lista recibe 403 y la página redirige a /login. Se repite contra la URL desplegada.
+  </aside>
+</section>
