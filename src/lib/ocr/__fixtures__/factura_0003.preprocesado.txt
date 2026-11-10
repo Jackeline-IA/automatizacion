@@ -1,0 +1,21 @@
+. 7 FACTURA ELECTRÓNICA
+Compuredes Villalpando Ordóñez S.A.S.
+NIT 880877724-0 - Responsable de IVA FE-000545
+CLIENTE DATOS DE LA FACTURA
+David Escobar Viera Corral Salcido Emisión: 26 de enero de 2026 - 07:34:25
+Documento: 899742694-7 Vence: 26 de enero de 2026
+Contado - Efectivo
+Calle 39 € 67-55, Cartagena - Resolución DIAN 18764059304556 de 23 de febrero de 2026 Prefijo FE
+Cant. Descripción Precio unitario Subtotal
+3 Portátil 14" Core i5 16 GB RAM 512 GB SSD $4.095.900 $12.287.700
+3 UPS interactiva 1000 VA $627.200 $1.881.600
+8 Teclado mecánico inalámbrico español $319.000 $2.552.000
+3 Impresora multifuncional láser $1.237.800 $3.713.400
+monocromática con red
+2 Switch de red gestionable 24 puertos Gigabit $1.183.300 $2.366.600
+Subtotal $22.801.300
+IVA (19%) $4.332.247
+— od —.[.] ——é—o, ———— ]——]
+Total factura $27.133.547
+CUFE 15195454839cb24260ec1d95a9479171829eb6SBacbe a13c81c32 19a6d45 fbsbdadab7aeBe9a3b96ebbdbsO3ccGe
+Representación gráfica de factura electrónic a de venta. Documento sintético con datos fic ticios para fines académicos
