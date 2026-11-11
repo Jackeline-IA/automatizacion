@@ -95,10 +95,39 @@ export interface IndiceNumero {
 
 export type EstadoProceso = "subiendo" | "ejecutando" | "terminado";
 
+/** Cuántas facturas y cuánto suman (pesos COP, enteros). */
+export interface Importes {
+  n: number;
+  subtotal: number;
+  iva: number;
+  impoconsumo: number;
+  total: number;
+}
+
+/**
+ * Contadores de un lote. Se actualizan con incrementos DENTRO de la transacción
+ * que guarda cada factura: siempre cuadran con los datos y mostrarlos cuesta una
+ * lectura (la del lote), no recorrer sus facturas.
+ */
+export interface MetricasProceso {
+  /** Pasaron todas las validaciones. */
+  aceptadas: Importes;
+  /** Quedaron en revisión (lo que el OCR no leyó suma 0). */
+  revision: Importes;
+  /** Ingresadas o corregidas a mano (Fase 9). */
+  manuales: Importes;
+  /** Imágenes que no se pudieron procesar tras agotar los intentos. */
+  errores: number;
+  /** Imágenes que ya estaban guardadas (no cuentan en los porcentajes). */
+  duplicadas: number;
+  clientesNuevos: number;
+  /** Por NIT del proveedor; solo facturas aceptadas (en revisión el NIT puede estar mal leído). */
+  proveedores: Record<string, Importes & { nombre: string }>;
+}
+
 /**
  * procesos/{id automático}
  * Un lote: una subida con su cola de trabajo, su Excel y sus métricas.
- * El campo `metricas` se añade en la Fase 8.
  */
 export interface Proceso {
   uid: string;
@@ -111,6 +140,8 @@ export interface Proceso {
   rutaExcel: string | null;
   /** Bloqueo temporal para que un solo cliente genere el Excel; null si nadie lo tiene. */
   finalizandoDesde: number | null;
+  /** Ausente en lotes creados antes de la Fase 8: se tratan como ceros. */
+  metricas?: MetricasProceso;
 }
 
 export type EstadoArchivo = "pendiente" | "procesando" | "ok" | "error";

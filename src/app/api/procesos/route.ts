@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { exigirUsuario } from "@/lib/auth/sesion";
 import { db } from "@/lib/firebase/admin";
-import { COLECCIONES, type Proceso } from "@/lib/modelo/tipos";
+import { COLECCIONES, type EstadoProceso, type Proceso } from "@/lib/modelo/tipos";
+import { metricasVacias } from "@/lib/procesamiento/metricas";
+import { lotesDelUsuario } from "@/lib/procesamiento/proceso";
 import { MAXIMO_ARCHIVOS_POR_LOTE } from "@/lib/procesamiento/subidas";
 
 const NuevoLote = z.object({
@@ -32,7 +34,26 @@ export async function POST(request: Request) {
     fin: null,
     rutaExcel: null,
     finalizandoDesde: null,
+    metricas: metricasVacias(),
   };
   const referencia = await db().collection(COLECCIONES.procesos).add(proceso);
   return Response.json({ id: referencia.id }, { status: 201 });
+}
+
+const ESTADOS: EstadoProceso[] = ["subiendo", "ejecutando", "terminado"];
+
+/**
+ * Lista los lotes de quien inició sesión. Con `?estado=ejecutando` devuelve solo
+ * esos: así el motor del navegador descubre los que quedaron a medias.
+ */
+export async function GET(request: Request) {
+  const usuario = await exigirUsuario(request);
+  if (usuario instanceof Response) return usuario;
+
+  const estado = new URL(request.url).searchParams.get("estado");
+  if (estado !== null && !ESTADOS.includes(estado as EstadoProceso)) {
+    return Response.json({ error: `El estado debe ser uno de: ${ESTADOS.join(", ")}` }, { status: 400 });
+  }
+  const lotes = await lotesDelUsuario(usuario.uid);
+  return Response.json({ lotes: estado ? lotes.filter((lote) => lote.estado === estado) : lotes });
 }
