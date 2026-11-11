@@ -75,7 +75,7 @@ export default function PaginaLogin() {
             required
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}
-            className="rounded border border-foreground/30 bg-transparent px-3 py-2 text-base"
+            className="rounded border border-borde bg-superficie px-3 py-2 text-base"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -87,23 +87,23 @@ export default function PaginaLogin() {
             required
             value={clave}
             onChange={(e) => setClave(e.target.value)}
-            className="rounded border border-foreground/30 bg-transparent px-3 py-2 text-base"
+            className="rounded border border-borde bg-superficie px-3 py-2 text-base"
           />
         </label>
         {error && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="text-sm text-malo">
             ✕ {error}
           </p>
         )}
         <button
           type="submit"
           disabled={enviando}
-          className="rounded bg-foreground px-4 py-2 font-medium text-background disabled:opacity-60"
+          className="rounded bg-acento px-4 py-2 font-medium text-sobre-acento disabled:opacity-60"
         >
           {enviando ? "Entrando…" : "Entrar"}
         </button>
       </form>
-      <p className="text-sm opacity-70">No hay registro: las cuentas las crea quien administra la aplicación.</p>
+      <p className="text-sm text-secundario">No hay registro: las cuentas las crea quien administra la aplicación.</p>
     </main>
   );
 }

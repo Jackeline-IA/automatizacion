@@ -1,24 +1,60 @@
 @import "tailwindcss";
 
+/*
+ * Colores por ROL, no por nombre: los componentes piden «acento» o «malo», no
+ * «morado» o «rojo». Cambiar la paleta es cambiar solo estas variables.
+ * Paleta morada sobre fondo claro. Es SIEMPRE clara, aunque el sistema esté en
+ * modo oscuro (decisión de diseño): `color-scheme: light` hace que también los
+ * controles del navegador (desplegables, campos, barras) se dibujen claros.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --fondo: #f8f5fc;
+  --superficie: #ffffff;
+  --texto: #1f1930;
+  --texto-secundario: #5d5673;
+  --borde: #dcd3ec;
+  --acento: #7a3fc6;
+  --acento-suave: #efe6fb;
+  --sobre-acento: #ffffff;
+  --bueno: #19794a;
+  --bueno-suave: #e2f4ea;
+  --malo: #b3261e;
+  --malo-suave: #fbe6e4;
+
+  /* Nombres que ya usaba la pantalla de inicio de sesión. */
+  --background: var(--fondo);
+  --foreground: var(--texto);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-texto: var(--texto);
+  --color-secundario: var(--texto-secundario);
+  --color-borde: var(--borde);
+  --color-acento: var(--acento);
+  --color-acento-suave: var(--acento-suave);
+  --color-sobre-acento: var(--sobre-acento);
+  --color-bueno: var(--bueno);
+  --color-bueno-suave: var(--bueno-suave);
+  --color-malo: var(--malo);
+  --color-malo-suave: var(--malo-suave);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--fondo);
+  color: var(--texto);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Importes: cifras del mismo ancho, para que las columnas queden alineadas. */
+.cifras {
+  font-variant-numeric: tabular-nums;
+}
+
+progress {
+  accent-color: var(--acento);
 }
