@@ -26,6 +26,33 @@ function almacen() {
   return cliente.storage.from(leer("SUPABASE_BUCKET"));
 }
 
+const POR_PAGINA = 1000;
+
+/** Rutas completas de las imágenes que hay bajo una carpeta, en orden de nombre. */
+export async function listarImagenes(carpeta: string): Promise<string[]> {
+  const sinBarra = carpeta.replace(/\/+$/, "");
+  const rutas: string[] = [];
+  // Supabase devuelve como mucho una página por llamada: se pagina con `offset`.
+  for (let offset = 0; ; offset += POR_PAGINA) {
+    const { data, error } = await almacen().list(sinBarra, {
+      limit: POR_PAGINA,
+      offset,
+      sortBy: { column: "name", order: "asc" },
+    });
+    if (error) throw new Error(`No se pudo listar el almacén: ${error.message}`);
+    for (const archivo of data) {
+      if (/\.(png|jpe?g)$/i.test(archivo.name)) rutas.push(`${sinBarra}/${archivo.name}`);
+    }
+    if (data.length < POR_PAGINA) return rutas;
+  }
+}
+
+export async function descargarArchivo(ruta: string): Promise<Buffer> {
+  const { data, error } = await almacen().download(ruta);
+  if (error) throw new Error(`No se pudo descargar ${ruta}: ${error.message}`);
+  return Buffer.from(await data.arrayBuffer());
+}
+
 /**
  * Guarda un archivo en el bucket. `upsert` hace la subida idempotente: si el
  * navegador reintenta una imagen cuya primera subida sí llegó, no falla ni duplica.

@@ -38,12 +38,16 @@ export interface Cliente {
 
 export type EstadoFactura = "aceptada" | "revision";
 
-/** Un renglón de la factura. Va embebido: siempre se lee junto con ella y son pocos. */
+/**
+ * Un renglón de la factura. Va embebido: siempre se lee junto con ella y son pocos.
+ * Las cifras son null cuando el OCR no las pudo leer (la factura queda en
+ * revisión): no se inventa un valor para rellenarlas.
+ */
 export interface ItemFactura {
   descripcion: string;
-  cantidad: number;
-  precioUnitario: number;
-  subtotal: number;
+  cantidad: number | null;
+  precioUnitario: number | null;
+  subtotal: number | null;
 }
 
 /**
