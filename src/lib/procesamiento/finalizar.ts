@@ -1,7 +1,11 @@
 /*
- * Cerrar un lote cuando ya no queda nada por procesar. Idempotente: llamarlo dos
- * veces, o desde dos pestañas a la vez, deja el lote terminado una sola vez.
+ * Cerrar un lote cuando ya no queda nada por procesar: genera su Excel y lo deja
+ * «terminado». Idempotente: llamarlo dos veces, o desde dos pestañas a la vez,
+ * deja el lote terminado (y un solo Excel) una sola vez.
  */
+import { guardarArchivo } from "@/lib/almacen";
+import { cargarDatosExcel } from "@/lib/excel/datos";
+import { CONTENT_TYPE_EXCEL, generarExcel, nombreExcel } from "@/lib/excel/generar";
 import { db } from "@/lib/firebase/admin";
 import type { Proceso } from "@/lib/modelo/tipos";
 import { contarPendientes } from "./cola";
@@ -22,8 +26,8 @@ export async function finalizarProceso(procesoId: string): Promise<ResultadoFina
   const referencia = referenciaProceso(procesoId);
   const ahora = Date.now();
 
-  // Tomar el cierre en una transacción: solo un cliente pasa de aquí. En la
-  // Fase 7 esto protege la generación del Excel (que no debe hacerse dos veces).
+  // Tomar el cierre en una transacción: solo un cliente pasa de aquí, así el
+  // Excel se genera una sola vez aunque dos pestañas finalicen a la vez.
   const turno = await db().runTransaction(async (tx) => {
     const proceso = (await tx.get(referencia)).data() as Proceso;
     if (proceso.estado === "terminado") return "ya-terminado" as const;
@@ -32,13 +36,20 @@ export async function finalizarProceso(procesoId: string): Promise<ResultadoFina
       return "otro-lo-esta-cerrando" as const;
     }
     tx.update(referencia, { finalizandoDesde: ahora });
-    return "mio" as const;
+    return proceso;
   });
 
   if (turno === "ya-terminado") return { listo: true, yaEstaba: true };
-  if (turno !== "mio") return { listo: false, motivo: turno };
+  if (typeof turno === "string") return { listo: false, motivo: turno };
 
-  // (Fase 7: aquí se genera el Excel y se guarda su ruta en `rutaExcel`.)
-  await referencia.update({ estado: "terminado", fin: Date.now(), finalizandoDesde: null });
+  // El Excel se arma leyendo la base y se guarda en el almacén (privado). Si
+  // algo falla aquí, el lote no queda «terminado» y el bloqueo caduca solo: la
+  // siguiente llamada a finalizar lo vuelve a intentar.
+  const fin = Date.now();
+  const excel = await generarExcel(await cargarDatosExcel(procesoId, turno, fin));
+  const rutaExcel = nombreExcel(procesoId, new Date(fin));
+  await guardarArchivo(rutaExcel, excel, CONTENT_TYPE_EXCEL);
+
+  await referencia.update({ estado: "terminado", fin, rutaExcel, finalizandoDesde: null });
   return { listo: true, yaEstaba: false };
 }
