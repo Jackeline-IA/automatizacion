@@ -82,6 +82,23 @@ export interface Factura {
   uid: string;
   creadoEn: number;
   items: ItemFactura[];
+
+  // --- Desde la Fase 9 (ausentes en facturas guardadas antes: se tratan como null) ---
+  /** Dígito de verificación leído del NIT del proveedor. */
+  dvProveedor?: number | null;
+  /** Dígito de verificación leído del documento del cliente. */
+  clienteDv?: number | null;
+  /** El documento del cliente TAL COMO SE LEYÓ, aunque no haya pasado el DV (para precargar la revisión). */
+  clienteDocumentoLeido?: string | null;
+  /** La ingresó o corrigió una persona (revisión manual). */
+  corregidaManualmente?: boolean;
+  /** Correo de quien la corrigió por última vez. */
+  corregidaPor?: string;
+  corregidaEn?: number;
+  /** Qué motivos de revisión había dado la máquina antes de la primera corrección. */
+  motivosOriginales?: string[];
+  /** Validaciones que no cuadraban y la persona confirmó de todos modos. */
+  validacionesIgnoradas?: string[];
 }
 
 /**

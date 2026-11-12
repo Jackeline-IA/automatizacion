@@ -10,12 +10,19 @@
  * procesan el mismo lote a la vez no se hacen reintentar entre sí.
  */
 import { FieldPath, FieldValue, type Transaction, type WriteBatch } from "firebase-admin/firestore";
-import { cambiosDe, type EventoMetricas } from "./metricas";
+import { cambiosDe, type CambioMetricas, type EventoMetricas } from "./metricas";
 import { referenciaProceso } from "./proceso";
 
 export function aplicarMetricas(escritura: Transaction | WriteBatch, procesoId: string, evento: EventoMetricas): void {
+  aplicarCambiosMetricas(escritura, procesoId, cambiosDe(evento));
+}
+
+/** Escribe una lista de cambios ya calculada (la usa también la corrección manual, Fase 9). */
+export function aplicarCambiosMetricas(escritura: Transaction | WriteBatch, procesoId: string, cambios: CambioMetricas[]): void {
+  // Sin cambios no hay nada que escribir (update exige al menos un campo).
+  if (cambios.length === 0) return;
   const pares: (FieldPath | FieldValue | string)[] = [];
-  for (const cambio of cambiosDe(evento)) {
+  for (const cambio of cambios) {
     // FieldPath y no «metricas.proveedores.856162509.n»: el NIT es una clave
     // numérica y en una ruta con puntos no es un nombre de campo válido.
     pares.push(

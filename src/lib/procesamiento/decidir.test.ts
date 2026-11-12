@@ -106,6 +106,18 @@ describe("qué se guarda de una factura leída", () => {
     expect(plan.crearIndice).toBe(true);
   });
 
+  it("guarda lo leído que hace falta para precargar la revisión manual (Fase 9)", () => {
+    // Aunque el DV no pase y clienteDocumento quede en null, lo leído no se pierde:
+    // la persona que revise lo verá precargado y solo corregirá el dígito.
+    const mala = { ...LEIDA, clienteDv: 9 };
+    const plan = decidirGuardado(CONTEXTO, lectura(mala, ["El dígito de verificación del documento del cliente no es válido"]), NADA_EXISTE);
+    if (plan.resultado === "duplicada") throw new Error("no debía ser duplicada");
+    expect(plan.factura.clienteDocumento).toBeNull();
+    expect(plan.factura.clienteDocumentoLeido).toBe("869745262");
+    expect(plan.factura.clienteDv).toBe(9);
+    expect(plan.factura.dvProveedor).toBe(7);
+  });
+
   it("sin número leído: no hay índice que crear", () => {
     const sinNumero = { ...LEIDA, numero: null };
     const plan = decidirGuardado(CONTEXTO, lectura(sinNumero, ["No se pudo leer el número de factura"]), NADA_EXISTE);

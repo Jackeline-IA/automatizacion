@@ -69,7 +69,11 @@ export function decidirGuardado(contexto: ContextoArchivo, lectura: LecturaParaG
     fecha: f.fecha,
     proveedor: f.proveedor,
     nitProveedor: f.nitProveedor,
+    dvProveedor: f.dvProveedor,
     clienteDocumento: documentoFiable ? f.clienteDocumento : null,
+    // Lo leído se conserva aunque no pase el DV: la revisión manual lo precarga.
+    clienteDocumentoLeido: f.clienteDocumento,
+    clienteDv: f.clienteDv,
     clienteNombre: f.clienteNombre,
     subtotal: f.subtotal,
     iva: f.iva,

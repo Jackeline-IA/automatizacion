@@ -146,5 +146,7 @@ export function calcularTasas(metricas: MetricasProceso): Tasas {
 export function proveedoresOrdenados(metricas: MetricasProceso): (Importes & { nit: string; nombre: string })[] {
   return Object.entries(metricas.proveedores)
     .map(([nit, proveedor]) => ({ nit, ...proveedor }))
+    // Una corrección manual puede sacar la única factura de un NIT mal leído: queda en cero.
+    .filter((proveedor) => proveedor.n > 0)
     .sort((a, b) => b.total - a.total || a.nombre.localeCompare(b.nombre, "es"));
 }

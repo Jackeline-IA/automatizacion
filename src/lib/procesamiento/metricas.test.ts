@@ -120,6 +120,12 @@ describe("reconstruir, sumar y resumir métricas", () => {
     ]);
   });
 
+  it("un proveedor que quedó sin facturas (una corrección lo cambió por otro) no se muestra", () => {
+    const m = metricasDesdeEventos([ACEPTADA]);
+    m.proveedores["999"] = { nombre: "Mal leído", n: 0, subtotal: 0, iva: 0, impoconsumo: 0, total: 0 };
+    expect(proveedoresOrdenados(m).map((p) => p.nit)).toEqual(["856162509"]);
+  });
+
   it("una aceptada sin NIT legible no crea un proveedor", () => {
     // No debería ocurrir (sin NIT no se acepta), pero no debe crear la clave «null».
     const m = metricasDesdeEventos([{ ...ACEPTADA, nitProveedor: null }]);
