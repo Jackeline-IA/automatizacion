@@ -39,7 +39,11 @@ interface Leida {
 /** Solo lo visible: Next 16 (cacheComponents) deja montada y OCULTA la pantalla anterior. */
 const visible = (localizador: Locator) => localizador.filter({ visible: true });
 
-async function seVe(page: Page, texto: string | RegExp, ms = 10_000): Promise<boolean> {
+/**
+ * ¿Se ve este texto? Espera hasta 30 s (en `npm run dev` cada página y ruta se compila
+ * la primera vez que se visita y llegó a pasar de 10 s); en cuanto aparece, sigue.
+ */
+async function seVe(page: Page, texto: string | RegExp, ms = 30_000): Promise<boolean> {
   return visible(page.getByText(texto))
     .first()
     .waitFor({ state: "visible", timeout: ms })
@@ -147,7 +151,8 @@ async function main(): Promise<void> {
     const contador = Number((await insignia.textContent().catch(() => "0"))?.replace(/\D/g, "") || 0);
     comprobar(`  …y el contador muestra al menos ${enRevision} pendientes`, contador >= enRevision, true);
     const fila = (l: Leida) => visible(page.getByRole("row").filter({ hasText: l.imagen.nombre })).first();
-    await fila(A).waitFor({ state: "visible", timeout: 10_000 }).catch(() => undefined);
+    // 30 s y no 10: en `npm run dev` la primera visita compila la página y /api/facturas (pasó de 10 s una vez).
+    await fila(A).waitFor({ state: "visible", timeout: 30_000 }).catch(() => undefined);
     comprobar("la lista trae todas las facturas en revisión del lote", (await Promise.all(usadas.map((l) => fila(l).count()))).every((n) => n === 1), true);
     comprobar("  …cada una con su motivo y un botón «Revisar»", await fila(A).getByRole("link", { name: "Revisar" }).count(), 1);
     await capturar("1-lista");
