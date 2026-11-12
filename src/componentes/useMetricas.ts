@@ -55,12 +55,14 @@ export function useMetricas(): { datos: DatosMetricas | null; error: string | nu
     }, CADA_MS);
     const dejarIniciado = escuchar("lote-iniciado", () => void cargar());
     const dejarTerminado = escuchar("lote-terminado", () => void cargar());
+    const dejarBorrado = escuchar("datos-borrados", () => void cargar());
 
     return () => {
       vigente = false;
       clearInterval(reloj);
       dejarIniciado();
       dejarTerminado();
+      dejarBorrado();
     };
   }, [router]);
 

@@ -140,7 +140,14 @@ async function main(): Promise<void> {
     console.log("\n— Métricas —");
     await menu.getByRole("link", { name: "Métricas" }).click();
     comprobar("el menú lleva a /metricas sin recargar", await seVe(page, "Leídas correctamente"), true);
-    comprobar("  …con «Métricas» resaltado", await menu.getByRole("link", { name: "Métricas" }).getAttribute("aria-current"), "page");
+    // Espera a que el enlace quede marcado en vez de leerlo en un único instante:
+    // con el equipo cargado (OCR en npm run dev) una lectura única dio null una vez.
+    const metricasMarcado = await menu
+      .locator('a[aria-current="page"]', { hasText: "Métricas" })
+      .waitFor({ state: "visible", timeout: 5_000 })
+      .then(() => "page")
+      .catch(() => menu.getByRole("link", { name: "Métricas" }).getAttribute("aria-current"));
+    comprobar("  …con «Métricas» resaltado", metricasMarcado, "page");
     for (const texto of ["Mal leídas (a revisión)", "Lo procesado", "Por razón social", "Por lote", "Clientes en la base"]) {
       comprobar(`  …muestra «${texto}»`, await seVe(page, texto, 5_000), true);
     }

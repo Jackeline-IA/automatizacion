@@ -47,6 +47,37 @@ export async function listarImagenes(carpeta: string): Promise<string[]> {
   }
 }
 
+/**
+ * Borra TODO lo que hay bajo una carpeta de primer nivel cuyas subcarpetas
+ * contienen archivos (como «procesos/<id>/…»). Devuelve cuántos archivos borró.
+ * Irreversible: solo la usa «Borrar todo».
+ */
+export async function borrarCarpetaConSubcarpetas(raiz: string): Promise<number> {
+  let borrados = 0;
+  for (;;) {
+    // Siempre desde el principio: lo ya borrado desaparece del listado.
+    const { data: subcarpetas, error } = await almacen().list(raiz, { limit: POR_PAGINA });
+    if (error) throw new Error(`No se pudo listar el almacén: ${error.message}`);
+    if (subcarpetas.length === 0) return borrados;
+
+    let borradosEnEstaVuelta = 0;
+    for (const subcarpeta of subcarpetas) {
+      const carpeta = `${raiz}/${subcarpeta.name}`;
+      for (;;) {
+        const { data: archivos, error: errorLista } = await almacen().list(carpeta, { limit: POR_PAGINA });
+        if (errorLista) throw new Error(`No se pudo listar el almacén: ${errorLista.message}`);
+        if (archivos.length === 0) break;
+        const { error: errorBorrado } = await almacen().remove(archivos.map((archivo) => `${carpeta}/${archivo.name}`));
+        if (errorBorrado) throw new Error(`No se pudieron borrar archivos del almacén: ${errorBorrado.message}`);
+        borradosEnEstaVuelta += archivos.length;
+      }
+    }
+    borrados += borradosEnEstaVuelta;
+    // Sin avance no se insiste: evita un bucle sin fin si algo no se deja borrar.
+    if (borradosEnEstaVuelta === 0) return borrados;
+  }
+}
+
 export async function descargarArchivo(ruta: string): Promise<Buffer> {
   const { data, error } = await almacen().download(ruta);
   if (error) throw new Error(`No se pudo descargar ${ruta}: ${error.message}`);
