@@ -3,15 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { revisionManual, sumarMetricas } from "@/lib/procesamiento/metricas";
 import { Motor } from "./Motor";
 import { BOTON_SECUNDARIO } from "./ui";
+import { useMetricas } from "./useMetricas";
 
 const ENLACES = [
   { href: "/", texto: "Procesar facturas" },
+  { href: "/revision", texto: "Revisión" },
   { href: "/metricas", texto: "Métricas" },
 ];
 
-/** «Procesar facturas» también queda resaltado en el detalle de un lote. */
+/** «Procesar facturas» también queda resaltado en el detalle de un lote; «Revisión», en el formulario de una factura. */
 function estaActivo(href: string, ruta: string): boolean {
   return href === "/" ? ruta === "/" || ruta.startsWith("/procesos") : ruta.startsWith(href);
 }
@@ -20,6 +23,9 @@ export function MenuSuperior() {
   const ruta = usePathname();
   const router = useRouter();
   const [correo, setCorreo] = useState<string | null>(null);
+  // Cuántas facturas esperan a una persona, de los contadores de los lotes (sin lecturas extra).
+  const { datos } = useMetricas();
+  const pendientes = datos ? revisionManual(sumarMetricas(datos.lotes.map((lote) => lote.metricas))).pendientes : 0;
 
   useEffect(() => {
     let vigente = true;
@@ -58,6 +64,14 @@ export function MenuSuperior() {
                 className={`rounded px-3 py-1.5 text-sm font-medium ${activo ? "bg-acento text-sobre-acento" : "text-texto hover:bg-acento-suave"}`}
               >
                 {texto}
+                {href === "/revision" && pendientes > 0 && (
+                  <span
+                    aria-label={`${pendientes} pendiente(s)`}
+                    className={`cifras ml-1.5 rounded-full px-1.5 text-xs ${activo ? "bg-sobre-acento text-acento" : "bg-acento text-sobre-acento"}`}
+                  >
+                    {pendientes}
+                  </span>
+                )}
               </Link>
             );
           })}

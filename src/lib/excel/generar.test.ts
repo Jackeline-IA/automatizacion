@@ -166,6 +166,18 @@ describe("Excel de un lote", () => {
     });
   });
 
+  it("hoja Resumen: cuenta aparte las facturas revisadas a mano (Fase 9)", async () => {
+    // «En revisión» sigue contando lo que dijo la máquina; lo corregido se ve en su propia fila.
+    const corregida = factura({ numero: "FE-000009", archivo: "factura_0009.png", corregidaManualmente: true, corregidaPor: "persona@correo.com" });
+    const hoja = (await abrir({ ...DATOS, facturas: [...DATOS.facturas, corregida] })).getWorksheet("Resumen")!;
+    const resumen: Record<string, ExcelJS.CellValue> = {};
+    hoja.eachRow((r) => {
+      resumen[String(r.getCell(1).value)] = r.getCell(2).value;
+    });
+    expect(resumen["Revisadas a mano"]).toBe(1);
+    expect(resumen["En revisión"]).toBe(1);
+  });
+
   it("un lote sin facturas genera un Excel válido solo con encabezados", async () => {
     const libro = await abrir({ ...DATOS, archivos: [], facturas: [], totalArchivos: 0 });
     expect(libro.getWorksheet("Facturas")!.rowCount).toBe(1);

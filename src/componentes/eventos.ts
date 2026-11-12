@@ -4,8 +4,11 @@
  * que un lote terminó (para que se refresquen al instante, sin esperar al sondeo).
  */
 
-/** «datos-borrados» avisa de que se vació la base: los paneles deben volver a cargar. */
-export type EventoLote = "lote-iniciado" | "lote-terminado" | "datos-borrados";
+/**
+ * «datos-borrados» avisa de que se vació la base: los paneles deben volver a cargar.
+ * «revision-guardada» (Fase 9): una persona corrigió una factura; cambian los contadores.
+ */
+export type EventoLote = "lote-iniciado" | "lote-terminado" | "datos-borrados" | "revision-guardada";
 
 export function emitir(evento: EventoLote, procesoId: string): void {
   window.dispatchEvent(new CustomEvent(evento, { detail: { id: procesoId } }));

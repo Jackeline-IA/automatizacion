@@ -29,6 +29,8 @@ export interface FacturaDeLote {
   total: number | null;
   estado: Factura["estado"] | null;
   motivos: string[];
+  /** La corrigió una persona (Fase 9). */
+  corregidaManualmente: boolean;
 }
 
 export async function facturasDelLote(procesoId: string): Promise<FacturaDeLote[]> {
@@ -61,6 +63,7 @@ export async function facturasDelLote(procesoId: string): Promise<FacturaDeLote[
       total: f?.total ?? null,
       estado: f?.estado ?? null,
       motivos: f?.motivos ?? [],
+      corregidaManualmente: f?.corregidaManualmente === true,
     };
   });
 }

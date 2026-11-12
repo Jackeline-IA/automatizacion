@@ -103,6 +103,91 @@ export function precargaDesdeFactura(f: Factura): Precarga {
   };
 }
 
+/* --- El formulario trabaja con texto (lo que hay escrito en cada campo) --- */
+
+export interface ItemCampos {
+  descripcion: string;
+  cantidad: string;
+  precioUnitario: string;
+}
+
+export interface CamposFormulario {
+  numero: string;
+  fecha: string;
+  proveedor: string;
+  nitProveedor: string;
+  dvProveedor: string;
+  clienteDocumento: string;
+  clienteDv: string;
+  clienteNombre: string;
+  items: ItemCampos[];
+  subtotal: string;
+  iva: string;
+  impoconsumo: string;
+  total: string;
+  llevaImpoconsumo: boolean;
+}
+
+/**
+ * Un entero escrito por una persona: admite «$», espacios y puntos de miles.
+ * null si está vacío; NaN si no es un entero (el esquema dirá qué está mal:
+ * un decimal o una letra no se «arreglan» en silencio).
+ */
+export function leerEntero(texto: string): number | null {
+  const limpio = texto.replace(/[$\s.]/g, "");
+  if (limpio === "") return null;
+  return /^-?\d+$/.test(limpio) ? Number(limpio) : Number.NaN;
+}
+
+const aTexto = (valor: number | string | null) => (valor === null ? "" : String(valor));
+
+/** Campos del formulario a partir de lo que leyó la máquina; los totales que no leyó se proponen. */
+export function camposDesdePrecarga(p: Precarga): CamposFormulario {
+  const llevaImpoconsumo = p.impoconsumo !== null;
+  const propuesta = proponerTotales(p.items, llevaImpoconsumo);
+  return {
+    numero: aTexto(p.numero),
+    fecha: aTexto(p.fecha),
+    proveedor: aTexto(p.proveedor),
+    nitProveedor: aTexto(p.nitProveedor),
+    dvProveedor: aTexto(p.dvProveedor),
+    clienteDocumento: aTexto(p.clienteDocumento),
+    clienteDv: aTexto(p.clienteDv),
+    clienteNombre: aTexto(p.clienteNombre),
+    items: p.items.map((item) => ({ descripcion: item.descripcion, cantidad: aTexto(item.cantidad), precioUnitario: aTexto(item.precioUnitario) })),
+    subtotal: aTexto(p.subtotal ?? propuesta.subtotal),
+    iva: aTexto(p.iva ?? propuesta.iva),
+    impoconsumo: aTexto(p.impoconsumo),
+    total: aTexto(p.total ?? propuesta.total),
+    llevaImpoconsumo,
+  };
+}
+
+/**
+ * Lo que se envía en el PUT (y lo que se valida en vivo con el mismo esquema).
+ * Un campo numérico vacío va como `undefined` para que el esquema diga «escribe
+ * un número» en vez de tomarlo como cero.
+ */
+export function entradaDesdeCampos(c: CamposFormulario, confirmado: boolean): unknown {
+  const numero = (texto: string) => leerEntero(texto) ?? undefined;
+  return {
+    numero: c.numero,
+    fecha: c.fecha,
+    proveedor: c.proveedor,
+    nitProveedor: c.nitProveedor,
+    dvProveedor: leerEntero(c.dvProveedor),
+    clienteDocumento: c.clienteDocumento,
+    clienteDv: leerEntero(c.clienteDv),
+    clienteNombre: c.clienteNombre,
+    items: c.items.map((item) => ({ descripcion: item.descripcion, cantidad: numero(item.cantidad), precioUnitario: numero(item.precioUnitario) })),
+    subtotal: numero(c.subtotal),
+    iva: numero(c.iva),
+    impoconsumo: c.llevaImpoconsumo ? numero(c.impoconsumo) : null,
+    total: numero(c.total),
+    confirmado,
+  };
+}
+
 /** Lo que de una factura corregida cuenta en los contadores. */
 export interface ImportesCorreccion {
   subtotal: number;

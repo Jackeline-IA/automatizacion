@@ -150,7 +150,10 @@ export async function generarExcel(datos: DatosExcel): Promise<Buffer> {
     ["Carpeta", datos.carpeta],
     ["Total de archivos", datos.totalArchivos],
     ["Aceptadas", cuantos((a) => a.resultado === "aceptada")],
+    // Lo que dijo la máquina: no baja aunque después una persona las corrija.
     ["En revisión", cuantos((a) => a.resultado === "revision")],
+    // Corregidas o ingresadas por una persona (Fase 9); en la hoja Facturas ya figuran como aceptadas.
+    ["Revisadas a mano", datos.facturas.filter((f) => f.corregidaManualmente === true).length],
     ["Duplicadas", cuantos((a) => a.resultado === "duplicada")],
     ["Con error", cuantos((a) => a.resultado === "error")],
     ["Clientes nuevos", cuantos((a) => a.clienteNuevo)],

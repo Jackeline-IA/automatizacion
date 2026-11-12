@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FacturaDeLote } from "@/lib/procesamiento/facturas-lote";
-import { calcularTasas } from "@/lib/procesamiento/metricas";
+import { calcularTasas, loProcesado, revisionManual } from "@/lib/procesamiento/metricas";
 import type { ResumenProceso } from "@/lib/procesamiento/proceso";
 import { escuchar } from "./eventos";
 import { fechaHora, NOMBRE_ESTADO, pesos } from "./formato";
-import { Aviso, Barra, BOTON, Dato, ENLACE, Insignia, TablaDesplazable, Tarjeta } from "./ui";
+import { Aviso, Barra, BOTON, BOTON_SECUNDARIO, Dato, ENLACE, Insignia, TablaDesplazable, Tarjeta } from "./ui";
 
 /*
  * Detalle de un lote. Mientras procesa, lee el propio documento del lote (con
@@ -24,7 +24,19 @@ export function VistaProceso({ id }: { id: string }) {
   const [facturas, setFacturas] = useState<FacturaDeLote[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<Filtro>("todas");
+  const [regenerando, setRegenerando] = useState<"no" | "si" | "listo" | "error">("no");
   const router = useRouter();
+
+  /** El Excel es una foto del momento en que terminó el lote: esto lo pone al día con las correcciones. */
+  async function regenerarExcel() {
+    setRegenerando("si");
+    try {
+      const respuesta = await fetch(`/api/procesos/${id}/regenerar-excel`, { method: "POST" });
+      setRegenerando(respuesta.ok ? "listo" : "error");
+    } catch {
+      setRegenerando("error");
+    }
+  }
 
   useEffect(() => {
     let vigente = true;
@@ -87,6 +99,8 @@ export function VistaProceso({ id }: { id: string }) {
 
   const m = lote.metricas;
   const tasas = calcularTasas(m);
+  const procesado = loProcesado(m);
+  const revision = revisionManual(m);
   const hechas = tasas.procesadas + m.duplicadas;
   const visibles = (facturas ?? []).filter((f) => filtro === "todas" || f.estado === filtro);
 
@@ -115,6 +129,7 @@ export function VistaProceso({ id }: { id: string }) {
         <div className="mt-3 flex flex-wrap gap-2">
           <Insignia tono="bueno">{m.aceptadas.n} leída(s) correctamente</Insignia>
           <Insignia tono="malo">{tasas.malLeidas} a revisión</Insignia>
+          {revision.revisadas > 0 && <Insignia tono="bueno">{revision.revisadas} revisada(s) a mano</Insignia>}
           <Insignia tono="neutro">{m.duplicadas} duplicada(s)</Insignia>
           <Insignia tono="neutro">{m.clientesNuevos} cliente(s) nuevo(s)</Insignia>
         </div>
@@ -122,13 +137,39 @@ export function VistaProceso({ id }: { id: string }) {
 
       <Tarjeta titulo="Lo procesado">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Dato etiqueta="Antes de IVA" valor={pesos(m.aceptadas.subtotal)} />
-          <Dato etiqueta="IVA" valor={pesos(m.aceptadas.iva)} />
-          <Dato etiqueta="Impoconsumo" valor={pesos(m.aceptadas.impoconsumo)} />
-          <Dato etiqueta="Total" valor={pesos(m.aceptadas.total)} />
+          <Dato etiqueta="Antes de IVA" valor={pesos(procesado.subtotal)} />
+          <Dato etiqueta="IVA" valor={pesos(procesado.iva)} />
+          <Dato etiqueta="Impoconsumo" valor={pesos(procesado.impoconsumo)} />
+          <Dato etiqueta="Total" valor={pesos(procesado.total)} />
         </div>
-        <p className="mt-3 text-xs text-secundario">Importes de las facturas leídas correctamente.</p>
+        <p className="mt-3 text-xs text-secundario">
+          Importes de las facturas leídas correctamente{revision.revisadas > 0 && " y de las revisadas a mano"}.
+          {revision.pendientes > 0 &&
+            (revision.pendientes === 1 ? " 1 espera revisión y no se suma todavía." : ` ${revision.pendientes} esperan revisión y no se suman todavía.`)}
+        </p>
       </Tarjeta>
+
+      {lote.tieneExcel && revision.revisadas > 0 && (
+        <Tarjeta>
+          <p className="text-sm">
+            El Excel se generó cuando el lote terminó. Si corregiste facturas después, regenéralo para que las incluya.
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <button type="button" onClick={regenerarExcel} disabled={regenerando === "si"} className={BOTON_SECUNDARIO}>
+              {regenerando === "si" ? "Regenerando…" : "Regenerar el Excel con las correcciones a mano"}
+            </button>
+            {regenerando === "listo" && (
+              <p className="text-sm text-bueno">
+                ✓ Excel actualizado.{" "}
+                <a href={`/api/procesos/${lote.id}/excel`} className={ENLACE}>
+                  Descargarlo
+                </a>
+              </p>
+            )}
+            {regenerando === "error" && <p className="text-sm text-malo">✕ No se pudo regenerar. Inténtalo de nuevo.</p>}
+          </div>
+        </Tarjeta>
+      )}
 
       <Tarjeta titulo="Facturas del lote">
         {lote.estado !== "terminado" ? (
@@ -179,10 +220,21 @@ export function VistaProceso({ id }: { id: string }) {
                       <td className="cifras py-2 pr-3 text-right">{pesos(f.impoconsumo)}</td>
                       <td className="cifras py-2 pr-3 text-right">{pesos(f.total)}</td>
                       <td className="py-2 pr-3">
-                        {f.estado === "aceptada" ? (
+                        {f.estado === "aceptada" && f.corregidaManualmente ? (
+                          <Insignia tono="bueno">Revisada a mano</Insignia>
+                        ) : f.estado === "aceptada" ? (
                           <Insignia tono="bueno">Correcta</Insignia>
                         ) : f.estado === "revision" ? (
-                          <Insignia tono="malo">Revisión</Insignia>
+                          <>
+                            <Insignia tono="malo">Revisión</Insignia>
+                            {f.hash && (
+                              <p className="mt-1 text-xs">
+                                <Link href={`/revision/${f.hash}`} className={ENLACE}>
+                                  Revisar
+                                </Link>
+                              </p>
+                            )}
+                          </>
                         ) : (
                           <Insignia tono="malo">Error</Insignia>
                         )}

@@ -97,7 +97,9 @@ async function main(): Promise<void> {
     const lotesPrevios = new Set((await api<{ lotes: ResumenProceso[] }>("/api/procesos")).lotes.map((l) => l.id));
     await page.goto(`${url}/`);
     const menu = page.getByRole("navigation", { name: "Principal" });
-    comprobar("el menú tiene «Procesar facturas» y «Métricas»", (await menu.getByRole("link").allTextContents()).join(" | "), "Procesar facturas | Métricas");
+    // Desde la Fase 9 hay una pestaña «Revisión», que puede llevar al lado el número de pendientes.
+    const pestanas = (await menu.getByRole("link").allTextContents()).map((texto) => texto.replace(/\d+$/, ""));
+    comprobar("el menú tiene «Procesar facturas», «Revisión» y «Métricas»", pestanas.join(" | "), "Procesar facturas | Revisión | Métricas");
     comprobar("  …con «Procesar facturas» resaltado", await menu.getByRole("link", { name: "Procesar facturas" }).getAttribute("aria-current"), "page");
     comprobar("  …y el botón «Cerrar sesión»", await page.getByRole("button", { name: "Cerrar sesión" }).count(), 1);
 

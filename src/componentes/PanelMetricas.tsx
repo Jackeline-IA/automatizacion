@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { calcularTasas, proveedoresOrdenados, sumarMetricas } from "@/lib/procesamiento/metricas";
+import { calcularTasas, loProcesado, proveedoresOrdenados, revisionManual, sumarMetricas } from "@/lib/procesamiento/metricas";
 import { entero, fechaHora, NOMBRE_ESTADO, pesos } from "./formato";
 import { Aviso, Barra, Dato, ENLACE, Insignia, Medidor, TablaDesplazable, Tarjeta } from "./ui";
 import { useMetricas } from "./useMetricas";
@@ -22,6 +22,8 @@ export function PanelMetricas() {
   const visibles = elegido === TODOS ? lotes : lotes.filter((lote) => lote.id === elegido);
   const suma = sumarMetricas(visibles.map((lote) => lote.metricas));
   const tasas = calcularTasas(suma);
+  const procesado = loProcesado(suma);
+  const revision = revisionManual(suma);
   const proveedores = proveedoresOrdenados(suma);
   const mayorProveedor = proveedores[0]?.total ?? 0;
 
@@ -64,6 +66,23 @@ export function PanelMetricas() {
         />
       </div>
 
+      {revision.malLeidas > 0 && (
+        // Párrafo corrido (no cajas flex): así la frase no se parte en trozos con huecos.
+        <p className="rounded-lg border border-borde bg-superficie px-4 py-3 text-sm">
+          De las <strong className="cifras">{entero(revision.malLeidas)}</strong> mal leídas,{" "}
+          <strong className="cifras">{entero(revision.revisadas)}</strong> ya se revisaron a mano y{" "}
+          <strong className="cifras">{entero(revision.pendientes)}</strong> {revision.pendientes === 1 ? "espera" : "esperan"} a una persona.
+          {revision.pendientes > 0 && (
+            <>
+              {" "}
+              <Link href="/revision" className={ENLACE}>
+                Ir a revisarlas
+              </Link>
+            </>
+          )}
+        </p>
+      )}
+
       <Tarjeta>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Dato etiqueta="Facturas procesadas (distintas)" valor={entero(tasas.procesadas)} />
@@ -74,21 +93,22 @@ export function PanelMetricas() {
 
       <Tarjeta titulo="Lo procesado">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Dato etiqueta="Antes de IVA" valor={pesos(suma.aceptadas.subtotal)} />
-          <Dato etiqueta="IVA" valor={pesos(suma.aceptadas.iva)} />
-          <Dato etiqueta="Impoconsumo" valor={pesos(suma.aceptadas.impoconsumo)} />
-          <Dato etiqueta="Total" valor={pesos(suma.aceptadas.total)} />
+          <Dato etiqueta="Antes de IVA" valor={pesos(procesado.subtotal)} />
+          <Dato etiqueta="IVA" valor={pesos(procesado.iva)} />
+          <Dato etiqueta="Impoconsumo" valor={pesos(procesado.impoconsumo)} />
+          <Dato etiqueta="Total" valor={pesos(procesado.total)} />
         </div>
         <p className="mt-3 text-sm text-secundario">
-          Importes de las {entero(suma.aceptadas.n)} factura(s) leídas correctamente.
-          {suma.revision.n > 0 &&
-            ` Hay ${entero(suma.revision.n)} en revisión que no se suman aquí (lo que se alcanzó a leer de ellas da ${pesos(suma.revision.total)}).`}
+          Importes de las {entero(suma.aceptadas.n)} factura(s) leídas correctamente
+          {suma.manuales.n > 0 && ` y las ${entero(suma.manuales.n)} revisadas a mano`}.
+          {revision.pendientes > 0 &&
+            ` ${revision.pendientes === 1 ? "La que espera" : `Las ${entero(revision.pendientes)} que esperan`} revisión no se suma${revision.pendientes === 1 ? "" : "n"} hasta que una persona la${revision.pendientes === 1 ? "" : "s"} revise.`}
         </p>
       </Tarjeta>
 
       <Tarjeta titulo="Por razón social">
         {proveedores.length === 0 ? (
-          <p className="text-sm text-secundario">Aún no hay facturas leídas correctamente.</p>
+          <p className="text-sm text-secundario">Aún no hay facturas leídas correctamente ni revisadas a mano.</p>
         ) : (
           <TablaDesplazable>
             <table className="w-full min-w-[720px] text-left text-sm">
@@ -123,7 +143,9 @@ export function PanelMetricas() {
             </table>
           </TablaDesplazable>
         )}
-        <p className="mt-3 text-xs text-secundario">Solo facturas leídas correctamente: en las de revisión el NIT puede estar mal leído.</p>
+        <p className="mt-3 text-xs text-secundario">
+          Facturas leídas correctamente y revisadas a mano; las que esperan revisión no, porque su NIT puede estar mal leído.
+        </p>
       </Tarjeta>
 
       <Tarjeta titulo="Por lote">
@@ -138,7 +160,7 @@ export function PanelMetricas() {
                   <th className="py-2 pr-3 font-medium">Correctas</th>
                   <th className="py-2 pr-3 font-medium">Mal leídas</th>
                   <th className="w-32 py-2 pr-3 font-medium">Reparto</th>
-                  <th className="py-2 pr-3 text-right font-medium">Total aceptado</th>
+                  <th className="py-2 pr-3 text-right font-medium">Total procesado</th>
                   <th className="py-2 pr-3 font-medium">Estado</th>
                   <th className="py-2 font-medium">Abrir</th>
                 </tr>
@@ -164,7 +186,7 @@ export function PanelMetricas() {
                           <div className="bg-malo" style={{ width: `${t.porcentajeMalLeidas}%` }} />
                         </div>
                       </td>
-                      <td className="cifras py-2 pr-3 text-right">{pesos(lote.metricas.aceptadas.total)}</td>
+                      <td className="cifras py-2 pr-3 text-right">{pesos(loProcesado(lote.metricas).total)}</td>
                       <td className="py-2 pr-3">
                         <Insignia tono={lote.estado === "terminado" ? "bueno" : "neutro"}>{NOMBRE_ESTADO[lote.estado]}</Insignia>
                       </td>

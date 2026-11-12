@@ -142,6 +142,21 @@ export function calcularTasas(metricas: MetricasProceso): Tasas {
   };
 }
 
+/**
+ * «Lo procesado»: lo aceptado por la máquina MÁS lo revisado a mano (Fase 9).
+ * Lo que sigue en revisión no se suma hasta que una persona lo revise.
+ */
+export function loProcesado(metricas: MetricasProceso): Importes {
+  return sumarImportes(metricas.aceptadas, metricas.manuales);
+}
+
+/** De las mal leídas, cuántas ya revisó una persona y cuántas esperan. */
+export function revisionManual(metricas: MetricasProceso): { malLeidas: number; revisadas: number; pendientes: number } {
+  const malLeidas = metricas.revision.n + metricas.errores;
+  const revisadas = metricas.manuales?.n ?? 0;
+  return { malLeidas, revisadas, pendientes: Math.max(0, malLeidas - revisadas) };
+}
+
 /** Proveedores de mayor a menor total, con su NIT. */
 export function proveedoresOrdenados(metricas: MetricasProceso): (Importes & { nit: string; nombre: string })[] {
   return Object.entries(metricas.proveedores)

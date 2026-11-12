@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { Factura } from "../modelo/tipos";
-import { aParcial, cambiosCorreccion, motivosCorreccion, precargaDesdeFactura, proponerTotales, type ImportesCorreccion } from "./correccion";
+import {
+  aParcial,
+  camposDesdePrecarga,
+  cambiosCorreccion,
+  entradaDesdeCampos,
+  leerEntero,
+  motivosCorreccion,
+  precargaDesdeFactura,
+  proponerTotales,
+  type ImportesCorreccion,
+} from "./correccion";
 import { erroresDeFormato, type EntradaCorreccion } from "./correccion-esquema";
 
 // Los datos reales de factura_0001 (sus dígitos de verificación son válidos).
@@ -159,6 +169,49 @@ describe("precarga del formulario con lo que leyó la máquina", () => {
     expect(precarga.items).toEqual([{ descripcion: "", cantidad: null, precioUnitario: null }]);
     expect(precarga.dvProveedor).toBeNull();
     expect(precarga.clienteDocumento).toBeNull();
+  });
+});
+
+describe("del texto de los campos a lo que se envía", () => {
+  it("leerEntero acepta pesos escritos con puntos de miles y signo", () => {
+    expect(leerEntero("$ 1.234.567")).toBe(1234567);
+    expect(leerEntero(" 725705 ")).toBe(725705);
+    expect(leerEntero("")).toBeNull();
+    // Un decimal o una letra no se «arreglan» en silencio: el esquema dirá qué está mal.
+    expect(Number.isNaN(leerEntero("725705,5"))).toBe(true);
+    expect(Number.isNaN(leerEntero("12a"))).toBe(true);
+  });
+
+  it("los campos precargados reproducen la factura, y la entrada pasa el esquema", () => {
+    const precarga = {
+      ...BUENA,
+      items: BUENA.items.map((item) => ({ ...item })),
+    };
+    const campos = camposDesdePrecarga(precarga);
+    expect(campos.subtotal).toBe("3819500");
+    expect(campos.dvProveedor).toBe("7");
+    expect(campos.llevaImpoconsumo).toBe(false);
+    const entrada = entradaDesdeCampos(campos, false);
+    expect(erroresDeFormato(entrada)).toEqual([]);
+    expect(entrada).toEqual(BUENA);
+  });
+
+  it("los totales que la máquina no leyó se proponen desde los ítems", () => {
+    const campos = camposDesdePrecarga({ ...BUENA, subtotal: null, iva: null, total: null });
+    expect([campos.subtotal, campos.iva, campos.total]).toEqual(["3819500", "725705", "4545205"]);
+  });
+
+  it("un campo vacío llega como «falta» al esquema, no como cero", () => {
+    const campos = { ...camposDesdePrecarga(BUENA), total: "", dvProveedor: "" };
+    const entrada = entradaDesdeCampos(campos, false) as Record<string, unknown>;
+    expect(entrada.dvProveedor).toBeNull();
+    expect(erroresDeFormato(entrada)).toContain("El total: escribe un número");
+  });
+
+  it("sin impoconsumo marcado se envía null aunque el campo tenga algo", () => {
+    const campos = { ...camposDesdePrecarga(BUENA), impoconsumo: "100" };
+    expect((entradaDesdeCampos(campos, true) as Record<string, unknown>).impoconsumo).toBeNull();
+    expect((entradaDesdeCampos({ ...campos, llevaImpoconsumo: true }, true) as Record<string, unknown>).impoconsumo).toBe(100);
   });
 });
 

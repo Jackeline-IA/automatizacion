@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   calcularTasas,
   cambiosDe,
+  loProcesado,
+  revisionManual,
   metricasDesdeEventos,
   metricasVacias,
   proveedoresOrdenados,
@@ -124,6 +126,16 @@ describe("reconstruir, sumar y resumir métricas", () => {
     const m = metricasDesdeEventos([ACEPTADA]);
     m.proveedores["999"] = { nombre: "Mal leído", n: 0, subtotal: 0, iva: 0, impoconsumo: 0, total: 0 };
     expect(proveedoresOrdenados(m).map((p) => p.nit)).toEqual(["856162509"]);
+  });
+
+  it("lo procesado suma las aceptadas por la máquina y las revisadas a mano; las pendientes no", () => {
+    const m = metricasDesdeEventos([ACEPTADA, REVISION, REVISION, { tipo: "error" }]);
+    m.manuales = { n: 1, subtotal: 500000, iva: 95000, impoconsumo: 0, total: 595000 };
+    expect(loProcesado(m)).toEqual({ n: 2, subtotal: 1500000, iva: 285000, impoconsumo: 40000, total: 1825000 });
+    // 3 mal leídas (2 en revisión + 1 error), 1 ya revisada a mano → 2 esperan a una persona.
+    expect(revisionManual(m)).toEqual({ malLeidas: 3, revisadas: 1, pendientes: 2 });
+    // «Leídas correctamente» mide a la máquina: no cambia con las correcciones.
+    expect(calcularTasas(m).correctas).toBe(1);
   });
 
   it("una aceptada sin NIT legible no crea un proveedor", () => {
